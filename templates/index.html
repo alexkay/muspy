@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div style="float:right;margin:0 0 5px 5px;">
+<a class="noborder thickbox" href="/screencast/intro?KeepThis=true&amp;TB_iframe=true&amp;width=740&amp;height=560"><img src="/static/screencasts/intro.gif" alt="Guided Video Tour"/></a>
+</div>
+<p>Welcome to Muspy &ndash; <span class="marker">the easiest way to follow your favourite artists!</span></p>
+
+<h2>What?</h2>
+<p><span class="marker">Muspy will notify you when 
+{% if user.is_authenticated %}<a href="/artists">{% endif %}artists you like{% if user.is_authenticated %}</a>{% endif %}
+release 
+{% if user.is_authenticated %}<a href="/releases">{% endif %}new albums{% if user.is_authenticated %}</a>{% endif %}</span>.</p>
+<h2>Why?</h2>
+<p>Have you ever missed an album of one of your favourite artists only to
+ discover it by accident weeks after the release? Do you spend a lot of time on 
+official websites looking for release announcements? <span class="marker">With Muspy you will save time and won't miss any releases</span>.</p>
+<h2>How?</h2>
+{% if not user.is_authenticated %}
+<p>You need to <a href="/signup">create an account</a> to use Muspy. 
+Come on, don't be lazy! <span class="marker">It's free and only 
+<a href="/signup">takes a minute</a>!</span> If you already have an account, 
+<a href="/signin">click here</a> to sign in.</p>
+{% endif %}
+<p>After you sign in, you may 
+{% if user.is_authenticated %}<a href="/artists">{% endif %}add the artists{% if user.is_authenticated %}</a>{% endif %}
+you want to follow. You can add them one-by-one, copy the list of artists from your Facebook profile, or import the top bands from <a href="/import-from-last.fm">your Last.fm profile</a>.</p>
+<p>When one of the artists releases a new CD, 
+<span class="marker">you will receive a short e-mail notification</span> 
+with the album name and release dates. You can also see the 
+{% if user.is_authenticated %}<a href="/releases">{% endif %}new releases{% if user.is_authenticated %}</a>{% endif %}
+on the website sorted in the chronological order, or 
+<span class="marker">subscribe to the {% if user.is_authenticated %}<a href="/feed/{{ user.key.id }}">{% endif %}rss feed{% if user.is_authenticated %}</a>{% endif %}</span>
+and receive release alerts using the feed aggregator of your choice.</p>
+
+<h2>Latest Releases</h2>
+<table id="releases">
+{% for release in releases %}
+    {# TODO:% include "_release.html" %#}
+{% endfor %}
+</table>
+<p><a href="/calendar">More &raquo;</a></p>
+
+{% endblock content %}
+
+{% block javascript %}
+<script type="text/javascript" src="/static/jquery-1.2.6.js"></script>          
+<script type="text/javascript" src="/static/thickbox.js"></script>
+<link rel="stylesheet" href="/static/thickbox.css" type="text/css" media="screen" />
+{% endblock %}

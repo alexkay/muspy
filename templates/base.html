@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+    <head>
+        <title>{% if is_index %}Muspy &ndash; Get Notified on New Album Release Dates{% else %}{% block title %}{% endblock %} &ndash; Muspy{% endif %}</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+      	<meta http-equiv="Content-Style-Type" content="text/css"/>
+        <link rel="stylesheet" href="/static/style.css" />
+        <link rel="alternate" href="/blog/feed" type="application/atom+xml" title="Muspy - Blog" />
+        {% if user.is_authenticated %}<link rel="alternate" href="/feed?id={{ user.key.id }}" type="application/atom+xml" title="Muspy - New Releases" />{% endif %}
+        {% block javascript %}{% endblock %}
+    </head>
+    <body>
+        <div id="container">
+            <div id="header">
+                <div id="logo">
+                    <a href="/"><img src="/static/logo.gif" alt="Muspy logo"/></a>
+                </div>
+                <div id="menu">
+                    <div id="menu_top">
+                        <a href="/">Home</a>
+                        &bull; <a href="/about">About</a>
+                        &bull; <a href="/faq">FAQ</a>
+                        &bull; <a href="/contact">Contact</a>
+                        &bull; <a href="/blog/feed"><img src="/static/feed.png" alt="RSS" title="Subscribe in a reader"/></a>
+                        <a href="/blog">Blog</a>
+                    </div>
+                    <div id="menu_bottom_left">
+                        {% if user.is_authenticated %}
+                        <a href="/artists">Artists</a>
+                        &bull; <a href="/feed?id={{ user.key.id }}"><img src="/static/feed.png" alt="RSS" title="Subscribe in a reader"/></a>
+                        <a href="/releases">Releases</a>
+                        {% endif %}
+                    </div>
+                    <div id="menu_bottom_right">
+                        {% if user.is_authenticated %}
+                        {% comment %}
+                        {{ user.email }}
+                        &bull; {% endcomment %}<a href="/settings">Settings</a>
+                        &bull; <a href="/signout">Sign out</a>
+                        {% else %}
+                        <a href="/signin">Sign in</a>
+                        &bull; <a href="/signup">Sign up</a>
+                        {% endif %}
+                    </div>
+                    <div>&nbsp;</div>
+                </div>
+            </div>
+            {% if user.is_authenticated and not user.email_activated %}
+            <div id="activate">
+                <p>Your account is awaiting e-mail confirmation. Please click the 
+                activation link in the e-mail you were sent or 
+                <a href="/activate">click here</a> to re-send the activation e-mail. 
+                Some e-mail accounts may view the activation e-mail as spam, 
+                so be sure to turn off spam filters or check your spam folder for 
+                the e-mail. You can also enter a new e-mail address on the 
+                <a href="/settings">settings</a> page.</p>
+            </div>
+            {% endif %}
+            {% if flash.notice %}
+            <div id="flash_notice">
+                <p>{{ flash.notice }}</p>
+            </div>
+            {% endif %}
+            {% if flash.error %}
+            <div id="flash_error">
+                <p>{{ flash.error }}</p>
+            </div>
+            {% endif %}
+            <div id="content">
+                {% if not is_index %}
+                <h1>{% block header %}{% endblock %}</h1>
+                {% endif %}
+                {% spaceless %}
+                {% block content%}{% endblock %}
+                {% endspaceless %}
+            </div>
+            <div id="footer">&nbsp;</div>
+        </div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-5695628-1");
+pageTracker._trackPageview();
+</script>
+<script src="http://muspy.uservoice.com/pages/general/widgets/tab.js?alignment=right&amp;color=CC0000" type="text/javascript"></script>
+    </body>
+</html>

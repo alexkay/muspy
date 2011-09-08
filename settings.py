@@ -55,7 +55,9 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'muspy.urls'
 
-TEMPLATE_DIRS = ()
+TEMPLATE_DIRS = (
+    'templates',
+)
 
 INSTALLED_APPS = (
     'django.contrib.auth',

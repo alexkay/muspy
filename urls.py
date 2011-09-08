@@ -1,17 +1,31 @@
-from django.conf.urls.defaults import patterns, include, url
+from django.conf.urls.defaults import *
+from django.views.generic.simple import redirect_to
 
-# Uncomment the next two lines to enable the admin:
-# from django.contrib import admin
-# admin.autodiscover()
-
-urlpatterns = patterns('',
-    # Examples:
-    # url(r'^$', 'muspy.views.home', name='home'),
-    # url(r'^muspy/', include('muspy.foo.urls')),
-
-    # Uncomment the admin/doc line below to enable admin documentation:
-    # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-    # Uncomment the next line to enable the admin:
-    # url(r'^admin/', include(admin.site.urls)),
+urlpatterns = patterns('src.views',
+    (r'^$', 'index'),
+    (r'^activate$', 'activate'),
+    (r'^artist/([0-9a-f\-]+)$', 'artist'),
+    (r'^artists$', 'artists'),
+    (r'^artists-add$', 'artists_add'),
+    (r'^artists-remove$', 'artists_remove'),
+    (r'^blog$', 'blog'),
+    (r'^blog/feed$', 'blog_feed'),
+    (r'^calendar$', 'calendar'),
+    (r'^cover$', 'cover'),
+    (r'^daemon$', 'daemon'),
+    (r'^feed$', 'feed'),
+    (r'^feed/(?P<id>\d+)$', redirect_to, {'url': '/feed?id=%(id)s'}),
+    (r'^import$', 'import_artists'),
+    (r'^releases$', 'releases'),
+    (r'^reset$', 'reset'),
+    (r'^screencast/([a-z\-\.]+)$', 'screencast'),
+    (r'^settings$', 'settings'),
+    (r'^signin$', 'signin'),
+    (r'^signout$', 'signout'),
+    (r'^signup$', 'signup'),
+    (r'^sitemap.xml$', 'sitemap'),
+    (r'^star$', 'star'),
+    (r'^test$', 'test'),
+    # Try to map other URLs to blog articles.
+    (r'^([a-z\-\.]+)$', 'article')
 )
