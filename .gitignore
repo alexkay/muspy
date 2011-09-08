@@ -1,2 +1,2 @@
 *.pyc
-muspy.db
+db/muspy.db
