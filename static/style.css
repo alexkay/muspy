@@ -1,0 +1,206 @@
+body {
+    color: #222222;
+    background: #FFFFFF;
+    font-family: Verdana, Helvetica, Arial;
+    font-size: 11pt;
+    margin: 0;
+    padding: 0;
+}
+
+p {
+    margin: 10px 0;
+}
+
+a {
+    color: #CC0000;
+    text-decoration: none;
+    border-bottom: 1px dotted #CC0000;
+}
+
+.noborder, img {
+    border-style: none;
+    outline: none;
+}
+
+h1, h2 {
+    color: #222222;
+    margin: 1em 0;
+    font-weight: bold;
+}
+
+h1 {
+    font-size: 16pt;
+}
+
+h2 {
+    font-size: 12pt;
+}
+
+#container {
+    width: 760px;
+    margin: 20px auto;
+    padding: 0;
+    background: #FFFFFF url(/static/logo-bg.gif) no-repeat scroll top right;
+}
+
+#header {
+    height: 100px;
+}
+
+#header a {
+    border: none;
+    text-decoration: none;
+}
+
+#logo {
+    float: left;
+}
+
+#menu {
+    padding-top: 20px;
+    padding-left: 175px;
+    font-size: 12pt;
+}
+
+#menu a:hover {
+    border-bottom: 1px dotted #CC0000;
+}
+
+#menu_top {
+    border-bottom: 2px solid #222222;
+    padding-bottom: 3px;
+}
+
+#menu_bottom_left {
+    float: left;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+#menu_bottom_right {
+    float: right;
+    text-align: right;
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+#activate, #flash_error {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #FFCCCC;
+    border: solid 1px #CC0000;
+}
+
+#activate p, #flash_error p, #flash_notice p {
+    margin: 0px;
+}
+
+#flash_notice {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #CCFFCC;
+    border: solid 1px #00CC00;
+}
+
+#activate p {
+    margin: 0px;
+}
+
+#content {
+    margin-top: 30px;
+}
+
+.marker {
+    background-color: #FFFFCC;
+}
+
+#footer {
+    padding-top: 10px;
+    border-bottom: 2px solid #222222;
+}
+
+.article_footer {
+    font-size: smaller;
+    margin-top: 2em;
+    margin-left: 2em;
+    margin-bottom: 2em;
+}
+#reset th, td {
+    text-align: left;
+    font-weight: normal;
+}
+
+#settings th, td {
+    text-align: left;
+    font-weight: normal;
+}
+
+#signup th, td {
+    text-align: left;
+    font-weight: normal;
+}
+
+#signin th, td {
+    text-align: left;
+    font-weight: normal;
+}
+
+.errorlist {
+    list-style: none;
+    color: #CC0000;
+    padding: 0;
+    margin: 0;
+}
+
+#found_artists ul {
+    margin-left: 0;
+    padding-left: 0;
+}
+
+#found_artists li {
+    list-style: none;
+}
+
+.add_artist {
+    vertical-align: middle;
+}
+
+.best_match {
+    font-size: 110%;
+    padding-bottom: 0.5em;
+}
+
+#artists, #pending, #releases {
+    width: 100%;
+}
+
+#releases td {
+    vertical-align: top;
+    padding-bottom: 5px;
+}
+
+td.cover {
+    width: 130px; /* 120px for the cover + 10px right margin */
+}
+
+td.info {
+    border-bottom: 1px dotted #CCCCCC;
+}
+
+a.star {
+    border-style: none;
+    outline: none;
+}
+
+.events {
+    font-size: smaller;
+}
+
+#loading {
+    text-align: center;
+    margin: 6em 0;
+}
+
+#loading p {
+    margin: 4em;
+}

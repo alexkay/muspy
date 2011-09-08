@@ -30,7 +30,9 @@ MEDIA_URL = ''
 STATIC_ROOT = ''
 STATIC_URL = '/static/'
 ADMIN_MEDIA_PREFIX = '/static/admin/'
-STATICFILES_DIRS = ()
+STATICFILES_DIRS = (
+    'static',
+)
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
