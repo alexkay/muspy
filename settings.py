@@ -4,7 +4,7 @@ DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
-    ('alex', 'alex@muspy.com'),
+    ('admin', 'admin@muspy.com'),
 )
 
 MANAGERS = ADMINS
