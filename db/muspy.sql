@@ -1,3 +1,9 @@
+PRAGMA user_version=1;
+
+PRAGMA encoding="UTF-8";
+PRAGMA foreign_keys=1;
+PRAGMA journal_mode=WAL;
+
 CREATE TABLE "auth_user" (
     "id" integer NOT NULL PRIMARY KEY,
     "username" varchar(30) NOT NULL UNIQUE,
@@ -11,9 +17,10 @@ CREATE TABLE "auth_user" (
     "last_login" datetime NOT NULL,
     "date_joined" datetime NOT NULL
 );
+
 CREATE TABLE "django_session" (
     "session_key" varchar(40) NOT NULL PRIMARY KEY,
     "session_data" text NOT NULL,
     "expire_date" datetime NOT NULL
 );
-CREATE INDEX "django_session_c25c2c28" ON "django_session" ("expire_date");
+CREATE INDEX "django_session_expire_date" ON "django_session" ("expire_date");
