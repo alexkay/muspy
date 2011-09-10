@@ -7,6 +7,7 @@ from django.shortcuts import redirect, render
 from settings import LOGIN_REDIRECT_URL
 # TODO: remove src.
 from src.forms import *
+from src.models import *
 
 def activate(request):
     if 'code' in request.GET:
