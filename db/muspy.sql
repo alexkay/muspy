@@ -9,7 +9,7 @@ CREATE TABLE "auth_user" (
     "username" varchar(30) NOT NULL UNIQUE,
     "first_name" varchar(30) NOT NULL,
     "last_name" varchar(30) NOT NULL,
-    "email" varchar(75) NOT NULL,
+    "email" varchar(75) NOT NULL UNIQUE,
     "password" varchar(128) NOT NULL,
     "is_staff" bool NOT NULL,
     "is_active" bool NOT NULL,

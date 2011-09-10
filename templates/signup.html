@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Sign up{% endblock %}
+{% block header %}Sign up{% endblock %}
+{% block content %}
+
+<form method="post" action="/signup">
+{% csrf_token %}
+
+<table id="signup">
+{{ form.as_table }}
+<tr>
+    <th>&nbsp;</th>
+    <td><input type="submit" value="Sign up" /></td>
+</tr>
+</table>
+
+</form>
+
+<p>Already a member? <a href="/signin">Sign in here</a>.</p>
+
+{% endblock content %}
+
+<script type="text/javascript">document.getElementById("id_username").focus();</script>

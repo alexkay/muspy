@@ -30,7 +30,7 @@ you want to follow. You can add them one-by-one, copy the list of artists from y
 with the album name and release dates. You can also see the 
 {% if user.is_authenticated %}<a href="/releases">{% endif %}new releases{% if user.is_authenticated %}</a>{% endif %}
 on the website sorted in the chronological order, or 
-<span class="marker">subscribe to the {% if user.is_authenticated %}<a href="/feed/{{ user.key.id }}">{% endif %}rss feed{% if user.is_authenticated %}</a>{% endif %}</span>
+<span class="marker">subscribe to the {% if user.is_authenticated %}<a href="/feed/{{ user.id }}">{% endif %}rss feed{% if user.is_authenticated %}</a>{% endif %}</span>
 and receive release alerts using the feed aggregator of your choice.</p>
 
 <h2>Latest Releases</h2>

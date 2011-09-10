@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Sign in{% endblock %}
+{% block header %}Sign in{% endblock %}
+{% block content %}
+
+<form method="post" action="/signin">
+{% csrf_token %}
+
+<table id="signin">
+{{ form.as_table }}
+<tr>
+    <th>&nbsp;</th>
+    <td><input type="submit" value="Sign in" /></td>
+</tr>
+</table>
+
+<input type="hidden" name="next" value="{{ next }}" />
+</form>
+
+<p>Forgot your password? <a href="/reset">Reset it</a>.</p>
+<p>Don't have an account? <a href="/signup">Create one</a>.</p>
+
+{% endblock content %}
+
+<script type="text/javascript">document.getElementById("id_username").focus();</script>

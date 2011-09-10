@@ -9,7 +9,7 @@
       	<meta http-equiv="Content-Style-Type" content="text/css"/>
         <link rel="stylesheet" href="/static/style.css" />
         <link rel="alternate" href="/blog/feed" type="application/atom+xml" title="Muspy - Blog" />
-        {% if user.is_authenticated %}<link rel="alternate" href="/feed?id={{ user.key.id }}" type="application/atom+xml" title="Muspy - New Releases" />{% endif %}
+        {% if user.is_authenticated %}<link rel="alternate" href="/feed?id={{ user.id }}" type="application/atom+xml" title="Muspy - New Releases" />{% endif %}
         {% block javascript %}{% endblock %}
     </head>
     <body>
@@ -30,7 +30,7 @@
                     <div id="menu_bottom_left">
                         {% if user.is_authenticated %}
                         <a href="/artists">Artists</a>
-                        &bull; <a href="/feed?id={{ user.key.id }}"><img src="/static/feed.png" alt="RSS" title="Subscribe in a reader"/></a>
+                        &bull; <a href="/feed?id={{ user.id }}"><img src="/static/feed.png" alt="RSS" title="Subscribe in a reader"/></a>
                         <a href="/releases">Releases</a>
                         {% endif %}
                     </div>

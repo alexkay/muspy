@@ -25,10 +25,20 @@ STATICFILES_DIRS = (
     'static',
 )
 
+# TODO: /releases if there are any otherwise /artists, or make it an option
+LOGIN_REDIRECT_URL = '/'
+
 SECRET_KEY = '^c)@qv0@pb$ym&zb^#vm8nuv0972qa9w(#le&atirpvfvi_yjc'
 
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
+)
+TEMPLATE_DIRS = (
+    'templates',
+)
+
+AUTHENTICATION_BACKENDS = (
+    'src.backends.EmailAuthBackend',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -39,11 +49,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-ROOT_URLCONF = 'muspy.urls'
-
-TEMPLATE_DIRS = (
-    'templates',
-)
+ROOT_URLCONF = 'urls'
 
 INSTALLED_APPS = (
     'django.contrib.auth',
