@@ -40,7 +40,7 @@ TEMPLATE_DIRS = (
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 
 AUTHENTICATION_BACKENDS = (
-    'src.backends.EmailAuthBackend',
+    'app.backends.EmailAuthBackend',
 )
 
 MIDDLEWARE_CLASSES = (

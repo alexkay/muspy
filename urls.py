@@ -2,9 +2,9 @@ from django.conf.urls.defaults import *
 from django.contrib.auth.views import login
 from django.views.generic.simple import redirect_to
 
-from src.forms import SignInForm
+from app.forms import SignInForm
 
-urlpatterns = patterns('src.views',
+urlpatterns = patterns('app.views',
     (r'^$', 'index'),
     (r'^activate$', 'activate'),
 #    (r'^artist/([0-9a-f\-]+)$', 'artist'),

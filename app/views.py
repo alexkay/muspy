@@ -6,9 +6,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
 from settings import LOGIN_REDIRECT_URL
-# TODO: remove src.
-from src.forms import *
-from src.models import *
+
+from app.forms import *
+from app.models import *
 
 def activate(request):
     if 'code' in request.GET:
