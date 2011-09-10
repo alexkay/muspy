@@ -27,6 +27,9 @@ STATICFILES_DIRS = (
 
 # TODO: /releases if there are any otherwise /artists, or make it an option
 LOGIN_REDIRECT_URL = '/'
+AUTH_PROFILE_MODULE = 'app.UserProfile'
+MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
+ROOT_URLCONF = 'urls'
 
 SECRET_KEY = '^c)@qv0@pb$ym&zb^#vm8nuv0972qa9w(#le&atirpvfvi_yjc'
 
@@ -36,8 +39,6 @@ TEMPLATE_LOADERS = (
 TEMPLATE_DIRS = (
     'templates',
 )
-
-MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 
 AUTHENTICATION_BACKENDS = (
     'app.backends.EmailAuthBackend',
@@ -51,13 +52,12 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
 )
 
-ROOT_URLCONF = 'urls'
-
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'app',
 )
 
 LOGGING = {

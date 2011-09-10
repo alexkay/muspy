@@ -46,7 +46,7 @@
                     <div>&nbsp;</div>
                 </div>
             </div>
-            {% if user.is_authenticated and not user.email_activated %}
+            {% if user.is_authenticated and not user.get_profile.email_activated %}
             <div class="message error">
                 <p>Your account is awaiting e-mail confirmation. Please click the 
                 activation link in the e-mail you were sent or 

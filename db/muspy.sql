@@ -4,6 +4,22 @@ PRAGMA encoding="UTF-8";
 PRAGMA foreign_keys=1;
 PRAGMA journal_mode=WAL;
 
+CREATE TABLE "app_userprofile" (
+    "id" integer NOT NULL PRIMARY KEY,
+    "user_id" integer NOT NULL UNIQUE REFERENCES "auth_user" ("id"),
+    "notify" bool NOT NULL,
+    "notify_album" bool NOT NULL,
+    "notify_single" bool NOT NULL,
+    "notify_ep" bool NOT NULL,
+    "notify_live" bool NOT NULL,
+    "notify_compilation" bool NOT NULL,
+    "notify_remix" bool NOT NULL,
+    "notify_other" bool NOT NULL,
+    "email_activated" bool NOT NULL,
+    "activation_code" varchar(16) NOT NULL,
+    "reset_code" varchar(16) NOT NULL
+);
+
 CREATE TABLE "auth_user" (
     "id" integer NOT NULL PRIMARY KEY,
     "username" varchar(30) NOT NULL UNIQUE,
