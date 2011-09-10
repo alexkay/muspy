@@ -1,15 +1,17 @@
 Maintainer:
 
- * Alexander Kojevnikov <alexander@kojevnikov.com>
+* Alexander Kojevnikov <alexander@kojevnikov.com>
 
 Contributors:
 
- * You?
+* You?
 
 Artist:
 
- * Olga Vasylevska
+* Olga Vasylevska
 
 Other:
 
- * Registration system is influenced by Eugeny Yablochkin's django-simplereg
+* Registration system is based on django-simplereg:
+
+  Copyright (c) 2011 Eugeny Yablochkin (under BSD3)
