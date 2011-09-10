@@ -1,8 +1,8 @@
 import uuid
 
+from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
-from django import forms
 
 
 class ResetForm(forms.Form):
@@ -35,65 +35,57 @@ class SettingsForm(forms.Form):
 
     def clean_email(self):
         email = self.cleaned_data['email'].lower().strip()
-        if self.user.email != email and User.find(email):
+        if self.profile.user.email != email and  User.objects.filter(email__iexact=email):
             raise forms.ValidationError('This e-mail is already in use. '
                                         'Please enter another.')
         return email
 
     def clean_password(self):
         password = self.cleaned_data['password']
-        if password and not self.user.check_password(password):
+        if password and not self.profile.user.check_password(password):
             raise forms.ValidationError('Invalid password, try again.')
         if self.data['new_password'] and not password:
             raise forms.ValidationError('Enter the current password.')
         return password
 
     def save(self):
-        messages = []
-        if self.user.email != self.cleaned_data['email']:
-            self.user.email = self.cleaned_data['email']
-            self.user.email_activated = False
-            self.user.put()
-            self.user.send_activation_email()
-            messages += 'An activation e-mail has been sent to ' + self.user.email
-        self.user.changed = False
+        if self.profile.user.email != self.cleaned_data['email']:
+            self.profile.user.email = self.cleaned_data['email']
+            self.profile.email_activated = False
+            # TODO: transaction
+            self.profile.user.save()
+            self.profile.save()
+            self.profile.send_activation_email()
+        changed = False
         if self.cleaned_data['new_password']:
-            self.user.set_password(self.cleaned_data['new_password'])
-            self.user.changed = True
-            messages += 'Successfully changed the password.'
-        if self.user.notify != self.cleaned_data['notify']:
-            self.user.notify = self.cleaned_data['notify']
-            self.user.changed = True
-            messages += ('E-mail notifications turned %s.' %
-                         ('ON' if self.user.notify else 'OFF'))
-
-        self.user.notification_changed = False
-        if self.user.notify_album != self.cleaned_data['notify_album']:
-            self.user.notify_album = self.cleaned_data['notify_album']
-            self.user.notification_changed = True
-        if self.user.notify_single != self.cleaned_data['notify_single']:
-            self.user.notify_single = self.cleaned_data['notify_single']
-            self.user.notification_changed = True
-        if self.user.notify_ep != self.cleaned_data['notify_ep']:
-            self.user.notify_ep = self.cleaned_data['notify_ep']
-            self.user.notification_changed = True
-        if self.user.notify_live != self.cleaned_data['notify_live']:
-            self.user.notify_live = self.cleaned_data['notify_live']
-            self.user.notification_changed = True
-        if self.user.notify_compilation != self.cleaned_data['notify_compilation']:
-            self.user.notify_compilation = self.cleaned_data['notify_compilation']
-            self.user.notification_changed = True
-        if self.user.notify_remix != self.cleaned_data['notify_remix']:
-            self.user.notify_remix = self.cleaned_data['notify_remix']
-            self.user.notification_changed = True
-        if self.user.notify_other != self.cleaned_data['notify_other']:
-            self.user.notify_other = self.cleaned_data['notify_other']
-            self.user.notification_changed = True
-        if self.user.changed or self.user.notification_changed:
-            self.user.put()
-        if self.user.notification_changed:
-            Job.update_releases(self.user.key().id())
-        return messages
+            self.profile.user.set_password(self.cleaned_data['new_password'])
+            self.profile.user.save()
+        if self.profile.notify != self.cleaned_data['notify']:
+            self.profile.notify = self.cleaned_data['notify']
+            changed = True
+        if self.profile.notify_album != self.cleaned_data['notify_album']:
+            self.profile.notify_album = self.cleaned_data['notify_album']
+            changed = True
+        if self.profile.notify_single != self.cleaned_data['notify_single']:
+            self.profile.notify_single = self.cleaned_data['notify_single']
+            changed = True
+        if self.profile.notify_ep != self.cleaned_data['notify_ep']:
+            self.profile.notify_ep = self.cleaned_data['notify_ep']
+            changed = True
+        if self.profile.notify_live != self.cleaned_data['notify_live']:
+            self.profile.notify_live = self.cleaned_data['notify_live']
+            changed = True
+        if self.profile.notify_compilation != self.cleaned_data['notify_compilation']:
+            self.profile.notify_compilation = self.cleaned_data['notify_compilation']
+            changed = True
+        if self.profile.notify_remix != self.cleaned_data['notify_remix']:
+            self.profile.notify_remix = self.cleaned_data['notify_remix']
+            changed = True
+        if self.profile.notify_other != self.cleaned_data['notify_other']:
+            self.profile.notify_other = self.cleaned_data['notify_other']
+            changed = True
+        if changed:
+            self.profile.save()
 
 class SignInForm(AuthenticationForm):
 

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Settings{% endblock %}
+{% block header %}Settings{% endblock %}
+{% block content %}
+
+<form method="post" action="/settings">
+{% csrf_token %}
+<table id="settings">
+<tr><td colspan="2"><h2>Edit e-mail address</h2></td></tr>
+<tr>
+<th>{{ form.email.label_tag}}:</th>
+<td>{{ form.email.errors }}{{ form.email }}</td>
+</tr>
+<tr class="spacer_row"><td colspan="2">&nbsp;</td></tr>
+
+<tr><td colspan="2"><h2>Edit password</h2></td></tr>
+<tr>
+<th>{{ form.password.label_tag}}:</th>
+<td>{{ form.password.errors }}{{ form.password }}</td>
+</tr>
+<tr>
+<th>{{ form.new_password.label_tag}}:</th>
+<td>{{ form.new_password.errors }}{{ form.new_password }}</td>
+</tr>
+<tr class="spacer_row"><td colspan="2">&nbsp;</td></tr>
+
+<tr><td colspan="2"><h2>Notifications</h2></td></tr>
+<tr>
+<td colspan="2"><p>{{ form.notify }}{{ form.notify.label_tag }}</p></td>
+</tr>
+<tr><td colspan="2"><p>Alternatively, you can subscribe to the <a href="/feed?id={{ user.get_profile.id }}"><img src="/static/feed.png" alt="RSS" /> web feed</a>.</p></td></td>
+<tr class="spacer_row"><td colspan="2">&nbsp;</td></tr>
+
+<tr><td colspan="2"><h2>Filter</h2></td></tr>
+<tr>
+<td colspan="2">
+<p>Track only these release types:</p>
+<p>
+&nbsp;&nbsp;&nbsp;&nbsp;{{ form.notify_album }}{{ form.notify_album.label_tag }}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{{ form.notify_single }}{{ form.notify_single.label_tag }}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{{ form.notify_ep }}{{ form.notify_ep.label_tag }}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{{ form.notify_live }}{{ form.notify_live.label_tag }}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{{ form.notify_compilation }}{{ form.notify_compilation.label_tag }}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{{ form.notify_remix }}{{ form.notify_remix.label_tag }}<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;{{ form.notify_other }}{{ form.notify_other.label_tag }}
+</p>
+</td>
+</tr>
+<tr class="spacer_row"><td colspan="2">&nbsp;</td></tr>
+
+<tr>
+<td colspan="2"><input type="submit" value="Update" /></td>
+</tr>
+</table>
+</form>
+
+{% endblock content %}
+
+<script type="text/javascript">document.getElementById("id_email").focus();</script>

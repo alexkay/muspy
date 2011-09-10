@@ -27,6 +27,7 @@ STATICFILES_DIRS = (
 
 # TODO: /releases if there are any otherwise /artists, or make it an option
 LOGIN_REDIRECT_URL = '/'
+LOGIN_URL = '/signin'
 AUTH_PROFILE_MODULE = 'app.UserProfile'
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 ROOT_URLCONF = 'urls'

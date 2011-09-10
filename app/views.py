@@ -67,21 +67,23 @@ def reset(request):
 def settings(request):
     if request.method == 'POST':
         form = SettingsForm(request.POST)
-        form.user = request.user
+        form.profile = request.user.get_profile()
         if form.is_valid():
             form.save()
             messages.success(request, 'Your settings have been saved.')
             return redirect('/')
     else:
-        initial = {'email': request.user.email,
-                   'notify': request.user.notify,
-                   'notify_album': request.user.notify_album,
-                   'notify_single': request.user.notify_single,
-                   'notify_ep': request.user.notify_ep,
-                   'notify_live': request.user.notify_live,
-                   'notify_compilation': request.user.notify_compilation,
-                   'notify_remix': request.user.notify_remix,
-                   'notify_other': request.user.notify_other}
+        initial = {
+            'email': request.user.email,
+            'notify': request.user.get_profile().notify,
+            'notify_album': request.user.get_profile().notify_album,
+            'notify_single': request.user.get_profile().notify_single,
+            'notify_ep': request.user.get_profile().notify_ep,
+            'notify_live': request.user.get_profile().notify_live,
+            'notify_compilation': request.user.get_profile().notify_compilation,
+            'notify_remix': request.user.get_profile().notify_remix,
+            'notify_other': request.user.get_profile().notify_other,
+        }
         form = SettingsForm(initial=initial)
 
     return render(request, 'settings.html', {'form': form})

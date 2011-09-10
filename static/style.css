@@ -147,6 +147,13 @@ h2 {
     font-weight: normal;
 }
 
+.errorlist {
+    list-style: none;
+    color: #CC0000;
+    padding: 0;
+    margin: 0;
+}
+
 #found_artists ul {
     margin-left: 0;
     padding-left: 0;
