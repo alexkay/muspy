@@ -1,5 +1,6 @@
 from datetime import date
 
+from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
@@ -12,18 +13,17 @@ from src.models import *
 def activate(request):
     if 'code' in request.GET:
         if User.activate(request.GET['code']):
-            flash_notice('Your e-mail address has been activated.')
+            messages.success(request, 'Your e-mail address has been activated.')
         else:
-            flash_error('Invalid activation code, '
-                        'your e-mail address was not activated.')
+            messages.error(request, 'Invalid activation code, your e-mail address was not activated.')
         return redirect('/')
 
     if not request.user.is_authenticated():
-        flash_error('You need to sign in to activate your e-mail address.')
+        messages.error(request, 'You need to sign in to activate your e-mail address.')
         return redirect('/')
 
     if request.user.email_activated:
-        flash_notice('Your e-mail address is already active.')
+        messages.info(request, 'Your e-mail address is already active.')
         return redirect('/')
 
     request.user.send_activation_email()
@@ -44,8 +44,9 @@ def reset(request):
             if not user:
                 raise ValueError('Unknown e-mail address: ' + email)
             user.send_reset_email()
-            flash_notice('An email has been sent to %s describing how to '
-                         'obtain your new password.' % user.email)
+            messages.success(request,
+                             'An email has been sent to %s describing how to '
+                             'obtain your new password.' % user.email)
             return redirect('/')
     elif 'code' in request.GET:
         code = request.GET['code']
@@ -68,8 +69,8 @@ def settings(request):
         form = SettingsForm(request.POST)
         form.user = request.user
         if form.is_valid():
-            messages = form.save()
-            flash_notice('Your settings have been saved.')
+            form.save()
+            messages.success(request, 'Your settings have been saved.')
             return redirect('/')
     else:
         initial = {'email': request.user.email,
@@ -86,11 +87,6 @@ def settings(request):
     return render(request, 'settings.html', {'form': form})
 
 def signup(request):
-
-    # TODO:
-#    if request.user.is_authenticated():
-#        flash_notice('Cannot sign up, you are already signed in.')
-#        return redirect('/')
 
     form = SignUpForm(request.POST or None)
     if form.is_valid():

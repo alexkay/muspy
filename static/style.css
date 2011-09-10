@@ -84,26 +84,28 @@ h2 {
     padding-bottom: 3px;
 }
 
-#activate, #flash_error {
+.message {
     margin-top: 30px;
     padding: 20px;
-    background-color: #FFCCCC;
-    border: solid 1px #CC0000;
 }
 
-#activate p, #flash_error p, #flash_notice p {
+.message p {
     margin: 0px;
 }
 
-#flash_notice {
-    margin-top: 30px;
-    padding: 20px;
+.debug {
+    background-color: #CCCCFF;
+    border: solid 1px #0000CC;
+}
+
+.info, .success {
     background-color: #CCFFCC;
     border: solid 1px #00CC00;
 }
 
-#activate p {
-    margin: 0px;
+.warning, .error {
+    background-color: #FFCCCC;
+    border: solid 1px #CC0000;
 }
 
 #content {
@@ -143,13 +145,6 @@ h2 {
 #signin th, td {
     text-align: left;
     font-weight: normal;
-}
-
-.errorlist {
-    list-style: none;
-    color: #CC0000;
-    padding: 0;
-    margin: 0;
 }
 
 #found_artists ul {

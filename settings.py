@@ -37,6 +37,8 @@ TEMPLATE_DIRS = (
     'templates',
 )
 
+MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
+
 AUTHENTICATION_BACKENDS = (
     'src.backends.EmailAuthBackend',
 )

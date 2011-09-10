@@ -36,9 +36,7 @@
                     </div>
                     <div id="menu_bottom_right">
                         {% if user.is_authenticated %}
-                        {% comment %}
-                        {{ user.email }}
-                        &bull; {% endcomment %}<a href="/settings">Settings</a>
+                        <a href="/settings">Settings</a>
                         &bull; <a href="/signout">Sign out</a>
                         {% else %}
                         <a href="/signin">Sign in</a>
@@ -49,7 +47,7 @@
                 </div>
             </div>
             {% if user.is_authenticated and not user.email_activated %}
-            <div id="activate">
+            <div class="message error">
                 <p>Your account is awaiting e-mail confirmation. Please click the 
                 activation link in the e-mail you were sent or 
                 <a href="/activate">click here</a> to re-send the activation e-mail. 
@@ -59,15 +57,12 @@
                 <a href="/settings">settings</a> page.</p>
             </div>
             {% endif %}
-            {% if flash.notice %}
-            <div id="flash_notice">
-                <p>{{ flash.notice }}</p>
+            {% if messages %}
+            {% for message in messages %}
+            <div class="message {{ message.tags }}">
+              <p>{{ message }}</p>
             </div>
-            {% endif %}
-            {% if flash.error %}
-            <div id="flash_error">
-                <p>{{ flash.error }}</p>
-            </div>
+            {% endfor %}
             {% endif %}
             <div id="content">
                 {% if not is_index %}
