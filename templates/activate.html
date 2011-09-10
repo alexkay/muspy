@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Email activation{% endblock %}
+{% block header %}Email activation{% endblock %}
+{% block content %}
+
+<p>An email has been sent to {{ user.email }} with details on
+how to activate your email address.</p>
+
+<p>You will receive an email in your inbox. If you don't receive your activation
+email within a couple of minutes, check your spam/junk email folders.</p>
+
+{% endblock content %}

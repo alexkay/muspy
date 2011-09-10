@@ -6,7 +6,7 @@
 <form method="post" action="/settings">
 {% csrf_token %}
 <table id="settings">
-<tr><td colspan="2"><h2>Edit e-mail address</h2></td></tr>
+<tr><td colspan="2"><h2>Edit email address</h2></td></tr>
 <tr>
 <th>{{ form.email.label_tag}}:</th>
 <td>{{ form.email.errors }}{{ form.email }}</td>

@@ -32,7 +32,14 @@ AUTH_PROFILE_MODULE = 'app.UserProfile'
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 ROOT_URLCONF = 'urls'
 
+# Change for production
 SECRET_KEY = '^c)@qv0@pb$ym&zb^#vm8nuv0972qa9w(#le&atirpvfvi_yjc'
+EMAIL_SUBJECT_PREFIX = '[muspy] '
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025
+#EMAIL_HOST_USER =
+#EMAIL_HOST_PASSWORD =
+#EMAIL_USE_TLS =
 
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',

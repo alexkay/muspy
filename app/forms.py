@@ -6,17 +6,17 @@ from django.contrib.auth.models import User
 
 
 class ResetForm(forms.Form):
-    email = forms.EmailField(label='E-mail', required=True)
+    email = forms.EmailField(label='Email', required=True)
 
     def clean_email(self):
         email = self.cleaned_data['email'].lower().strip()
         if not User.find(email):
-            raise forms.ValidationError('Unknown e-mail address. '
+            raise forms.ValidationError('Unknown email address. '
                                         'Please enter another.')
         return email
 
 class SettingsForm(forms.Form):
-    email = forms.EmailField(label='New e-mail')
+    email = forms.EmailField(label='New email')
     password = forms.CharField(label='Current password', max_length=100,
                                required=False,
                                widget=forms.PasswordInput(render_value=False))
@@ -24,7 +24,7 @@ class SettingsForm(forms.Form):
                                    required=False,
                                    widget=forms.PasswordInput(render_value=False))
     notify = forms.BooleanField(label='Receive new release notifications '
-                                'by e-mail.', required=False)
+                                'by email.', required=False)
     notify_album = forms.BooleanField(label='Album', required=False)
     notify_single = forms.BooleanField(label='Single', required=False)
     notify_ep = forms.BooleanField(label='EP', required=False)
@@ -35,8 +35,8 @@ class SettingsForm(forms.Form):
 
     def clean_email(self):
         email = self.cleaned_data['email'].lower().strip()
-        if self.profile.user.email != email and  User.objects.filter(email__iexact=email):
-            raise forms.ValidationError('This e-mail is already in use. '
+        if self.profile.user.email != email and  User.objects.filter(email__exact=email):
+            raise forms.ValidationError('This email is already in use. '
                                         'Please enter another.')
         return email
 
@@ -98,7 +98,7 @@ class SignUpForm(forms.Form):
 
     def clean_email(self):
         email = self.cleaned_data['email'].lower().strip()
-        if User.objects.filter(email__iexact=email):
+        if User.objects.filter(email__exact=email):
             raise forms.ValidationError('This email address is already in use. Please supply a different email address.')
         return email
 

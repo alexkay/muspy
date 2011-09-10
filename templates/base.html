@@ -48,12 +48,12 @@
             </div>
             {% if user.is_authenticated and not user.get_profile.email_activated %}
             <div class="message error">
-                <p>Your account is awaiting e-mail confirmation. Please click the 
-                activation link in the e-mail you were sent or 
-                <a href="/activate">click here</a> to re-send the activation e-mail. 
-                Some e-mail accounts may view the activation e-mail as spam, 
+                <p>Your account is awaiting email confirmation. Please click the 
+                activation link in the email you were sent or 
+                <a href="/activate">click here</a> to re-send the activation email. 
+                Some email accounts may view the activation email as spam, 
                 so be sure to turn off spam filters or check your spam folder for 
-                the e-mail. You can also enter a new e-mail address on the 
+                the email. You can also enter a new email address on the 
                 <a href="/settings">settings</a> page.</p>
             </div>
             {% endif %}

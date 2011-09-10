@@ -12,21 +12,21 @@ from app.models import *
 
 def activate(request):
     if 'code' in request.GET:
-        if User.activate(request.GET['code']):
-            messages.success(request, 'Your e-mail address has been activated.')
+        if UserProfile.activate(request.GET['code']):
+            messages.success(request, 'Your email address has been activated.')
         else:
-            messages.error(request, 'Invalid activation code, your e-mail address was not activated.')
+            messages.error(request, 'Invalid activation code, your email address was not activated.')
         return redirect('/')
 
     if not request.user.is_authenticated():
-        messages.error(request, 'You need to sign in to activate your e-mail address.')
+        messages.error(request, 'You need to sign in to activate your email address.')
         return redirect('/')
 
-    if request.user.email_activated:
-        messages.info(request, 'Your e-mail address is already active.')
+    if request.user.get_profile().email_activated:
+        messages.info(request, 'Your email address is already active.')
         return redirect('/')
 
-    request.user.send_activation_email()
+    request.user.get_profile().send_activation_email()
     return render(request, 'activate.html')
 
 def index(request):
@@ -36,32 +36,32 @@ def index(request):
     return render(request, 'index.html', {'is_index': True, 'releases': releases})
 
 def reset(request):
+    resetting = password = False
     if request.method == 'POST':
         form = ResetForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
-            user = User.find(email)
-            if not user:
-                raise ValueError('Unknown e-mail address: ' + email)
-            user.send_reset_email()
+            profile = UserProfile.find(email)
+            if not profile:
+                messages.error(request, 'Unknown email address: ' + email)
+                return redirect('/')
+            profile.send_reset_email()
             messages.success(request,
                              'An email has been sent to %s describing how to '
-                             'obtain your new password.' % user.email)
+                             'obtain your new password.' % email)
             return redirect('/')
     elif 'code' in request.GET:
         code = request.GET['code']
         resetting = True
-        email, password = User.reset(code)
+        email, password = UserProfile.reset(code)
         if email and password:
             # Sign in immediately.
             user = authenticate(username=email, password=password)
-            assert user
             login(request, user)
     else:
         form = ResetForm()
 
-    # TODO: remove locals()
-    return render(request, 'reset.html', locals())
+    return render(request, 'reset.html', {'resetting': resetting, 'password': password})
 
 @login_required
 def settings(request):

@@ -1,0 +1,12 @@
+Hi,
+
+You recently requested a new password. To reset your password, follow the link below:
+
+http://muspy.com/reset?code={{ code }}
+
+If clicking on the link doesn't work, try copying and pasting it into your browser.
+
+If you did not reset your password, please disregard this message.
+
+Cheers,
+The muspy Team
