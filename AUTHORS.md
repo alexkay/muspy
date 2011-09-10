@@ -12,6 +12,4 @@ Artist:
 
 Other:
 
-* Registration system is based on django-simplereg:
-
-  Copyright (c) 2011 Eugeny Yablochkin (under BSD3)
+* Registration system is based on django-simplereg: Copyright (c) 2011 Eugeny Yablochkin (BSD3)
