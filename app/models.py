@@ -85,11 +85,11 @@ class UserProfile(models.Model):
 
     @classmethod
     def reset(cls, code):
-        users = User.objects.filter(reset_code__exact=code)
-        if not users:
+        profiles = UserProfile.objects.filter(reset_code__exact=code)
+        if not profiles:
             return None, None
-        profile = users[0].get_profile()
-        password = profile.user.objects.make_random_password(length=16)
+        profile = profiles[0]
+        password = User.objects.make_random_password(length=16)
         profile.reset_code = ''
         profile.user.set_password(password)
         # TODO: transaction

@@ -36,7 +36,7 @@ def index(request):
     return render(request, 'index.html', {'is_index': True, 'releases': releases})
 
 def reset(request):
-    resetting = password = False
+    form = resetting = password = None
     if request.method == 'POST':
         form = ResetForm(request.POST)
         if form.is_valid():
@@ -58,10 +58,11 @@ def reset(request):
             # Sign in immediately.
             user = authenticate(username=email, password=password)
             login(request, user)
+            return redirect(LOGIN_REDIRECT_URL)
     else:
         form = ResetForm()
 
-    return render(request, 'reset.html', {'resetting': resetting, 'password': password})
+    return render(request, 'reset.html', {'form': form, 'resetting': resetting, 'password': password})
 
 @login_required
 def settings(request):
@@ -95,7 +96,6 @@ def signup(request):
         form.save(request)
         user = authenticate(username=request.POST['email'], password=request.POST['password'])
         login(request, user)
-
         return redirect(LOGIN_REDIRECT_URL)
 
     return render(request, 'signup.html', {'form': form})

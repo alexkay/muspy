@@ -4,13 +4,15 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
 
+from app.models import *
+
 
 class ResetForm(forms.Form):
     email = forms.EmailField(label='Email', required=True)
 
     def clean_email(self):
         email = self.cleaned_data['email'].lower().strip()
-        if not User.find(email):
+        if not UserProfile.find(email):
             raise forms.ValidationError('Unknown email address. '
                                         'Please enter another.')
         return email
