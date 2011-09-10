@@ -5,3 +5,4 @@
 * Send emails from a reply-able address.
 * Different activation emails for new accounts and changed addresses.
 * s/Muspy/muspy/g (or muspy.com), also s/www.//g.
+* Convert the flash videos to webm for the HTML5 video element.

@@ -95,6 +95,7 @@ def signup(request):
     if form.is_valid():
         form.save(request)
         user = authenticate(username=request.POST['email'], password=request.POST['password'])
+        user.get_profile().send_activation_email()
         login(request, user)
         return redirect(LOGIN_REDIRECT_URL)
 
