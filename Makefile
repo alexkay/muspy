@@ -1,4 +1,4 @@
-.PHONY: db run schema smtpd
+.PHONY: db run smtpd
 
 db:
 	rm -f db/muspy.db
@@ -6,9 +6,6 @@ db:
 
 run:
 	./manage.py runserver
-
-schema:
-	sqlite3 db/muspy.db ".schema" > db/muspy.sql
 
 smtpd:
 	python -m smtpd -n -c DebuggingServer localhost:1025
