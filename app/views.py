@@ -20,10 +20,12 @@ from datetime import date
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.shortcuts import redirect, render
 
 from settings import LOGIN_REDIRECT_URL
 
+from app.blog import articles, get_posts
 from app.forms import *
 from app.models import *
 
@@ -45,6 +47,34 @@ def activate(request):
 
     request.user.get_profile().send_activation_email()
     return render(request, 'activate.html')
+
+def article(request, slug):
+    if not slug in articles:
+        return HttpResponseNotFound()
+    article = articles[slug]
+    is_blog = 'date' in article
+    if is_blog:
+        template_name = 'articles/%s-%s.html' % (article['date'], slug)
+    else:
+        template_name = 'articles/%s.html' % slug
+    root =  request.build_absolute_uri('/')
+    return render(request, 'article.html', {'slug': slug, 'article': article,
+                                            'is_blog': is_blog, 'root': root,
+                                            'template_name': template_name})
+
+def blog(request):
+    posts = get_posts()
+    root =  request.build_absolute_uri('/')
+    return render(request, 'blog.html', {'posts': posts, 'root': root})
+
+def blog_feed(request):
+    posts = get_posts()
+    feed = render_to_string('blog_feed.xml',
+                            {'posts': posts,
+                             'updated_feed': max(p['updated'] for p in posts),
+                             'url': request.build_absolute_uri(),
+                             'root': request.build_absolute_uri('/')})
+    return HttpResponse(content=feed, content_type='application/atom+xml')
 
 def index(request):
     today = int(date.today().strftime('%Y%m%d'))
@@ -107,7 +137,6 @@ def settings(request):
     return render(request, 'settings.html', {'form': form})
 
 def signup(request):
-
     form = SignUpForm(request.POST or None)
     if form.is_valid():
         form.save(request)

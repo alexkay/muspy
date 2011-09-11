@@ -1,0 +1,24 @@
+{% autoescape off %}<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title type="text">Muspy - Blog</title>
+    <link href="{{ url }}" rel="self" type="application/atom+xml" />
+    <link href="{{ root }}" rel="alternate" type="text/html" />
+    <id>{{ url }}</id>
+    <updated>{{ updated_feed }}</updated>
+    <author><name>Muspy</name></author>
+    <icon>{{ root }}favicon.ico</icon>
+    <logo>{{ root }}static/logo.gif</logo>
+    {% for post in posts %}
+    <entry>
+        <title type="text"><![CDATA[{{ post.title }}]]></title>
+        <link href="{{ root }}{{ post.slug }}"/>
+        <id>{{ root }}{{ post.slug }}</id>
+        <updated>{{ post.updated }}</updated>
+        <content type="xhtml">
+            <div xmlns="http://www.w3.org/1999/xhtml">
+{% autoescape on %}{% include post.template_name %}{% endautoescape %}
+            </div>
+        </content>
+    </entry>
+    {% endfor %}
+</feed>{% endautoescape %}
