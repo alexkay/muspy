@@ -42,6 +42,15 @@ class ReleaseGroup(models.Model):
     date = models.IntegerField() # 20080101 OR 20080100 OR 20080000
     is_deleted = models.BooleanField()
 
+# Django's ManyToManyField generates terrible SQL, simulate it.
+class UserArtist(models.Model):
+
+    class Meta:
+        unique_together = ('user', 'artist')
+
+    user = models.ForeignKey(User)
+    artist = models.ForeignKey(Artist)
+
 class UserProfile(models.Model):
 
     code_length = 16
