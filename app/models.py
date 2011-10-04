@@ -25,20 +25,22 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
 
-@receiver(connection_created)
-def activate_foreign_keys(sender, connection, **kwargs):
-    if connection.vendor == 'sqlite':
-        cursor = connection.cursor()
-        cursor.execute('PRAGMA foreign_keys=1;')
+class Artist(models.Model):
 
-@receiver(post_save, sender=User)
-def user_post_save(sender, instance, created, **kwargs):
-    if created:
-        p = UserProfile()
-        p.user = instance
-        p.save()
+    mbid = models.CharField(max_length=36, unique=True)
+    name = models.CharField(max_length=512)
+    sort_name = models.CharField(max_length=512)
+    country = models.CharField(max_length=2)
+    disambiguation = models.CharField(max_length=512)
 
-User.__unicode__ = lambda x: x.email
+class ReleaseGroup(models.Model):
+
+    artist = models.ForeignKey(Artist)
+    mbid = models.CharField(max_length=36, unique=True)
+    name = models.CharField(max_length=512)
+    type = models.CharField(max_length=16)
+    date = models.IntegerField() # 20080101 OR 20080100 OR 20080000
+    is_deleted = models.BooleanField()
 
 class UserProfile(models.Model):
 
@@ -118,3 +120,20 @@ class UserProfile(models.Model):
     def find(cls, email):
         users = User.objects.filter(email__exact=email)
         return users[0].get_profile() if users else None
+
+# Activate foreign keys for sqlite.
+@receiver(connection_created)
+def activate_foreign_keys(sender, connection, **kwargs):
+    if connection.vendor == 'sqlite':
+        cursor = connection.cursor()
+        cursor.execute('PRAGMA foreign_keys=1;')
+
+# Create a profile for each user.
+@receiver(post_save, sender=User)
+def user_post_save(sender, instance, created, **kwargs):
+    if created:
+        p = UserProfile()
+        p.user = instance
+        p.save()
+
+User.__unicode__ = lambda x: x.email

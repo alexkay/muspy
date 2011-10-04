@@ -1,9 +1,23 @@
 PRAGMA user_version=1;
-
-PRAGMA encoding="UTF-8";
-PRAGMA foreign_keys=1;
 PRAGMA journal_mode=WAL;
 
+CREATE TABLE "app_artist" (
+    "id" integer NOT NULL PRIMARY KEY,
+    "mbid" varchar(36) NOT NULL UNIQUE,
+    "name" varchar(512) NOT NULL,
+    "sort_name" varchar(512) NOT NULL,
+    "country" varchar(2) NOT NULL,
+    "disambiguation" varchar(512) NOT NULL
+);
+CREATE TABLE "app_releasegroup" (
+    "id" integer NOT NULL PRIMARY KEY,
+    "artist_id" integer NOT NULL REFERENCES "app_artist" ("id"),
+    "mbid" varchar(36) NOT NULL UNIQUE,
+    "name" varchar(512) NOT NULL,
+    "type" varchar(16) NOT NULL,
+    "date" integer NOT NULL,
+    "is_deleted" bool NOT NULL
+);
 CREATE TABLE "app_userprofile" (
     "id" integer NOT NULL PRIMARY KEY,
     "user_id" integer NOT NULL UNIQUE REFERENCES "auth_user" ("id"),
@@ -19,7 +33,6 @@ CREATE TABLE "app_userprofile" (
     "activation_code" varchar(16) NOT NULL,
     "reset_code" varchar(16) NOT NULL
 );
-
 CREATE TABLE "auth_user" (
     "id" integer NOT NULL PRIMARY KEY,
     "username" varchar(30) NOT NULL UNIQUE,
@@ -33,10 +46,10 @@ CREATE TABLE "auth_user" (
     "last_login" datetime NOT NULL,
     "date_joined" datetime NOT NULL
 );
-
 CREATE TABLE "django_session" (
     "session_key" varchar(40) NOT NULL PRIMARY KEY,
     "session_data" text NOT NULL,
     "expire_date" datetime NOT NULL
 );
+CREATE INDEX "app_releasegroup_artist_id" ON "app_releasegroup" ("artist_id");
 CREATE INDEX "django_session_expire_date" ON "django_session" ("expire_date");
