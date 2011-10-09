@@ -33,6 +33,11 @@ class Artist(models.Model):
     country = models.CharField(max_length=2)
     disambiguation = models.CharField(max_length=512)
 
+    @classmethod
+    def get_by_user(cls, user):
+        # TODO: paging
+        return cls.objects.filter(userartist__user__id=user.id).order_by('sort_name')[:1000]
+
 class ReleaseGroup(models.Model):
 
     artist = models.ForeignKey(Artist)

@@ -57,6 +57,7 @@ CREATE TABLE "django_session" (
     "session_data" text NOT NULL,
     "expire_date" datetime NOT NULL
 );
+CREATE INDEX "app_artist_sort_name" ON "app_artist" ("sort_name");
 CREATE INDEX "app_releasegroup_artist_id" ON "app_releasegroup" ("artist_id");
 CREATE INDEX "app_userartist_artist_id" ON "app_userartist" ("artist_id");
 CREATE INDEX "app_userartist_user_id" ON "app_userartist" ("user_id");

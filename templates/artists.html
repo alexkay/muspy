@@ -1,0 +1,147 @@
+{% extends "base.html" %}
+{% block title %}Artists{% endblock %}
+{% block header %}Artists{% endblock %}
+{% block content %}
+
+{% if search %}
+    {% if not found_artists %}
+        <p>No artists matching your query.</p>
+    {% else %}
+    <p>Search results: <small>(click <img class="add_artist" src="/static/add.gif" alt="+"/> to follow the artist)</small></p>
+        <div id="found_artists">
+            <ul>
+                {% for artist in found_artists %}
+                    <li{% if artist.best_match %} class="best_match"{% endif %}>
+                        <a class="noborder" href="/artists-add?id={{ artist.id }}&amp;search={{ search|urlencode }}"><img class="add_artist" src="/static/add.gif" alt="+" title="Add"/></a>
+                        <a href="/artist/{{ artist.id }}">{{ artist.name }}</a>
+                        {% if artist.disambiguation %}&nbsp;<small>({{ artist.disambiguation }})</small>{% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% if artists_left %}
+            <p><a href="/artists?search={{ search|urlencode }}{% if dontadd %}&amp;dontadd=1{% endif %}&amp;offset={{ artists_offset }}">{{ artists_left }} more artist{{ artists_left|pluralize }}</a></p>
+        {% endif %}
+    {% endif %}
+{% endif %}
+
+<form action="/artists" method="post">
+    <p>
+        Add a new artist or artists:<br/>
+        <input type="text" id="search" name="search" size="50" maxlength="16384" value="{{ search }}"/>
+        &nbsp;<input type="submit" id="add" value="{% if dontadd %}Search{% else %}Add{% endif %}"/>
+        &nbsp;<input type="checkbox" id="dontadd" name="dontadd" value="1"{% if dontadd %} checked="checked"{% endif %}/>
+        <label for="dontadd">Search, don't add</label>
+    </p>
+    <p>
+        <small><strong>Hint:</strong> you can enter a comma-separated list of artists, for example: <em>Agalloch, Slumber, Lumsk</em></small>
+    </p>
+    <p>You can also <a href="/import">import artists</a>  from your Last.fm profile.</p>
+</form>
+
+{% if importing %}
+<h2>Importing</h2>
+<p>These artists will be imported shortly:</p>
+<p>{{ importing }}</p>
+{% endif %}
+
+{% if pending %}
+<h2>Pending artists</h2>
+<p>These artists either could not be found or their names are ambiguous. <br/>
+Click on a name to search or select and remove the artists you don't want to follow.</p>
+<form id="form-pending" action="/artists-remove" method="post">
+<table id="pending">
+    {% for row in pending_rows %}
+	<tr>
+        {% for name in row %}
+        <td>
+            {% if name %}
+                <input type="checkbox" name="name" value="{{ name }}"/>&nbsp;<a href="/artists?search={{ name|urlencode }}&amp;dontadd=1">{{ name }}</a>
+            {% else %}
+                &nbsp;
+            {% endif %}
+        </td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+<div id="div-name-all"></div>
+<p><input type="submit" value="Remove"/> selected names</p>
+</form>
+{% endif %}
+
+<h2>Artists you are following:</h2>
+{% if artist_rows %}
+<form id="form-artists" action="/artists-remove" method="post">
+<table id="artists">
+    {% for row in artist_rows %}
+    <tr>
+        {% for artist in row %}
+        <td>
+            {% if artist %}
+                <input type="checkbox" name="id" value="{{ artist.artist_id }}"/>&nbsp;<a href="/artist/{{ artist.artist_id }}">{{ artist.name }}</a>
+            {% else %}
+                &nbsp;
+            {% endif %}
+        </td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+<div id="div-id-all"></div>
+<p><input type="submit" value="Remove"/> selected artists</p>
+</form>
+{% else %}
+<p>You don't have any! Use the text box above to add your favourite artists
+to the list. You will receive a notification when one of the artists that you
+follow releases a new album.</p>
+{% endif %}
+
+{% endblock content %}
+
+{% block javascript %}
+<script type="text/javascript" src="/static/jquery-1.2.6.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+$(function() {
+    $("#search").focus();
+
+    $("#dontadd").click(function() {
+        $("#add").val($("#dontadd").attr("checked") ? "Search" : "Add");
+    });
+
+    $("#div-name-all").html('<p><input type="checkbox" id="name-all"/>&nbsp;<label for="name-all">Select all</label></p>');
+
+    $("#div-id-all").html('<p><input type="checkbox" id="id-all"/>&nbsp;<label for="id-all">Select all</label></p>');
+
+    $("#name-all").click(function() {
+        var checked_status = this.checked;
+        $("input[@name=name]").each(function() {
+            this.checked = checked_status;
+        });
+    });
+
+    $("#id-all").click(function() {
+        var checked_status = this.checked;
+        $("input[@name=id]").each(function() {
+            this.checked = checked_status;
+        });
+    });
+
+    $("#form-pending").submit(function() {
+        var checked = $("input[@name=name]:checked").length;
+        if(checked < 2) return true;
+        return confirm("Are you sure you want to remove " +
+            checked.toString() + " artists?");
+    });
+
+    $("#form-artists").submit(function() {
+        var checked = $("input[@name=id]:checked").length;
+        if(checked < 2) return true;
+        return confirm("Are you sure you want to remove " +
+            checked.toString() + " artists?");
+    });
+});
+//]]>
+</script>
+{% endblock %}

@@ -28,6 +28,7 @@ from settings import LOGIN_REDIRECT_URL
 from app.blog import articles, get_posts
 from app.forms import *
 from app.models import *
+from app.tools import arrange_for_table
 
 def activate(request):
     if 'code' in request.GET:
@@ -61,6 +62,71 @@ def article(request, slug):
     return render(request, 'article.html', {'slug': slug, 'article': article,
                                             'is_blog': is_blog, 'root': root,
                                             'template_name': template_name})
+
+@login_required
+def artists(request):
+    artists = Artist.get_by_user(request.user)
+
+    COLUMNS = 3
+    artist_rows = arrange_for_table(artists, COLUMNS)
+
+    # Using REQUEST because this handler can be called using both GET and POST.
+    # TODO: where does it POST from?
+    search = request.REQUEST.get('search', '')
+    dontadd = request.REQUEST.get('dontadd', '')
+    offset = request.REQUEST.get('offset', '')
+    offset = int(offset) if offset.isdigit() else 0
+
+    found_artists, count = [], 0
+    if search:
+        if len(search) > 16384:
+            messages.error('The search string is too long.')
+            return redirect('/artists')
+
+        if ',' in search and not offset:
+            # Batch add mode.
+            Job.add_artists(request.user.key().id(), search, dontadd)
+            messages.info('Your artists will be processed in the next couple of '
+                          'minutes. In the meantime you can add more artists.')
+            return redirect('/artists')
+
+        found_artists, count = mb.search_artists(search, offset=offset)
+        if found_artists is None:
+            flash_error('The search server could not fulfill your request '
+                        'due to an internal error. Please try again later.')
+            # TODO: no locals()
+            return render(request, 'artists.html', locals())
+
+        only_one = len(found_artists) == 1
+        first_is_exact = (len(found_artists) > 1 and
+                          found_artists[0]['name'].lower() == search.lower() and
+                          found_artists[1]['name'].lower() != search.lower())
+        if not dontadd and not offset and (only_one or first_is_exact):
+            # Only one artist found - add it right away.
+            artist_data = found_artists[0]
+            artist_id = artist_data['id']
+            artist = Artist.find(artist_id)
+            if not artist:
+                artist = Artist.add(artist_id,
+                                    artist_data['name'],
+                                    artist_data['sort-name'])
+                Job.add_releases(artist_id)
+
+            UserArtist.add(request.user, artist)
+            Job.copy_releases(artist_id, request.user.key().id())
+
+            flash_notice("%s has been added!" % artist.name)
+            return HttpResponseRedirect('/artists')
+
+    artists_offset = offset + len(found_artists)
+    artists_left = max(0, count - artists_offset)
+
+#    importing = Job.importing_artists(request.user.key().id())
+#    pending = sorted(s.search for s in request.user.searches.fetch(200))
+#    pending_rows = arrange_for_table(pending, COLUMNS)
+
+    return render(request, 'artists.html', {
+            'artist_rows': artist_rows})
 
 def blog(request):
     posts = get_posts()
