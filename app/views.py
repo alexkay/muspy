@@ -23,6 +23,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 
+import musicbrainz2.webservice as ws
+
 from settings import LOGIN_REDIRECT_URL
 
 from app.blog import articles, get_posts
@@ -71,13 +73,13 @@ def artists(request):
     artist_rows = arrange_for_table(artists, COLUMNS)
 
     # Using REQUEST because this handler can be called using both GET and POST.
-    # TODO: where does it POST from?
     search = request.REQUEST.get('search', '')
     dontadd = request.REQUEST.get('dontadd', '')
     offset = request.REQUEST.get('offset', '')
     offset = int(offset) if offset.isdigit() else 0
 
     found_artists, count = [], 0
+    LIMIT = 20
     if search:
         if len(search) > 16384:
             messages.error('The search string is too long.')
@@ -90,43 +92,50 @@ def artists(request):
                           'minutes. In the meantime you can add more artists.')
             return redirect('/artists')
 
-        found_artists, count = mb.search_artists(search, offset=offset)
-        if found_artists is None:
-            flash_error('The search server could not fulfill your request '
-                        'due to an internal error. Please try again later.')
-            # TODO: no locals()
-            return render(request, 'artists.html', locals())
+        try:
+            q = ws.Query()
+            f = ws.ArtistFilter(name=search, limit=LIMIT, offset=offset)
+            found_artists = q.getArtists(f)
+        except ws.WebServiceError, e:
+            messages.error('The search server could not fulfill your request '
+                           'due to an internal error. Please try again later.')
+            return render(request, 'artists.html', {
+                    'artist_rows': artist_rows,
+                    'search': search,
+                    'dontadd': dontadd})
 
         only_one = len(found_artists) == 1
         first_is_exact = (len(found_artists) > 1 and
-                          found_artists[0]['name'].lower() == search.lower() and
-                          found_artists[1]['name'].lower() != search.lower())
+                          found_artists[0].artist.name.lower() == search.lower() and
+                          found_artists[1].artist.name.lower() != search.lower())
         if not dontadd and not offset and (only_one or first_is_exact):
             # Only one artist found - add it right away.
-            artist_data = found_artists[0]
-            artist_id = artist_data['id']
-            artist = Artist.find(artist_id)
+            mb_artist = found_artists[0].artist
+            artist = Artist.find(mb_artist.id)
             if not artist:
-                artist = Artist.add(artist_id,
-                                    artist_data['name'],
-                                    artist_data['sort-name'])
-                Job.add_releases(artist_id)
+                artist = Artist.add(mb_artist.id, mb_artist.name, mb_artist.sort_name)
+                Job.add_releases(artist.mbid)
 
             UserArtist.add(request.user, artist)
-            Job.copy_releases(artist_id, request.user.key().id())
+            Job.copy_releases(artist.mbid, request.user.key().id())
 
-            flash_notice("%s has been added!" % artist.name)
-            return HttpResponseRedirect('/artists')
+            message.success("%s has been added!" % artist.name)
+            return redirect('/artists')
 
     artists_offset = offset + len(found_artists)
-    artists_left = max(0, count - artists_offset)
+    artists_left = LIMIT == len(found_artists)
 
 #    importing = Job.importing_artists(request.user.key().id())
 #    pending = sorted(s.search for s in request.user.searches.fetch(200))
 #    pending_rows = arrange_for_table(pending, COLUMNS)
 
     return render(request, 'artists.html', {
-            'artist_rows': artist_rows})
+            'artist_rows': artist_rows,
+            'search': search,
+            'dontadd': dontadd,
+            'found_artists': found_artists,
+            'artists_offset': artists_offset,
+            'artists_left': artists_left})
 
 def blog(request):
     posts = get_posts()
