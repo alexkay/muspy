@@ -21,6 +21,7 @@ CREATE TABLE "app_userartist" (
     "id" integer NOT NULL PRIMARY KEY,
     "user_id" integer NOT NULL REFERENCES "auth_user" ("id"),
     "artist_id" integer NOT NULL REFERENCES "app_artist" ("id"),
+    "date" datetime NOT NULL,
     UNIQUE ("user_id", "artist_id")
 );
 CREATE TABLE "app_userprofile" (

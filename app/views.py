@@ -16,12 +16,10 @@
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import date
-from time import sleep
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import login_required
-from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 
@@ -69,34 +67,8 @@ def article(request, slug):
 def artist(request, mbid):
     artist = Artist.get_by_mbid(mbid)
     if not artist:
-        artist_data = mb.get_artist(mbid)
-        if not artist_data:
-            # TODO: Show a meaningful error message.
-            return HttpResponseNotFound()
-
-        # Sleep 1s to comply with the MB web service.
-        sleep(1)
-
-        artist = Artist(
-            mbid=mbid, name=artist_data['name'], sort_name=artist_data['sort-name'],
-            disambiguation=artist_data['disambiguation'] if 'disambiguation' in artist_data else '')
-        artist.save()
-
-        # Add a few release groups immediately.
-        release_groups = mb.get_release_groups(mbid, limit=100, offset=0)
-        if release_groups:
-            with transaction.commit_on_success():
-                for rg_data in release_groups:
-                    # Ignoring releases without a release date.
-                    if rg_data.get('first-release-date'):
-                        release_group = ReleaseGroup(
-                            artist=artist,
-                            mbid=rg_data['id'],
-                            name=rg_data['title'],
-                            type=rg_data['type'],
-                            date=ReleaseGroup.parse_date(rg_data['first-release-date']),
-                            is_deleted=False)
-                        release_group.save()
+        # TODO: Show a meaningful error message.
+        return HttpResponseNotFound()
 
     PER_PAGE = 10
     offset = int(request.GET.get('offset', 0))
@@ -136,19 +108,19 @@ def artists(request):
     LIMIT = 20
     if search:
         if len(search) > 16384:
-            messages.error('The search string is too long.')
+            messages.error(request, 'The search string is too long.')
             return redirect('/artists')
 
         if ',' in search and not offset:
             # Batch add mode.
             Job.add_artists(request.user.key().id(), search, dontadd)
-            messages.info('Your artists will be processed in the next couple of '
+            messages.info(request, 'Your artists will be processed in the next couple of '
                           'minutes. In the meantime you can add more artists.')
             return redirect('/artists')
 
         found_artists, count = mb.search_artists(search, limit=LIMIT, offset=offset)
         if found_artists is None:
-            messages.error('The search server could not fulfill your request '
+            messages.error(request, 'The search server could not fulfil your request '
                            'due to an internal error. Please try again later.')
             return render(request, 'artists.html', {
                     'artist_rows': artist_rows,
@@ -171,7 +143,7 @@ def artists(request):
             UserArtist.add(request.user, artist)
             Job.copy_releases(mbid, request.user.key().id())
 
-            message.success("%s has been added!" % artist.name)
+            messages.success(request, "%s has been added!" % artist.name)
             return redirect('/artists')
 
     artists_offset = offset + len(found_artists)
@@ -188,6 +160,23 @@ def artists(request):
             'found_artists': found_artists,
             'artists_offset': artists_offset,
             'artists_left': artists_left})
+
+@login_required
+def artists_add(request):
+    mbid = request.GET.get('id', '').lower()
+    artist = Artist.get_by_mbid(mbid)
+    if not artist:
+        # TODO: Show a meaningful error message.
+        return HttpResponseNotFound()
+
+    UserArtist.add(request.user, artist)
+
+    #TODO
+#    search = request.GET.get('search', '')
+#    UserSearch.remove(request.user, [search])
+
+    messages.success(request, "%s has been added!" % artist.name)
+    return redirect('/artists')
 
 def blog(request):
     posts = get_posts()

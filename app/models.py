@@ -16,14 +16,17 @@
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
 import random
+from time import sleep
 
 from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
-from django.db import models
+from django.db import IntegrityError, models, transaction
 from django.db.backends.signals import connection_created
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
+
+import app.musicbrainz as mb
 
 class Artist(models.Model):
 
@@ -34,10 +37,40 @@ class Artist(models.Model):
 
     @classmethod
     def get_by_mbid(cls, mbid):
+        """ Fetches the artist and releases from MB if not in the database. """
         try:
             return cls.objects.get(mbid=mbid)
         except cls.DoesNotExist:
+            pass
+
+        artist_data = mb.get_artist(mbid)
+        if not artist_data:
             return None
+
+        # Sleep 1s to comply with the MB web service.
+        sleep(1)
+
+        artist = Artist(
+            mbid=mbid, name=artist_data['name'], sort_name=artist_data['sort-name'],
+            disambiguation=artist_data['disambiguation'] if 'disambiguation' in artist_data else '')
+        artist.save()
+
+        # Add a few release groups immediately.
+        release_groups = mb.get_release_groups(mbid, limit=100, offset=0)
+        if release_groups:
+            with transaction.commit_on_success():
+                for rg_data in release_groups:
+                    # Ignoring releases without a release date.
+                    if rg_data.get('first-release-date'):
+                        release_group = ReleaseGroup(
+                            artist=artist,
+                            mbid=rg_data['id'],
+                            name=rg_data['title'],
+                            type=rg_data['type'],
+                            date=ReleaseGroup.parse_date(rg_data['first-release-date']),
+                            is_deleted=False)
+                        release_group.save()
+        return artist
 
     @classmethod
     def get_by_user(cls, user):
@@ -80,6 +113,7 @@ class ReleaseGroup(models.Model):
         return date
 
 # Django's ManyToManyField generates terrible SQL, simulate it.
+# This also allows us to include additional fields.
 class UserArtist(models.Model):
 
     class Meta:
@@ -87,6 +121,15 @@ class UserArtist(models.Model):
 
     user = models.ForeignKey(User)
     artist = models.ForeignKey(Artist)
+    date = models.DateTimeField(auto_now_add=True)
+
+    @classmethod
+    def add(cls, user, artist):
+        user_artist = cls(user=user, artist=artist)
+        try:
+            user_artist.save()
+        except IntegrityError:
+            pass
 
 class UserProfile(models.Model):
 
