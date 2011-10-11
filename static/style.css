@@ -185,17 +185,13 @@ td.cover {
     width: 130px; /* 120px for the cover + 10px right margin */
 }
 
-td.info {
+td.release_info {
     border-bottom: 1px dotted #CCCCCC;
 }
 
 a.star {
     border-style: none;
     outline: none;
-}
-
-.events {
-    font-size: smaller;
 }
 
 #loading {

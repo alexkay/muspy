@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% if artist and user.is_authenticated and not user_has_artist %}
+<p><a class="noborder" href="/artists-add?id={{ artist.mbid }}"><img class="add_artist" src="/static/add.gif" alt="+"/></a>
+<a href="/artists-add?id={{ artist.mbid }}">Click to follow this artist</a></p>
+{% endif %}
+<table id="releases">
+{% for release in release_groups %}
+    {% include "_release.html" %}
+{% endfor %}
+</table>
+{% if offset %}
+<p><a href="{{ request.path }}?offset={{ offset }}" rel="noindex">Next {{ PER_PAGE }} &raquo;</a></p>
+{% endif %}
+
+{% endblock content %}
+
+{% block javascript %}
+{% if offset %}
+<meta name="robots" content="noindex"/>
+{% endif %}
+<script type="text/javascript" src="/static/jquery-1.6.4.min.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+function star(img) {
+    var starred = img.src.indexOf("starred1") == -1 ? 0 : 1;
+    $.post("/star", { id: img.id.substr(1), value: (1 - starred).toString() }, null, "json");
+    img.src = "/static/starred" + (1 - starred).toString() + ".gif";
+}
+
+$(function() {
+    $("a.star").click(function() {
+        star($(this).find("img")[0]);
+        return false;
+    });
+});
+//]]>
+</script>
+{% endblock %}

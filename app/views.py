@@ -16,10 +16,12 @@
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import date
+from time import sleep
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 
@@ -64,6 +66,59 @@ def article(request, slug):
                                             'is_blog': is_blog, 'root': root,
                                             'template_name': template_name})
 
+def artist(request, mbid):
+    artist = Artist.get_by_mbid(mbid)
+    if not artist:
+        artist_data = mb.get_artist(mbid)
+        if not artist_data:
+            # TODO: Show a meaningful error message.
+            return HttpResponseNotFound()
+
+        # Sleep 1s to comply with the MB web service.
+        sleep(1)
+
+        artist = Artist(
+            mbid=mbid, name=artist_data['name'], sort_name=artist_data['sort-name'],
+            disambiguation=artist_data['disambiguation'] if 'disambiguation' in artist_data else '')
+        artist.save()
+
+        # Add a few release groups immediately.
+        release_groups = mb.get_release_groups(mbid, limit=100, offset=0)
+        if release_groups:
+            with transaction.commit_on_success():
+                for rg_data in release_groups:
+                    # Ignoring releases without a release date.
+                    if rg_data.get('first-release-date'):
+                        release_group = ReleaseGroup(
+                            artist=artist,
+                            mbid=rg_data['id'],
+                            name=rg_data['title'],
+                            type=rg_data['type'],
+                            date=ReleaseGroup.parse_date(rg_data['first-release-date']),
+                            is_deleted=False)
+                        release_group.save()
+
+    PER_PAGE = 10
+    offset = int(request.GET.get('offset', 0))
+    user_has_artist = False #TODO: (request.user.is_authenticated() and
+                      # UserArtist.find(request.user, mbid))
+    if user_has_artist:
+        show_stars = True
+        releases = UserRelease.get_releases(request.user, mbid,
+                                            PER_PAGE, offset)
+    else:
+        show_stars = False
+        release_groups = ReleaseGroup.get_release_groups(mbid, PER_PAGE, offset)
+
+    offset = offset + PER_PAGE if len(release_groups) == PER_PAGE else None
+    return render(request, 'artist.html', {
+            'artist': artist,
+            'release_groups': release_groups,
+            'offset': offset,
+            'PER_PAGE': PER_PAGE,
+            'user_has_artist': user_has_artist,
+            'show_stars': show_stars})
+
 @login_required
 def artists(request):
     artists = Artist.get_by_user(request.user)
@@ -107,14 +162,14 @@ def artists(request):
         if not dontadd and not offset and (only_one or first_is_exact):
             # Only one artist found - add it right away.
             artist_data = found_artists[0]
-            artist_id = artist_data['id']
-            artist = Artist.find(artist_id)
+            mbid = artist_data['id']
+            artist = Artist.find(mbid)
             if not artist:
-                artist = Artist.add(artist_id, artist_data['name'], artist_data['sort-name'])
-                Job.add_releases(artist_id)
+                artist = Artist.add(mbid, artist_data['name'], artist_data['sort-name'])
+                Job.add_releases(mbid)
 
             UserArtist.add(request.user, artist)
-            Job.copy_releases(artist_id, request.user.key().id())
+            Job.copy_releases(mbid, request.user.key().id())
 
             message.success("%s has been added!" % artist.name)
             return redirect('/artists')

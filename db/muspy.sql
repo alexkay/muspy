@@ -6,7 +6,6 @@ CREATE TABLE "app_artist" (
     "mbid" varchar(36) NOT NULL UNIQUE,
     "name" varchar(512) NOT NULL,
     "sort_name" varchar(512) NOT NULL,
-    "country" varchar(2) NOT NULL,
     "disambiguation" varchar(512) NOT NULL
 );
 CREATE TABLE "app_releasegroup" (
@@ -57,6 +56,7 @@ CREATE TABLE "django_session" (
     "session_data" text NOT NULL,
     "expire_date" datetime NOT NULL
 );
+CREATE INDEX "app_artist_mbid" ON "app_artist" ("mbid");
 CREATE INDEX "app_artist_sort_name" ON "app_artist" ("sort_name");
 CREATE INDEX "app_releasegroup_artist_id" ON "app_releasegroup" ("artist_id");
 CREATE INDEX "app_userartist_artist_id" ON "app_userartist" ("artist_id");

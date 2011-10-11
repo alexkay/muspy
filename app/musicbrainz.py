@@ -39,6 +39,32 @@ def search_artists(query, limit, offset):
                in root.findall('%sartist-list/%sartist' % (ns, ns))]
     return artists, count
 
+def get_artist(mbid):
+    try:
+        xml = _fetch('artist', mbid=mbid)
+    except:
+        return None
+
+    root, ns = _parse_root(xml)
+    if root is None:
+        return None
+
+    return _parse_artist(root.find('%sartist' % ns), ns)
+
+def get_release_groups(mbid, limit, offset=0):
+    try:
+        xml = _fetch('release-group', artist=mbid, limit=limit, offset=offset)
+    except:
+        return None
+
+    root, ns = _parse_root(xml)
+    if root is None or ns is None:
+        return []
+
+    return [_parse_release_group(element, ns)
+            for element
+            in root.findall('%srelease-group-list/%srelease-group' % (ns, ns))]
+
 def _fetch(resource, mbid=None, **kw):
     url = 'http://musicbrainz.org/ws/2/'
     url += resource + '/'
@@ -72,6 +98,14 @@ def _parse_artist(element, ns):
             d['score'] = element.get(attr)
             d['best_match'] = d['score'] in ('100', '99')
             break
+    for prop in element:
+        d[prop.tag[len(ns):]] = prop.text
+    return d
+
+def _parse_release_group(element, ns):
+    d = {}
+    d['id'] = element.get('id').lower()
+    d['type'] = element.get('type')
     for prop in element:
         d[prop.tag[len(ns):]] = prop.text
     return d

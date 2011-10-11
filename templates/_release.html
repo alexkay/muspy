@@ -1,0 +1,20 @@
+    <tr>
+        <td class="cover"><img src="/cover?id={{ release.mbid }}" width="120" height="120" alt="album cover"/></td>
+        <td class="release_info">
+            <p>
+            {% if show_stars %}
+                {% if release.is_starred %}
+                <a class="star" href="/star?id={{ release.mbid }}&amp;value=0"><img id="i{{ release.mbid }}" src="/static/starred1.gif" alt=""/></a>
+                {% else %}
+                <a class="star" href="/star?id={{ release.mbid }}&amp;value=1"><img id="i{{ release.mbid }}" src="/static/starred0.gif" alt=""/></a>
+                {% endif %}
+            {% endif %}
+            &#32;{{ release.date_str }}: <a href="/artist/{{ release.artist.mbid }}">{{ release.artist.name }}</a> &ndash; {{ release.name }} ({{ release.type }})</p>
+            </p>
+            <p><small><strong>Amazon:</strong>&nbsp;<a href="http://www.amazon.ca/gp/search?ie=UTF8&amp;keywords={{ release.artist_name|urlencode }}%20{{ release.title|urlencode }}&amp;tag=muspy08-20&amp;index=blended&amp;linkCode=ur2&amp;camp=15121&amp;creative=330641">Canada</a> &bull;
+<a href="http://www.amazon.de/gp/search?ie=UTF8&amp;keywords={{ release.artist_name|urlencode }}%20{{ release.title|urlencode }}&amp;tag=muspy0c-21&amp;index=blended&amp;linkCode=ur2&amp;camp=1638&amp;creative=6742">Deutschland</a> &bull;
+<a href="http://www.amazon.fr/gp/search?ie=UTF8&amp;keywords={{ release.artist_name|urlencode }}%20{{ release.title|urlencode }}&amp;tag=muspy09-21&amp;index=blended&amp;linkCode=ur2&amp;camp=1642&amp;creative=6746">France</a> &bull;
+<a href="http://www.amazon.co.uk/gp/search?ie=UTF8&amp;keywords={{ release.artist_name|urlencode }}%20{{ release.title|urlencode }}&amp;tag=muspy-21&amp;index=blended&amp;linkCode=ur2&amp;camp=1634&amp;creative=6738">United Kingdom</a> &bull;
+<a href="http://www.amazon.com/gp/search?ie=UTF8&amp;keywords={{ release.artist_name|urlencode }}%20{{ release.title|urlencode }}&amp;tag=muspy-20&amp;index=blended&amp;linkCode=ur2&amp;camp=1789&amp;creative=9325">United States</a></p>
+        </td>
+    </tr>

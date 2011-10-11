@@ -30,8 +30,14 @@ class Artist(models.Model):
     mbid = models.CharField(max_length=36, unique=True)
     name = models.CharField(max_length=512)
     sort_name = models.CharField(max_length=512)
-    country = models.CharField(max_length=2)
     disambiguation = models.CharField(max_length=512)
+
+    @classmethod
+    def get_by_mbid(cls, mbid):
+        try:
+            return cls.objects.get(mbid=mbid)
+        except cls.DoesNotExist:
+            return None
 
     @classmethod
     def get_by_user(cls, user):
@@ -46,6 +52,32 @@ class ReleaseGroup(models.Model):
     type = models.CharField(max_length=16)
     date = models.IntegerField() # 20080101 OR 20080100 OR 20080000
     is_deleted = models.BooleanField()
+
+    def date_str(self):
+        year = self.date // 10000
+        month = (self.date // 100) % 100
+        day = self.date % 100
+        date_str = str(year)
+        if month:
+            date_str += '-%02d' % month
+            if day:
+                date_str += '-%02d'% day
+        return date_str
+
+    @classmethod
+    def get_release_groups(cls, mbid, limit, offset):
+        q = cls.objects.filter(artist__mbid=mbid)
+        q = q.select_related('artist__mbid', 'artist__name')
+        q = q.filter(is_deleted=False)
+        q = q.order_by('-date')
+        return q[offset:offset+limit]
+
+    @classmethod
+    def parse_date(cls, date_str):
+        date = int(date_str[0:4]) * 10000 if date_str[0:4] else 0
+        date += int(date_str[5:7]) * 100 if date_str[5:7] else 0
+        date += int(date_str[8:10]) if date_str[8:10] else 0
+        return date
 
 # Django's ManyToManyField generates terrible SQL, simulate it.
 class UserArtist(models.Model):

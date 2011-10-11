@@ -24,7 +24,7 @@ from app.forms import SignInForm
 urlpatterns = patterns('app.views',
     (r'^$', 'index'),
     (r'^activate$', 'activate'),
-#    (r'^artist/([0-9a-f\-]+)$', 'artist'),
+    (r'^artist/([0-9a-f\-]+)$', 'artist'),
     (r'^artists$', 'artists'),
 #    (r'^artists-add$', 'artists_add'),
 #    (r'^artists-remove$', 'artists_remove'),
