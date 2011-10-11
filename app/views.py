@@ -176,6 +176,23 @@ def artists_add(request):
     messages.success(request, "%s has been added!" % artist.name)
     return redirect('/artists')
 
+@login_required
+def artists_remove(request):
+    names = request.POST.getlist('name')
+    mbids = request.POST.getlist('id')
+    if not names and not mbids:
+        messages.info(request, 'Use checkboxes to select the artists you want to remove.')
+        return redirect('/artists')
+
+    if names:
+        UserSearch.remove(request.user, names)
+        messages.success(request, 'Removed %d pending artists.' % len(names))
+        return redirect('/artists')
+
+    UserArtist.remove(request.user, mbids)
+    messages.success(request, 'Removed %d artist%s.' % (len(mbids), 's' if len(mbids) > 1 else ''))
+    return redirect('/artists')
+
 def blog(request):
     posts = get_posts()
     root =  request.build_absolute_uri('/')

@@ -119,27 +119,27 @@ $(function() {
 
     $("#name-all").click(function() {
         var checked_status = this.checked;
-        $("input[@name=name]").each(function() {
+        $("input[name=name]").each(function() {
             this.checked = checked_status;
         });
     });
 
     $("#id-all").click(function() {
         var checked_status = this.checked;
-        $("input[@name=id]").each(function() {
+        $("input[name=id]").each(function() {
             this.checked = checked_status;
         });
     });
 
     $("#form-pending").submit(function() {
-        var checked = $("input[@name=name]:checked").length;
+        var checked = $("input[name=name]:checked").length;
         if(checked < 2) return true;
         return confirm("Are you sure you want to remove " +
             checked.toString() + " artists?");
     });
 
     $("#form-artists").submit(function() {
-        var checked = $("input[@name=id]:checked").length;
+        var checked = $("input[name=id]:checked").length;
         if(checked < 2) return true;
         return confirm("Are you sure you want to remove " +
             checked.toString() + " artists?");

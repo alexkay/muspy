@@ -131,6 +131,14 @@ class UserArtist(models.Model):
         except IntegrityError:
             pass
 
+    @classmethod
+    def remove(cls, user, mbids):
+        with transaction.commit_on_success():
+            for mbid in mbids:
+                q = cls.objects.filter(user__id=user.id)
+                q = q.filter(artist__mbid=mbid)
+                q.delete()
+
 class UserProfile(models.Model):
 
     code_length = 16
