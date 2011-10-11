@@ -82,7 +82,7 @@ Click on a name to search or select and remove the artists you don't want to fol
         {% for artist in row %}
         <td>
             {% if artist %}
-                <input type="checkbox" name="id" value="{{ artist.artist_id }}"/>&nbsp;<a href="/artist/{{ artist.artist_id }}">{{ artist.name }}</a>
+                <input type="checkbox" name="id" value="{{ artist.mbid }}"/>&nbsp;<a href="/artist/{{ artist.mbid }}">{{ artist.name }}</a>
             {% else %}
                 &nbsp;
             {% endif %}
