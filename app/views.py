@@ -135,14 +135,12 @@ def artists(request):
             # Only one artist found - add it right away.
             artist_data = found_artists[0]
             mbid = artist_data['id']
-            artist = Artist.find(mbid)
+            artist = Artist.get_by_mbid(mbid)
             if not artist:
-                artist = Artist.add(mbid, artist_data['name'], artist_data['sort-name'])
-                Job.add_releases(mbid)
+                # TODO: error message
+                return redirect('/artists')
 
             UserArtist.add(request.user, artist)
-            Job.copy_releases(mbid, request.user.key().id())
-
             messages.success(request, "%s has been added!" % artist.name)
             return redirect('/artists')
 
