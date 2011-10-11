@@ -23,13 +23,12 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 
-import musicbrainz2.webservice as ws
-
 from settings import LOGIN_REDIRECT_URL
 
 from app.blog import articles, get_posts
 from app.forms import *
 from app.models import *
+import app.musicbrainz as mb
 from app.tools import arrange_for_table
 
 def activate(request):
@@ -92,11 +91,8 @@ def artists(request):
                           'minutes. In the meantime you can add more artists.')
             return redirect('/artists')
 
-        try:
-            q = ws.Query()
-            f = ws.ArtistFilter(name=search, limit=LIMIT, offset=offset)
-            found_artists = q.getArtists(f)
-        except ws.WebServiceError, e:
+        found_artists, count = mb.search_artists(search, limit=LIMIT, offset=offset)
+        if found_artists is None:
             messages.error('The search server could not fulfill your request '
                            'due to an internal error. Please try again later.')
             return render(request, 'artists.html', {
@@ -106,24 +102,25 @@ def artists(request):
 
         only_one = len(found_artists) == 1
         first_is_exact = (len(found_artists) > 1 and
-                          found_artists[0].artist.name.lower() == search.lower() and
-                          found_artists[1].artist.name.lower() != search.lower())
+                          found_artists[0]['name'].lower() == search.lower() and
+                          found_artists[1]['name'].lower() != search.lower())
         if not dontadd and not offset and (only_one or first_is_exact):
             # Only one artist found - add it right away.
-            mb_artist = found_artists[0].artist
-            artist = Artist.find(mb_artist.id)
+            artist_data = found_artists[0]
+            artist_id = artist_data['id']
+            artist = Artist.find(artist_id)
             if not artist:
-                artist = Artist.add(mb_artist.id, mb_artist.name, mb_artist.sort_name)
-                Job.add_releases(artist.mbid)
+                artist = Artist.add(artist_id, artist_data['name'], artist_data['sort-name'])
+                Job.add_releases(artist_id)
 
             UserArtist.add(request.user, artist)
-            Job.copy_releases(artist.mbid, request.user.key().id())
+            Job.copy_releases(artist_id, request.user.key().id())
 
             message.success("%s has been added!" % artist.name)
             return redirect('/artists')
 
     artists_offset = offset + len(found_artists)
-    artists_left = LIMIT == len(found_artists)
+    artists_left = max(0, count - artists_offset)
 
 #    importing = Job.importing_artists(request.user.key().id())
 #    pending = sorted(s.search for s in request.user.searches.fetch(200))

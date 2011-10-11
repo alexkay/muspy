@@ -10,18 +10,17 @@
     <p>Search results: <small>(click <img class="add_artist" src="/static/add.gif" alt="+"/> to follow the artist)</small></p>
         <div id="found_artists">
             <ul>
-                {% for item in found_artists %}
-                   {# TODO: move `score >= 99` and `id|slice` to the code, it doesn't belong here #}
-                    <li{% if item.score >= 99 %} class="best_match"{% endif %}>
-                        <a class="noborder" href="/artists-add?id={{ item.artist.id|slice:"-36:" }}&amp;search={{ search|urlencode }}"><img class="add_artist" src="/static/add.gif" alt="+" title="Add"/></a>
-                        <a href="/artist/{{ item.artist.id|slice:"-36:" }}">{{ item.artist.name }}</a>
-                        {% if item.artist.disambiguation %}&nbsp;<small>({{ item.artist.disambiguation }})</small>{% endif %}
+                {% for artist in found_artists %}
+                    <li{% if artist.best_match %} class="best_match"{% endif %}>
+                        <a class="noborder" href="/artists-add?id={{ artist.id }}&amp;search={{ search|urlencode }}"><img class="add_artist" src="/static/add.gif" alt="+" title="Add"/></a>
+                        <a href="/artist/{{ artist.id }}">{{ artist.name }}</a>
+                        {% if artist.disambiguation %}&nbsp;<small>({{ artist.disambiguation }})</small>{% endif %}
                     </li>
                 {% endfor %}
             </ul>
         </div>
         {% if artists_left %}
-            <p><a href="/artists?search={{ search|urlencode }}{% if dontadd %}&amp;dontadd=1{% endif %}&amp;offset={{ artists_offset }}">Next</a></p>
+            <p><a href="/artists?search={{ search|urlencode }}{% if dontadd %}&amp;dontadd=1{% endif %}&amp;offset={{ artists_offset }}">{{ artists_left }} more artist{{ artists_left|pluralize }}</a></p>
         {% endif %}
     {% endif %}
 {% endif %}
