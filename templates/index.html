@@ -35,7 +35,7 @@ and receive release alerts using the feed aggregator of your choice.</p>
 <h2>Latest Releases</h2>
 <table id="releases">
 {% for release in releases %}
-    {# TODO:% include "_release.html" %#}
+    {% include "_release.html" %}
 {% endfor %}
 </table>
 <p><a href="/calendar">More &raquo;</a></p>

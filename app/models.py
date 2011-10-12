@@ -27,6 +27,7 @@ from django.dispatch import receiver
 from django.template.loader import render_to_string
 
 import app.musicbrainz as mb
+from app.tools import date_to_str, str_to_date
 
 class Artist(models.Model):
 
@@ -67,7 +68,7 @@ class Artist(models.Model):
                             mbid=rg_data['id'],
                             name=rg_data['title'],
                             type=rg_data['type'],
-                            date=ReleaseGroup.parse_date(rg_data['first-release-date']),
+                            date=str_to_date(rg_data['first-release-date']),
                             is_deleted=False)
                         release_group.save()
         return artist
@@ -87,15 +88,7 @@ class ReleaseGroup(models.Model):
     is_deleted = models.BooleanField()
 
     def date_str(self):
-        year = self.date // 10000
-        month = (self.date // 100) % 100
-        day = self.date % 100
-        date_str = str(year)
-        if month:
-            date_str += '-%02d' % month
-            if day:
-                date_str += '-%02d'% day
-        return date_str
+        return date_to_str(self.date)
 
     @classmethod
     def get_release_groups(cls, mbid, limit, offset):
@@ -106,11 +99,13 @@ class ReleaseGroup(models.Model):
         return q[offset:offset+limit]
 
     @classmethod
-    def parse_date(cls, date_str):
-        date = int(date_str[0:4]) * 10000 if date_str[0:4] else 0
-        date += int(date_str[5:7]) * 100 if date_str[5:7] else 0
-        date += int(date_str[8:10]) if date_str[8:10] else 0
-        return date
+    def get_calendar(cls, date, limit, offset):
+        """Returns the list of release groups for the date."""
+        q = cls.objects.filter(date__lte=date)
+        # TODO: benchmark, do we need an index?
+        q = q.filter(is_deleted=False)
+        q = q.order_by('-date', 'id')
+        return q[offset:offset+limit]
 
 # Django's ManyToManyField generates terrible SQL, simulate it.
 # This also allows us to include additional fields.

@@ -34,3 +34,29 @@ def arrange_for_table(items, columns):
              if i * N + j < L else None
              for j in xrange(N)]
             for i in xrange(M)]
+
+def str_to_date(date_str):
+    """ Convert a date string into int
+
+    '2010-01-02' -> 20100102
+    '2010-01'    -> 20100100
+    '2010'       -> 20100000
+
+    """
+    date = int(date_str[0:4]) * 10000 if date_str[0:4] else 0
+    date += int(date_str[5:7]) * 100 if date_str[5:7] else 0
+    date += int(date_str[8:10]) if date_str[8:10] else 0
+    return date
+
+def date_to_str(date):
+    """ Reverse of str_to_date() """
+
+    year = date // 10000
+    month = (date // 100) % 100
+    day = date % 100
+    date_str = str(year)
+    if month:
+        date_str += '-%02d' % month
+        if day:
+            date_str += '-%02d'% day
+    return date_str

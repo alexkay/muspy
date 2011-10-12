@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}{% if releases %}{{ releases.0.date_first }} &ndash; {% endif %}Release Calendar{% endblock %}
+{% block header %}Release Calendar{% endblock %}
+
+{% block content %}
+<table id="releases">
+{% for release in releases %}
+    {% if release.date_first %}
+        <tr><td colspan="2"><h3>{{ release.date_first }}</h3></td></tr>
+    {% endif %}
+    {% include "_release.html" %}
+{% endfor %}
+</table>
+{% if next_date %}
+<p><a href="{{ request.path }}?date={{ next_date|urlencode }}{% if next_offset %}&amp;offset={{ next_offset }}{% endif %}"{% if next_offset %} rel="noindex"{% endif %}>More &raquo;</a></p>
+{% endif %}
+
+{% endblock content %}
+

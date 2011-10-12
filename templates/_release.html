@@ -9,7 +9,7 @@
                 <a class="star" href="/star?id={{ release.mbid }}&amp;value=1"><img id="i{{ release.mbid }}" src="/static/starred0.gif" alt=""/></a>
                 {% endif %}
             {% endif %}
-            &#32;{{ release.date_str }}: <a href="/artist/{{ release.artist.mbid }}">{{ release.artist.name }}</a> &ndash; {{ release.name }} ({{ release.type }})</p>
+            &#32;{% if release.date_str %}{{ release.date_str }}: {% endif %}<a href="/artist/{{ release.artist.mbid }}">{{ release.artist.name }}</a> &ndash; {{ release.name }} ({{ release.type }})</p>
             </p>
             <p><small><strong>Amazon:</strong>&nbsp;<a href="http://www.amazon.ca/gp/search?ie=UTF8&amp;keywords={{ release.artist_name|urlencode }}%20{{ release.title|urlencode }}&amp;tag=muspy08-20&amp;index=blended&amp;linkCode=ur2&amp;camp=15121&amp;creative=330641">Canada</a> &bull;
 <a href="http://www.amazon.de/gp/search?ie=UTF8&amp;keywords={{ release.artist_name|urlencode }}%20{{ release.title|urlencode }}&amp;tag=muspy0c-21&amp;index=blended&amp;linkCode=ur2&amp;camp=1638&amp;creative=6742">Deutschland</a> &bull;

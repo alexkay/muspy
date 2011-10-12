@@ -60,6 +60,7 @@ CREATE TABLE "django_session" (
 CREATE INDEX "app_artist_mbid" ON "app_artist" ("mbid");
 CREATE INDEX "app_artist_sort_name" ON "app_artist" ("sort_name");
 CREATE INDEX "app_releasegroup_artist_id" ON "app_releasegroup" ("artist_id");
+CREATE INDEX "app_releasegroup_date" ON "app_releasegroup" ("date" DESC);
 CREATE INDEX "app_userartist_artist_id" ON "app_userartist" ("artist_id");
 CREATE INDEX "app_userartist_user_id" ON "app_userartist" ("user_id");
 CREATE INDEX "django_session_expire_date" ON "django_session" ("expire_date");
