@@ -37,7 +37,8 @@ CREATE TABLE "app_userprofile" (
     "notify_other" bool NOT NULL,
     "email_activated" bool NOT NULL,
     "activation_code" varchar(16) NOT NULL,
-    "reset_code" varchar(16) NOT NULL
+    "reset_code" varchar(16) NOT NULL,
+    "legacy_id" integer
 );
 CREATE TABLE "auth_user" (
     "id" integer NOT NULL PRIMARY KEY,
@@ -57,10 +58,10 @@ CREATE TABLE "django_session" (
     "session_data" text NOT NULL,
     "expire_date" datetime NOT NULL
 );
-CREATE INDEX "app_artist_mbid" ON "app_artist" ("mbid");
 CREATE INDEX "app_artist_sort_name" ON "app_artist" ("sort_name");
 CREATE INDEX "app_releasegroup_artist_id" ON "app_releasegroup" ("artist_id");
 CREATE INDEX "app_releasegroup_date" ON "app_releasegroup" ("date" DESC);
-CREATE INDEX "app_userartist_artist_id" ON "app_userartist" ("artist_id");
-CREATE INDEX "app_userartist_user_id" ON "app_userartist" ("user_id");
+CREATE INDEX "app_userprofile_activation_code" ON "app_userprofile" ("activation_code");
+CREATE INDEX "app_userprofile_reset_code" ON "app_userprofile" ("reset_code");
+CREATE INDEX "app_userprofile_legacy_id" ON "app_userprofile" ("legacy_id");
 CREATE INDEX "django_session_expire_date" ON "django_session" ("expire_date");

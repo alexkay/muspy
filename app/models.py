@@ -91,7 +91,7 @@ class ReleaseGroup(models.Model):
         return date_to_str(self.date)
 
     @classmethod
-    def get_release_groups(cls, mbid, limit, offset):
+    def get_by_artist(cls, mbid, limit, offset):
         q = cls.objects.filter(artist__mbid=mbid)
         q = q.select_related('artist__mbid', 'artist__name')
         q = q.filter(is_deleted=False)
@@ -151,6 +151,7 @@ class UserProfile(models.Model):
     email_activated = models.BooleanField(default=False)
     activation_code = models.CharField(max_length=code_length)
     reset_code = models.CharField(max_length=code_length)
+    legacy_id = models.IntegerField(null=True)
 
     def generate_code(self):
         code_chars = '23456789abcdefghijkmnpqrstuvwxyz'
@@ -185,7 +186,7 @@ class UserProfile(models.Model):
 
     @classmethod
     def activate(cls, code):
-        profiles = UserProfile.objects.filter(activation_code__exact=code)
+        profiles = UserProfile.objects.filter(activation_code=code)
         if not profiles:
             return False
         profile = profiles[0]
@@ -196,7 +197,7 @@ class UserProfile(models.Model):
 
     @classmethod
     def reset(cls, code):
-        profiles = UserProfile.objects.filter(reset_code__exact=code)
+        profiles = UserProfile.objects.filter(reset_code=code)
         if not profiles:
             return None, None
         profile = profiles[0]
@@ -209,8 +210,18 @@ class UserProfile(models.Model):
         return profile.user.email, password
 
     @classmethod
-    def find(cls, email):
-        users = User.objects.filter(email__exact=email)
+    def get_by_email(cls, email):
+        users = User.objects.filter(email=email.lower())
+        return users[0].get_profile() if users else None
+
+    @classmethod
+    def get_by_legacy_id(cls, legacy_id):
+        profiles = cls.objects.filter(legacy_id=legacy_id)
+        return profiles[0] if profiles else None
+
+    @classmethod
+    def get_by_username(cls, username):
+        users = User.objects.filter(username=username)
         return users[0].get_profile() if users else None
 
 # Activate foreign keys for sqlite.

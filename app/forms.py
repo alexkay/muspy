@@ -29,7 +29,7 @@ class ResetForm(forms.Form):
 
     def clean_email(self):
         email = self.cleaned_data['email'].lower().strip()
-        if not UserProfile.find(email):
+        if not UserProfile.get_by_email(email):
             raise forms.ValidationError('Unknown email address. '
                                         'Please enter another.')
         return email
@@ -54,7 +54,7 @@ class SettingsForm(forms.Form):
 
     def clean_email(self):
         email = self.cleaned_data['email'].lower().strip()
-        if self.profile.user.email != email and  User.objects.filter(email__exact=email):
+        if self.profile.user.email != email and  User.objects.filter(email=email):
             raise forms.ValidationError('This email is already in use. '
                                         'Please enter another.')
         return email
@@ -117,7 +117,7 @@ class SignUpForm(forms.Form):
 
     def clean_email(self):
         email = self.cleaned_data['email'].lower().strip()
-        if User.objects.filter(email__exact=email):
+        if User.objects.filter(email=email):
             raise forms.ValidationError('This email address is already in use. Please supply a different email address.')
         return email
 

@@ -80,7 +80,7 @@ def artist(request, mbid):
                                             PER_PAGE, offset)
     else:
         show_stars = False
-        release_groups = ReleaseGroup.get_release_groups(mbid, PER_PAGE, offset)
+        release_groups = ReleaseGroup.get_by_artist(mbid, PER_PAGE, offset)
 
     offset = offset + PER_PAGE if len(release_groups) == PER_PAGE else None
     return render(request, 'artist.html', {
@@ -258,7 +258,7 @@ def reset(request):
         form = ResetForm(request.POST)
         if form.is_valid():
             email = form.cleaned_data['email']
-            profile = UserProfile.find(email)
+            profile = UserProfile.get_by_email(email)
             if not profile:
                 messages.error(request, 'Unknown email address: ' + email)
                 return redirect('/')
