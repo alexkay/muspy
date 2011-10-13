@@ -6,7 +6,7 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
       	<meta http-equiv="Content-Style-Type" content="text/css"/>
         <link rel="stylesheet" href="/static/style.css" />
-        <link rel="alternate" href="/blog/feed" type="application/atom+xml" title="[muspy] Blog" />
+        <link rel="alternate" href="http://versia.com/category/muspy/feed/atom/" type="application/atom+xml" title="[muspy] Blog" />
         {% if user.is_authenticated %}<link rel="alternate" href="/feed?id={{ user.username }}" type="application/atom+xml" title="[muspy] New Releases" />{% endif %}
         {% block javascript %}{% endblock %}
     </head>
@@ -23,8 +23,8 @@
                         &bull; <a href="/faq">FAQ</a>
                         &bull; <a href="/contact">Contact</a>
                         &bull; <a href="https://github.com/alexkay/muspy">Code</a>
-                        &bull; <a href="/blog/feed"><img src="/static/feed.png" alt="RSS" title="Subscribe in a reader"/></a>
-                        <a href="/blog">Blog</a>
+                        &bull; <a href="http://versia.com/category/spek/feed/atom/"><img src="/static/feed.png" alt="RSS" title="Subscribe in a reader"/></a>
+                        <a href="http://versia.com/category/muspy/">Blog</a>
                     </div>
                     <div id="menu_bottom_left">
                         {% if user.is_authenticated %}

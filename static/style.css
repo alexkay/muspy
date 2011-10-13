@@ -121,12 +121,6 @@ h2 {
     border-bottom: 2px solid #222222;
 }
 
-.article_footer {
-    font-size: smaller;
-    margin-top: 2em;
-    margin-left: 2em;
-    margin-bottom: 2em;
-}
 #reset th, td {
     text-align: left;
     font-weight: normal;

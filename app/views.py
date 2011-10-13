@@ -25,7 +25,6 @@ from django.shortcuts import redirect, render
 
 from settings import LOGIN_REDIRECT_URL
 
-from app.blog import articles, get_posts
 from app.forms import *
 from app.models import *
 import app.musicbrainz as mb
@@ -49,20 +48,6 @@ def activate(request):
 
     request.user.get_profile().send_activation_email()
     return render(request, 'activate.html')
-
-def article(request, slug):
-    if not slug in articles:
-        return HttpResponseNotFound()
-    article = articles[slug]
-    is_blog = 'date' in article
-    if is_blog:
-        template_name = 'articles/%s-%s.html' % (article['date'], slug)
-    else:
-        template_name = 'articles/%s.html' % slug
-    root =  request.build_absolute_uri('/')
-    return render(request, 'article.html', {'slug': slug, 'article': article,
-                                            'is_blog': is_blog, 'root': root,
-                                            'template_name': template_name})
 
 def artist(request, mbid):
     artist = Artist.get_by_mbid(mbid)
@@ -192,20 +177,6 @@ def artists_remove(request):
     UserArtist.remove(request.user, mbids)
     messages.success(request, 'Removed %d artist%s.' % (len(mbids), 's' if len(mbids) > 1 else ''))
     return redirect('/artists')
-
-def blog(request):
-    posts = get_posts()
-    root =  request.build_absolute_uri('/')
-    return render(request, 'blog.html', {'posts': posts, 'root': root})
-
-def blog_feed(request):
-    posts = get_posts()
-    feed = render_to_string('blog_feed.xml',
-                            {'posts': posts,
-                             'updated_feed': max(p['updated'] for p in posts),
-                             'url': request.build_absolute_uri(),
-                             'root': request.build_absolute_uri('/')})
-    return HttpResponse(content=feed, content_type='application/atom+xml')
 
 def calendar(request):
     date_str = request.GET.get('date', None)
