@@ -60,3 +60,16 @@ def date_to_str(date):
         if day:
             date_str += '-%02d'% day
     return date_str
+
+def date_to_iso8601(date):
+    """ Int date to ISO 8601 string
+
+    20100203 -> 2010-02-03T00:00:00Z
+    20100200 -> 2010-02-01T00:00:00Z
+    20100000 -> 2010-01-01T00:00:00Z
+
+    """
+    year = date // 10000
+    month = (date // 100) % 100
+    day = date % 100
+    return "%04d-%02d-%02dT00:00:00Z" % (year, month or 1, day or 1)

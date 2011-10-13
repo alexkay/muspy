@@ -10,3 +10,4 @@
 * Convert the flash videos to webm for the HTML5 video element.
 * Short affiliate links.
 * Artist auto completion.
+* Review all URLs, e.g. /feed/<id> instead of /feed?id=<id>

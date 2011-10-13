@@ -27,7 +27,7 @@ from django.dispatch import receiver
 from django.template.loader import render_to_string
 
 import app.musicbrainz as mb
-from app.tools import date_to_str, str_to_date
+from app.tools import date_to_iso8601, date_to_str, str_to_date
 
 class Artist(models.Model):
 
@@ -90,11 +90,21 @@ class ReleaseGroup(models.Model):
     def date_str(self):
         return date_to_str(self.date)
 
+    def date_iso8601(self):
+        return date_to_iso8601(self.date)
+
     @classmethod
-    def get_by_artist(cls, mbid, limit, offset):
-        q = cls.objects.filter(artist__mbid=mbid)
+    def get(cls, artist=None, user=None, limit=0, offset=0):
+        if not artist and not user:
+            assert 'Both artist and user are None'
+            return None
+        q = cls.objects.filter(is_deleted=False)
+        if artist:
+            q = q.filter(artist=artist)
+        if user:
+            # TODO: filter by type
+            q = q.filter(artist__userartist__user=user)
         q = q.select_related('artist__mbid', 'artist__name')
-        q = q.filter(is_deleted=False)
         q = q.order_by('-date')
         return q[offset:offset+limit]
 

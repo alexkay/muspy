@@ -80,7 +80,7 @@ def artist(request, mbid):
                                             PER_PAGE, offset)
     else:
         show_stars = False
-        release_groups = ReleaseGroup.get_by_artist(mbid, PER_PAGE, offset)
+        release_groups = ReleaseGroup.get(artist=artist, limit=PER_PAGE, offset=offset)
 
     offset = offset + PER_PAGE if len(release_groups) == PER_PAGE else None
     return render(request, 'artist.html', {
@@ -246,6 +246,28 @@ def calendar(request):
             'releases': releases,
             'next_date': next_date,
             'next_offset': next_offset})
+
+def feed(request):
+    user_id = request.GET.get('id', '')
+    if user_id.isdigit():
+        profile = UserProfile.get_by_legacy_id(user_id)
+        if profile:
+            return redirect('/feed?id=' + profile.user.username, permanent=True)
+
+    profile = UserProfile.get_by_username(user_id)
+    if not profile:
+        return HttpResponseNotFound()
+
+    LIMIT = 20
+    releases = ReleaseGroup.get(user=profile.user, limit=LIMIT, offset=0)
+    if releases:
+        releases.date_iso8601 = min(r.date_iso8601 for r in releases)
+
+    return render(request, 'feed.xml', {
+            'releases': releases,
+            'url': request.build_absolute_uri(),
+            'root': request.build_absolute_uri('/')
+            }, content_type='application/atom+xml')
 
 def index(request):
     today = int(date.today().strftime('%Y%m%d'))
