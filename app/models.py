@@ -129,6 +129,13 @@ class UserArtist(models.Model):
     date = models.DateTimeField(auto_now_add=True)
 
     @classmethod
+    def get(cls, user, artist):
+        try:
+            return cls.objects.get(user=user, artist=artist)
+        except cls.DoesNotExist:
+            return None
+
+    @classmethod
     def add(cls, user, artist):
         user_artist = cls(user=user, artist=artist)
         try:

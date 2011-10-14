@@ -57,15 +57,15 @@ def artist(request, mbid):
 
     PER_PAGE = 10
     offset = int(request.GET.get('offset', 0))
-    user_has_artist = False #TODO: (request.user.is_authenticated() and
-                      # UserArtist.find(request.user, mbid))
+    user_has_artist = request.user.is_authenticated() and UserArtist.get(request.user, artist)
     if user_has_artist:
         show_stars = True
-        releases = UserRelease.get_releases(request.user, mbid,
-                                            PER_PAGE, offset)
+        release_groups = ReleaseGroup.get(
+            artist=artist, user=request.user, limit=PER_PAGE, offset=offset)
     else:
         show_stars = False
-        release_groups = ReleaseGroup.get(artist=artist, limit=PER_PAGE, offset=offset)
+        release_groups = ReleaseGroup.get(
+            artist=artist, limit=PER_PAGE, offset=offset)
 
     offset = offset + PER_PAGE if len(release_groups) == PER_PAGE else None
     return render(request, 'artist.html', {
