@@ -11,3 +11,5 @@
 * Short affiliate links.
 * Artist auto completion.
 * Review all URLs, e.g. /feed/<id> instead of /feed?id=<id>
+* 404 and 500 pages
+* Email errors

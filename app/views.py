@@ -245,6 +245,21 @@ def index(request):
     releases = ReleaseGroup.get_calendar(today, 5, 0)
     return render(request, 'index.html', {'is_index': True, 'releases': releases})
 
+@login_required
+def releases(request):
+    PER_PAGE = 10
+    limit = PER_PAGE + 1
+    offset = int(request.GET.get('offset', 0))
+    release_groups = list(ReleaseGroup.get(user=request.user, limit=limit, offset=offset))
+    offset = offset + PER_PAGE if len(release_groups) > PER_PAGE else None
+
+    return render(request, 'releases.html', {
+            'release_groups': release_groups[:PER_PAGE],
+            'offset': offset,
+            'PER_PAGE': PER_PAGE,
+            'next': next,
+            'show_stars': True})
+
 def reset(request):
     form = resetting = password = None
     if request.method == 'POST':

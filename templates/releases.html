@@ -1,0 +1,15 @@
+{% extends "base_releases.html" %}
+{% block title %}Releases{% endblock %}
+{% block header %}Releases{% endblock %}
+
+{% block content %}
+
+{% if release_groups %}
+{{ block.super }}
+{% else %}
+<p>Oops! You have not added any artists, or the artists that you follow
+have not yet released any albums.
+Go ahead, <a href="/artists">add more artists</a>!</p>
+{% endif %}
+
+{% endblock %}
