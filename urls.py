@@ -44,7 +44,6 @@ urlpatterns = patterns('app.views',
     (r'^signin$', login, {'authentication_form': SignInForm, 'template_name': 'signin.html'}),
     (r'^signout$', 'signout'),
     (r'^signup$', 'signup'),
-#    (r'^sitemap.xml$', 'sitemap'),
+    (r'^sitemap.xml$', 'sitemap'),
 #    (r'^star$', 'star'),
-#    (r'^test$', 'test'),
 )

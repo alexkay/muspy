@@ -13,3 +13,4 @@
 * Review all URLs, e.g. /feed/<id> instead of /feed?id=<id>
 * 404 and 500 pages
 * Email errors
+* Django's sitemap?

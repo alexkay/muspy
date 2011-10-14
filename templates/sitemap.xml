@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<url>
+  <loc>{{ root }}</loc>
+  <priority>1.00</priority>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>{{ root }}about</loc>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>{{ root }}calendar</loc>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>{{ root }}contact</loc>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>{{ root }}faq</loc>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>{{ root }}signin</loc>
+  <changefreq>weekly</changefreq>
+</url>
+<url>
+  <loc>{{ root }}signup</loc>
+  <changefreq>weekly</changefreq>
+</url>
+</urlset>

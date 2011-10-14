@@ -329,3 +329,7 @@ def signup(request):
 def signout(request):
     logout(request)
     return redirect('/')
+
+def sitemap(request):
+    root = request.build_absolute_uri('/')
+    return render(request, 'sitemap.xml', {'root': root}, content_type='text/xml')
