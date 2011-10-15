@@ -297,7 +297,7 @@ def settings(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Your settings have been saved.')
-            return redirect('/')
+            return redirect(request.path)
     else:
         initial = {
             'email': request.user.email,

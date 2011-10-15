@@ -102,8 +102,8 @@ class ReleaseGroup(models.Model):
         if artist:
             q = q.filter(artist=artist)
         if user:
-            # TODO: filter by type
             q = q.filter(artist__userartist__user=user)
+            q = q.filter(type__in=user.get_profile().get_types())
         q = q.select_related('artist__mbid', 'artist__name')
         q = q.order_by('-date')
         return q[offset:offset+limit]
@@ -169,6 +169,19 @@ class UserProfile(models.Model):
     activation_code = models.CharField(max_length=code_length)
     reset_code = models.CharField(max_length=code_length)
     legacy_id = models.IntegerField(null=True)
+
+    def get_types(self):
+        """Return the list of release types the user wants to follow."""
+        types = []
+        if self.notify_album: types.append('Album')
+        if self.notify_single: types.append('Single')
+        if self.notify_ep: types.append('EP')
+        if self.notify_live: types.append('Live')
+        if self.notify_compilation: types.append('Compilation')
+        if self.notify_remix: types.append('Remix')
+        if self.notify_other:
+            types.extend(['Soundtrack', 'Spokenword', 'Interview', 'Audiobook', 'Other'])
+        return types
 
     def generate_code(self):
         code_chars = '23456789abcdefghijkmnpqrstuvwxyz'
