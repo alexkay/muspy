@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# This script monitors the daemon and restarts when it's dead.
+# Add it to the crontab on @reboot.
+
+trap 'kill $PID; exit' INT TERM
+
+PID=
+
+while :
+do
+    if [ -z "$PID" ] || ! kill -0 $PID > /dev/null 2>&1 ; then
+        ./daemon.py &
+        PID="$!"
+    fi
+
+    sleep 60
+done

@@ -104,9 +104,9 @@ class ReleaseGroup(models.Model):
             assert 'Both artist and user are None'
             return None
         q = cls.objects.filter(is_deleted=False)
+        q = q.select_related('artist__mbid', 'artist__name')
         if artist:
             q = q.filter(artist=artist)
-        q = q.select_related('artist__mbid', 'artist__name')
         if user:
             q = q.filter(artist__userartist__user=user)
             q = q.filter(Q(users=user) | Q(users__isnull=True))
