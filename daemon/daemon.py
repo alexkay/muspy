@@ -25,8 +25,11 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'muspy.settings'
 import logging
 import time
 
+from django.db import transaction
+
 from app.models import *
 import app.musicbrainz as mb
+from app.tools import str_to_date
 
 DELAY = 4
 
@@ -42,8 +45,6 @@ def daemon():
 
     artist = None
     while True:
-        # Sleep to avoid clogging up MusicBrainz servers.
-        start = sleep(start)
 
         # Get the next artist.
         artists = Artist.objects.order_by('mbid')
@@ -54,6 +55,9 @@ def daemon():
         except IndexError:
             break # last artist
 
+        # Sleep to avoid clogging up MusicBrainz servers.
+        start = sleep(start)
+
         logging.info('Checking artist %s' % artist.mbid)
         artist_data = mb.get_artist(artist.mbid)
         if not artist_data:
@@ -61,6 +65,7 @@ def daemon():
             logging.warning('Could not fetch artist data')
             continue # skip for now
 
+        # Update artist info if changed.
         updated = False
         if artist.name != artist_data['name']:
             artist.name = artist_data['name']
@@ -75,7 +80,69 @@ def daemon():
             logging.info('Artist changed, updating')
             artist.save()
 
-        start = sleep(start)
+        current = {rg.mbid: rg for rg in ReleaseGroup.objects.filter(artist=artist)}
+
+        # Get release groups
+        LIMIT = 100
+        offset = 0
+        while True:
+            start = sleep(start)
+            release_groups = mb.get_release_groups(artist.mbid, LIMIT, offset)
+            logging.info('Fetched %s release groups' % len(release_groups))
+            with transaction.commit_on_success():
+                for rg_data in release_groups:
+                    mbid = rg_data['id']
+                    # Ignore releases without a release date.
+                    if not rg_data.get('first-release-date'):
+                        if mbid in current:
+                            release_group = current[mbid]
+                            if not release_group.is_deleted:
+                                release_group.is_deleted = True
+                                release_group.save()
+                                logging.info('Deleted release group %s' % mbid)
+                        continue
+
+                    release_date = str_to_date(rg_data['first-release-date'])
+                    if mbid in current:
+                        release_group = current[mbid]
+
+                        updated = False
+                        if release_group.is_deleted:
+                            release_group.is_deleted = False
+                        if release_group.name != rg_data['title']:
+                            release_group.name = rg_date['title']
+                            updated = True
+                        if release_group.type != rg_data['type']:
+                            release_group.type = rg_date['type']
+                            updated = True
+                        if release_group.date != release_date:
+                            release_group.date = release_date
+                            updated = True
+                        if updated:
+                            release_group.save()
+                            logging.info('Updated release group %s' % mbid)
+
+                        del current[mbid]
+                    else:
+                        release_group = ReleaseGroup(
+                            artist=artist,
+                            mbid=rg_data['id'],
+                            name=rg_data['title'],
+                            type=rg_data['type'],
+                            date=release_date,
+                            is_deleted=False)
+                        release_group.save()
+                        logging.info('Created release group %s' % mbid)
+                        # TODO: notify all users
+
+            if len(release_groups) < LIMIT: break
+            offset += LIMIT
+
+        with transaction.commit_on_success():
+            for release_group in current:
+                release_group.is_deleted = True
+                release_group.save()
+                logging.info('Deleted release group %s' % mbid)
 
     logging.info('Done checking artists')
 
