@@ -1,18 +1,20 @@
 #!/bin/sh
 
-# This script monitors the daemon and restarts when it's dead.
-# Add it to the crontab on @reboot.
+# The daemon will exit after each fetch cycle, this script makes sure the daemon
+# is restarted when it's done fetching or it's dead.
+# Add this script to the crontab on @reboot.
 
 trap 'kill $PID; exit' INT TERM
 
+LOG=/tmp/muspy.log
 PID=
 
 while :
 do
     if [ -z "$PID" ] || ! kill -0 $PID > /dev/null 2>&1 ; then
-        ./daemon.py &
+        $(dirname $0)/daemon.py >> $LOG 2>&1 &
         PID="$!"
     fi
 
-    sleep 60
+    sleep 10
 done

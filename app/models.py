@@ -56,7 +56,7 @@ class Artist(models.Model):
 
         artist = Artist(
             mbid=mbid, name=artist_data['name'], sort_name=artist_data['sort-name'],
-            disambiguation=artist_data['disambiguation'] if 'disambiguation' in artist_data else '')
+            disambiguation=artist_data.get('disambiguation', ''))
         artist.save()
 
         # Add a few release groups immediately.

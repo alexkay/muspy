@@ -15,9 +15,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
+from socket import setdefaulttimeout
 from urllib import urlencode
 from urllib2 import Request, urlopen
 from xml.etree import ElementTree as et
+
+setdefaulttimeout(10)
 
 def search_artists(query, limit, offset):
     try:

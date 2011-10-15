@@ -22,4 +22,69 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/../..'))
 sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/..'))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'muspy.settings'
 
+import logging
+import time
+
 from app.models import *
+import app.musicbrainz as mb
+
+DELAY = 4
+
+def daemon():
+    """Perform background processing.
+
+    * Periodically check for new releases and send email notifications.
+    * Process background jobs triggered by the users.
+
+    """
+    logging.info('Start checking artists')
+    start = time.time()
+
+    artist = None
+    while True:
+        # Sleep to avoid clogging up MusicBrainz servers.
+        start = sleep(start)
+
+        # Get the next artist.
+        artists = Artist.objects.order_by('mbid')
+        if artist:
+            artists = artists.filter(mbid__gt=artist.mbid)
+        try:
+            artist = artists[0]
+        except IndexError:
+            break # last artist
+
+        logging.info('Checking artist %s' % artist.mbid)
+        artist_data = mb.get_artist(artist.mbid)
+        if not artist_data:
+            # TODO: musicbrainz/network error or deleted?
+            logging.warning('Could not fetch artist data')
+            continue # skip for now
+
+        updated = False
+        if artist.name != artist_data['name']:
+            artist.name = artist_data['name']
+            updated = True
+        if artist.sort_name != artist_data['sort-name']:
+            artist.sort_name = artist_data['sort-name']
+            updated = True
+        if artist.disambiguation != artist_data.get('disambiguation', ''):
+            artist.disambiguation = artist_data.get('disambiguation', '')
+            updated = True
+        if updated:
+            logging.info('Artist changed, updating')
+            artist.save()
+
+        start = sleep(start)
+
+    logging.info('Done checking artists')
+
+def sleep(start):
+    duration = time.time() - start
+    if DELAY - duration > 0:
+        time.sleep(DELAY - duration)
+    return time.time()
+
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
+    daemon()
