@@ -22,6 +22,7 @@ from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
 from django.db import IntegrityError, models, transaction
 from django.db.backends.signals import connection_created
+from django.db.models import Count, Q
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
@@ -88,6 +89,7 @@ class ReleaseGroup(models.Model):
     type = models.CharField(max_length=16)
     date = models.IntegerField() # 20080101 OR 20080100 OR 20080000
     is_deleted = models.BooleanField()
+    users = models.ManyToManyField(User, through='Star') # users that starred this release
 
     def date_str(self):
         return date_to_str(self.date)
@@ -103,11 +105,15 @@ class ReleaseGroup(models.Model):
         q = cls.objects.filter(is_deleted=False)
         if artist:
             q = q.filter(artist=artist)
+        q = q.select_related('artist__mbid', 'artist__name')
         if user:
             q = q.filter(artist__userartist__user=user)
+            q = q.filter(Q(users=user) | Q(users__isnull=True))
             q = q.filter(type__in=user.get_profile().get_types())
-        q = q.select_related('artist__mbid', 'artist__name')
-        q = q.order_by('-date')
+            q = q.annotate(is_starred=Count('users'))
+            q = q.order_by('-users', '-date')
+        else:
+            q = q.order_by('-date')
         return q[offset:offset+limit]
 
     @classmethod
@@ -123,6 +129,7 @@ class ReleaseGroup(models.Model):
 class Star(models.Model):
 
     class Meta:
+        db_table = 'app_star'
         unique_together = ('user', 'release_group')
 
     user = models.ForeignKey(User)

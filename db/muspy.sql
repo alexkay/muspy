@@ -67,6 +67,8 @@ CREATE TABLE "django_session" (
 CREATE INDEX "app_artist_sort_name" ON "app_artist" ("sort_name");
 CREATE INDEX "app_releasegroup_artist_id" ON "app_releasegroup" ("artist_id");
 CREATE INDEX "app_releasegroup_date" ON "app_releasegroup" ("date" DESC);
+CREATE INDEX "app_star_user_id" ON "app_star" ("user_id");
+CREATE INDEX "app_star_release_group_id" ON "app_star" ("release_group_id");
 CREATE INDEX "app_userprofile_activation_code" ON "app_userprofile" ("activation_code");
 CREATE INDEX "app_userprofile_reset_code" ON "app_userprofile" ("reset_code");
 CREATE INDEX "app_userprofile_legacy_id" ON "app_userprofile" ("legacy_id");
