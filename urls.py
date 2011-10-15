@@ -45,5 +45,5 @@ urlpatterns = patterns('app.views',
     (r'^signout$', 'signout'),
     (r'^signup$', 'signup'),
     (r'^sitemap.xml$', 'sitemap'),
-#    (r'^star$', 'star'),
+    (r'^star$', 'star'),
 )

@@ -29,6 +29,7 @@ from django.template.loader import render_to_string
 import app.musicbrainz as mb
 from app.tools import date_to_iso8601, date_to_str, str_to_date
 
+
 class Artist(models.Model):
 
     mbid = models.CharField(max_length=36, unique=True)
@@ -78,6 +79,7 @@ class Artist(models.Model):
         # TODO: paging
         return cls.objects.filter(userartist__user__id=user.id).order_by('sort_name')[:1000]
 
+
 class ReleaseGroup(models.Model):
 
     artist = models.ForeignKey(Artist)
@@ -117,6 +119,26 @@ class ReleaseGroup(models.Model):
         q = q.order_by('-date', 'id')
         return q[offset:offset+limit]
 
+
+class Star(models.Model):
+
+    class Meta:
+        unique_together = ('user', 'release_group')
+
+    user = models.ForeignKey(User)
+    release_group = models.ForeignKey(ReleaseGroup)
+
+    @classmethod
+    def set(cls, user, mbid, value):
+        try:
+            release_group = ReleaseGroup.objects.get(mbid=mbid)
+        except ReleaseGroup.DoesNotExist:
+            return
+        if value:
+            cls.objects.get_or_create(user=user, release_group=release_group)
+        else:
+            cls.objects.filter(user=user, release_group=release_group).delete()
+
 # Django's ManyToManyField generates terrible SQL, simulate it.
 # This also allows us to include additional fields.
 class UserArtist(models.Model):
@@ -150,6 +172,7 @@ class UserArtist(models.Model):
                 q = cls.objects.filter(user__id=user.id)
                 q = q.filter(artist__mbid=mbid)
                 q.delete()
+
 
 class UserProfile(models.Model):
 
@@ -254,12 +277,14 @@ class UserProfile(models.Model):
         users = User.objects.filter(username=username)
         return users[0].get_profile() if users else None
 
+
 # Activate foreign keys for sqlite.
 @receiver(connection_created)
 def activate_foreign_keys(sender, connection, **kwargs):
     if connection.vendor == 'sqlite':
         cursor = connection.cursor()
         cursor.execute('PRAGMA foreign_keys=1;')
+
 
 # Create a profile for each user.
 @receiver(post_save, sender=User)
@@ -268,5 +293,6 @@ def user_post_save(sender, instance, created, **kwargs):
         p = UserProfile()
         p.user = instance
         p.save()
+
 
 User.__unicode__ = lambda x: x.email

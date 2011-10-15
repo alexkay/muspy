@@ -17,6 +17,12 @@ CREATE TABLE "app_releasegroup" (
     "date" integer NOT NULL,
     "is_deleted" bool NOT NULL
 );
+CREATE TABLE "app_star" (
+    "id" integer NOT NULL PRIMARY KEY,
+    "user_id" integer NOT NULL REFERENCES "auth_user" ("id"),
+    "release_group_id" integer NOT NULL REFERENCES "app_releasegroup" ("id"),
+    UNIQUE ("user_id", "release_group_id")
+);
 CREATE TABLE "app_userartist" (
     "id" integer NOT NULL PRIMARY KEY,
     "user_id" integer NOT NULL REFERENCES "auth_user" ("id"),
