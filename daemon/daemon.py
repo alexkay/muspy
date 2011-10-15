@@ -86,5 +86,5 @@ def sleep(start):
     return time.time()
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
     daemon()
