@@ -37,6 +37,7 @@ class Artist(models.Model):
     name = models.CharField(max_length=512)
     sort_name = models.CharField(max_length=512)
     disambiguation = models.CharField(max_length=512)
+    users = models.ManyToManyField(User, through='UserArtist')
 
     @classmethod
     def get_by_mbid(cls, mbid):
@@ -78,7 +79,7 @@ class Artist(models.Model):
     @classmethod
     def get_by_user(cls, user):
         # TODO: paging
-        return cls.objects.filter(userartist__user__id=user.id).order_by('sort_name')[:1000]
+        return cls.objects.filter(users=user).order_by('sort_name')[:1000]
 
 
 class ReleaseGroup(models.Model):
@@ -146,8 +147,7 @@ class Star(models.Model):
         else:
             cls.objects.filter(user=user, release_group=release_group).delete()
 
-# Django's ManyToManyField generates terrible SQL, simulate it.
-# This also allows us to include additional fields.
+
 class UserArtist(models.Model):
 
     class Meta:
