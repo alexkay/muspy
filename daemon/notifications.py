@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime, timedelta
 import logging
 
 from app.models import *
@@ -51,11 +52,11 @@ def send():
                         logging.warning('Could not send to user %d, retrying' % user.id)
                         continue
                     sent_emails += 1
-                    logging.info('Sent notification to user %d' % user.id)
+                    logging.info('Sent a notification to user %d' % user.id)
 
             user.new_release_groups.clear()
 
-    logging.info('Sent %d email notifications, restarting' % sent_emails)
+    logging.info('Sent %d email notifications' % sent_emails)
 
 
 def is_recent(date):

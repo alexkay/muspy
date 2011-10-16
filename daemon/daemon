@@ -23,6 +23,7 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/..'))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'muspy.settings'
 
 import logging
+import time
 import traceback
 
 from daemon import notifications, releases
@@ -34,9 +35,10 @@ def daemon():
     * Process background jobs triggered by the users.
 
     """
-
+    start = time.time()
     releases.check()
     notifications.send()
+    logging.info("Cycle wall time: %.4f days" % ((time.time() - start) / 86400))
 
 
 if __name__ == '__main__':
