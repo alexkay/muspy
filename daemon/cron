@@ -12,7 +12,7 @@ PID=
 while :
 do
     if [ -z "$PID" ] || ! kill -0 $PID > /dev/null 2>&1 ; then
-        $(dirname $0)/daemon.py >> $LOG 2>&1 &
+        $(dirname $0)/daemon >> $LOG 2>&1 &
         PID="$!"
     fi
 

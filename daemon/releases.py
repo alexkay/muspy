@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # Copyright © 2009-2011 Alexander Kojevnikov <alexander@kojevnikov.com>
@@ -16,31 +15,17 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
-# Allow the cron script to run in the Django project context
-import os, sys
-sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/../..'))
-sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/..'))
-os.environ['DJANGO_SETTINGS_MODULE'] = 'muspy.settings'
-
-from datetime import datetime, timedelta
 import logging
-import time
-import traceback
 
 from django.db import connection, transaction
 
 from app.models import *
 import app.musicbrainz as mb
 from app.tools import str_to_date
+from daemon import jobs, tools
 
 
-def daemon():
-    """Perform background processing.
-
-    * Periodically check for new releases and send email notifications.
-    * Process background jobs triggered by the users.
-
-    """
+def check():
     logging.info('Start checking artists')
     checked_artists = 0
     artist = None
@@ -56,8 +41,8 @@ def daemon():
             break # last artist
         checked_artists += 1
 
-        process_jobs()
-        sleep()
+        jobs.process()
+        tools.sleep()
         logging.info('Checking artist %s' % artist.mbid)
         artist_data = mb.get_artist(artist.mbid)
         if not artist_data:
@@ -87,8 +72,8 @@ def daemon():
         offset = 0
         checked_release_groups = 0
         while True:
-            process_jobs()
-            sleep()
+            jobs.process()
+            tools.sleep()
             release_groups = mb.get_release_groups(artist.mbid, LIMIT, offset)
             if release_groups is None:
                 logging.warning('Could not fetch release groups, retrying')
@@ -164,83 +149,3 @@ def daemon():
                 logging.info('Deleted release group %s' % mbid)
 
     logging.info('Checked %d artists and %d release groups' % (checked_artists, checked_release_groups))
-
-    sent_emails = 0
-    while True:
-        try:
-            notification = Notification.objects.all()[0]
-        except IndexError:
-            break # last one
-
-        with transaction.commit_on_success():
-            user = notification.user
-            profile = user.get_profile()
-            if profile.notify and profile.email_activated:
-                types = profile.get_types()
-                release_groups = user.new_release_groups.select_related('artist').all()
-                release_groups = [
-                    rg for rg in release_groups
-                    if rg.type in types and is_recent(rg.date)]
-                if release_groups:
-                    process_jobs()
-                    sleep()
-                    result = user.get_profile().send_email(
-                        subject='[muspy] New Release Notification',
-                        text_template='email/release.txt',
-                        html_template='email/release.html',
-                        releases=release_groups,
-                        root='http://muspy.com/')
-                    if not result:
-                        logging.warning('Could not send to user %d, retrying' % user.id)
-                        continue
-                    sent_emails += 1
-                    logging.info('Sent notification to user %d' % user.id)
-
-            user.new_release_groups.clear()
-
-    logging.info('Sent %d email notifications, restarting' % sent_emails)
-
-
-def process_jobs():
-    """Work on pending jobs."""
-    while True:
-        try:
-            job = Job.objects.order_by('id')[0]
-        except IndexError:
-            break
-
-        # TODO
-        job.delete()
-
-
-def is_recent(date):
-    """Check if the integer date is not older than one year."""
-    date = datetime(
-        year=date // 10000,
-        month=(date // 100) % 100 or 1,
-        day=date % 100 or 1)
-    one_year = timedelta(weeks=52)
-    return date > datetime.utcnow() - one_year
-
-
-def sleep():
-    """Sleep to avoid clogging up MusicBrainz servers.
-
-    Call it before each MB request.
-
-    """
-    DELAY = 2 # seconds
-    duration = time.time() - sleep.start
-    if DELAY - duration > 0:
-        time.sleep(DELAY - duration)
-    sleep.start = time.time()
-
-sleep.start = time.time()
-
-
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
-    try:
-        daemon()
-    except:
-        logging.error('Daemon error:\n' + traceback.format_exc())
