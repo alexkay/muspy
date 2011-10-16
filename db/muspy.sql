@@ -8,6 +8,12 @@ CREATE TABLE "app_artist" (
     "sort_name" varchar(512) NOT NULL,
     "disambiguation" varchar(512) NOT NULL
 );
+CREATE TABLE "app_notification" (
+    "id" integer NOT NULL PRIMARY KEY,
+    "user_id" integer NOT NULL REFERENCES "auth_user" ("id"),
+    "release_group_id" integer NOT NULL,
+    UNIQUE ("user_id", "release_group_id")
+);
 CREATE TABLE "app_releasegroup" (
     "id" integer NOT NULL PRIMARY KEY,
     "artist_id" integer NOT NULL REFERENCES "app_artist" ("id"),
@@ -65,6 +71,8 @@ CREATE TABLE "django_session" (
     "expire_date" datetime NOT NULL
 );
 CREATE INDEX "app_artist_sort_name" ON "app_artist" ("sort_name");
+CREATE INDEX "app_notification_user_id" ON "app_notification" ("user_id");
+CREATE INDEX "app_notification_release_group_id" ON "app_notification" ("release_group_id");
 CREATE INDEX "app_releasegroup_artist_id" ON "app_releasegroup" ("artist_id");
 CREATE INDEX "app_releasegroup_date" ON "app_releasegroup" ("date" DESC);
 CREATE INDEX "app_star_user_id" ON "app_star" ("user_id");

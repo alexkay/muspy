@@ -82,6 +82,15 @@ class Artist(models.Model):
         return cls.objects.filter(users=user).order_by('sort_name')[:1000]
 
 
+class Notification(models.Model):
+
+    class Meta:
+        db_table = 'app_notification'
+        unique_together = ('user', 'release_group')
+
+    user = models.ForeignKey(User)
+    release_group = models.ForeignKey('ReleaseGroup')
+
 class ReleaseGroup(models.Model):
 
     artist = models.ForeignKey(Artist)
@@ -90,7 +99,11 @@ class ReleaseGroup(models.Model):
     type = models.CharField(max_length=16)
     date = models.IntegerField() # 20080101 OR 20080100 OR 20080000
     is_deleted = models.BooleanField()
-    users = models.ManyToManyField(User, through='Star') # users that starred this release
+
+    users_who_starred = models.ManyToManyField(
+        User, through='Star', related_name='starred_release_groups')
+    users_to_notify = models.ManyToManyField(
+        User, through='Notification', related_name='new_release_groups')
 
     def date_str(self):
         return date_to_str(self.date)
@@ -109,10 +122,10 @@ class ReleaseGroup(models.Model):
             q = q.filter(artist=artist)
         if user:
             q = q.filter(artist__userartist__user=user)
-            q = q.filter(Q(users=user) | Q(users__isnull=True))
+            q = q.filter(Q(users_who_starred=user) | Q(users_who_starred__isnull=True))
             q = q.filter(type__in=user.get_profile().get_types())
-            q = q.annotate(is_starred=Count('users'))
-            q = q.order_by('-users', '-date')
+            q = q.annotate(is_starred=Count('users_who_starred'))
+            q = q.order_by('-users_who_starred', '-date')
         else:
             q = q.order_by('-date')
         return q[offset:offset+limit]
