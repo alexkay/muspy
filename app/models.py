@@ -295,9 +295,9 @@ class UserProfile(models.Model):
         password = User.objects.make_random_password(length=16)
         profile.reset_code = ''
         profile.user.set_password(password)
-        # TODO: transaction
-        profile.user.save()
-        profile.save()
+        with transaction.commit_on_success():
+            profile.user.save()
+            profile.save()
         return profile.user.email, password
 
     @classmethod

@@ -20,6 +20,7 @@ import string
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
+from django.db import transaction
 
 from app.models import *
 
@@ -71,9 +72,9 @@ class SettingsForm(forms.Form):
         if self.profile.user.email != self.cleaned_data['email']:
             self.profile.user.email = self.cleaned_data['email']
             self.profile.email_activated = False
-            # TODO: transaction
-            self.profile.user.save()
-            self.profile.save()
+            with transaction.commit_on_success():
+                self.profile.user.save()
+                self.profile.save()
             self.profile.send_activation_email()
         changed = False
         if self.cleaned_data['new_password']:
