@@ -1,0 +1,10 @@
+{% autoescape off %}Hi,
+
+{{ releases|length|pluralize:"A new,New" }} release{{ releases|length|pluralize }} {{ releases|length|pluralize:"is,are" }} available:
+
+{% for release in releases %}  {% if release.date_str %}{{ release.date_str }}: {% endif %}{{ release.artist.name }} - {{ release.name }}{% if release.type %} ({{ release.type }}){% endif %}
+{% endfor %}
+Visit muspy for more information: {{ root }}releases
+
+Cheers,
+The muspy Team{% endautoescape %}

@@ -16,6 +16,7 @@
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
 import random
+from smtplib import SMTPException
 from time import sleep
 
 from django.contrib.auth.models import User
@@ -118,7 +119,7 @@ class ReleaseGroup(models.Model):
             assert 'Both artist and user are None'
             return None
         q = cls.objects.filter(is_deleted=False)
-        q = q.select_related('artist__mbid', 'artist__name')
+        q = q.select_related('artist')
         if artist:
             q = q.filter(artist=artist)
         if user:
@@ -237,26 +238,32 @@ class UserProfile(models.Model):
         msg = EmailMultiAlternatives(subject, text, sender, [self.user.email])
         if html_template:
             html = render_to_string(html_template, kwds)
-            msg.attach_alternative(html_content, "text/html")
-        msg.send()
+            msg.attach_alternative(html, "text/html")
+        try:
+            msg.send()
+        except SMTPException:
+            return False
+        return True
 
     def send_activation_email(self):
         code = self.generate_code()
         self.activation_code = code
         self.save()
-        self.send_email(subject='Email Activation',
-                        text_template='email/activate.txt',
-                        html_template=None,
-                        code=code)
+        self.send_email(
+            subject='Email Activation',
+            text_template='email/activate.txt',
+            html_template=None,
+            code=code)
 
     def send_reset_email(self):
         code = self.generate_code()
         self.reset_code = code
         self.save()
-        self.send_email(subject='Password Reset Confirmation',
-                        text_template='email/reset.txt',
-                        html_template=None,
-                        code=code)
+        self.send_email(
+            subject='Password Reset Confirmation',
+            text_template='email/reset.txt',
+            html_template=None,
+            code=code)
 
     @classmethod
     def activate(cls, code):

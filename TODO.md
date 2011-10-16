@@ -14,3 +14,4 @@
 * 404 and 500 pages
 * Email errors
 * Django's sitemap?
+* Block special artists

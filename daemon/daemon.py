@@ -24,6 +24,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'muspy.settings'
 
 import logging
 import time
+import traceback
 
 from django.db import connection, transaction
 
@@ -83,6 +84,9 @@ def daemon():
         while True:
             sleep()
             release_groups = mb.get_release_groups(artist.mbid, LIMIT, offset)
+            if release_groups is None:
+                logging.warning('Could not fetch release groups, retrying')
+                continue
             logging.info('Fetched %s release groups' % len(release_groups))
             with transaction.commit_on_success():
                 for rg_data in release_groups:
@@ -154,13 +158,43 @@ def daemon():
 
     logging.info('Done checking artists, start sending email notifications')
 
+    while True:
+        try:
+            notification = Notification.objects.all()[0]
+        except IndexError:
+            break # last one
+
+        with transaction.commit_on_success():
+            user = notification.user
+            profile = user.get_profile()
+            if profile.notify and profile.email_activated:
+                types = profile.get_types()
+                release_groups = user.new_release_groups.select_related('artist').all()
+                release_groups = [rg for rg in release_groups if rg.type in types]
+                if release_groups:
+                    sleep()
+                    result = user.get_profile().send_email(
+                        subject='[muspy] New Release Notification',
+                        text_template='email/release.txt',
+                        html_template='email/release.html',
+                        releases=release_groups,
+                        root='http://muspy.com/')
+                    if not result:
+                        logging.warning('Could not send to user %d, retrying' % user.id)
+                        continue
+                    logging.info('Sent notification to user %d' % user.id)
+
+            user.new_release_groups.all().delete()
+
+    logging.info('Done sending email notifications, restarting')
+
 def sleep():
     """Sleep to avoid clogging up MusicBrainz servers.
 
     Call it before each MB request.
 
     """
-    DELAY = 4 # seconds
+    DELAY = 2 # seconds
     duration = time.time() - sleep.start
     if DELAY - duration > 0:
         time.sleep(DELAY - duration)
@@ -170,4 +204,7 @@ sleep.start = time.time()
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
-    daemon()
+    try:
+        daemon()
+    except:
+        logging.error('Daemon error:\n' + traceback.format_exc())
