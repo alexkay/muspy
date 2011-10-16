@@ -31,7 +31,6 @@ from app.models import *
 import app.musicbrainz as mb
 from app.tools import str_to_date
 
-DELAY = 4
 
 def daemon():
     """Perform background processing.
@@ -41,8 +40,6 @@ def daemon():
 
     """
     logging.info('Start checking artists')
-    start = time.time()
-
     artist = None
     while True:
 
@@ -55,9 +52,7 @@ def daemon():
         except IndexError:
             break # last artist
 
-        # Sleep to avoid clogging up MusicBrainz servers.
-        start = sleep(start)
-
+        sleep()
         logging.info('Checking artist %s' % artist.mbid)
         artist_data = mb.get_artist(artist.mbid)
         if not artist_data:
@@ -86,7 +81,7 @@ def daemon():
         LIMIT = 100
         offset = 0
         while True:
-            start = sleep(start)
+            sleep()
             release_groups = mb.get_release_groups(artist.mbid, LIMIT, offset)
             logging.info('Fetched %s release groups' % len(release_groups))
             with transaction.commit_on_success():
@@ -159,11 +154,19 @@ def daemon():
 
     logging.info('Done checking artists, start sending email notifications')
 
-def sleep(start):
-    duration = time.time() - start
+def sleep():
+    """Sleep to avoid clogging up MusicBrainz servers.
+
+    Call it before each MB request.
+
+    """
+    DELAY = 4 # seconds
+    duration = time.time() - sleep.start
     if DELAY - duration > 0:
         time.sleep(DELAY - duration)
-    return time.time()
+    sleep.start = time.time()
+
+sleep.start = time.time()
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
