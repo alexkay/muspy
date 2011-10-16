@@ -83,6 +83,16 @@ class Artist(models.Model):
         return cls.objects.filter(users=user).order_by('sort_name')[:1000]
 
 
+class Job(models.Model):
+
+    TYPE_ADD_ARTISTS = 1
+    TYPE_ADD_RELEASES = 2
+    TYPE_IMPORT_LASTFM = 3
+
+    user = models.ForeignKey(User)
+    type = models.IntegerField()
+    data = models.TextField()
+
 class Notification(models.Model):
 
     class Meta:

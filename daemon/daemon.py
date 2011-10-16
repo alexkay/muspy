@@ -56,6 +56,7 @@ def daemon():
             break # last artist
         checked_artists += 1
 
+        process_jobs()
         sleep()
         logging.info('Checking artist %s' % artist.mbid)
         artist_data = mb.get_artist(artist.mbid)
@@ -86,6 +87,7 @@ def daemon():
         offset = 0
         checked_release_groups = 0
         while True:
+            process_jobs()
             sleep()
             release_groups = mb.get_release_groups(artist.mbid, LIMIT, offset)
             if release_groups is None:
@@ -180,6 +182,7 @@ def daemon():
                     rg for rg in release_groups
                     if rg.type in types and is_recent(rg.date)]
                 if release_groups:
+                    process_jobs()
                     sleep()
                     result = user.get_profile().send_email(
                         subject='[muspy] New Release Notification',
@@ -196,6 +199,18 @@ def daemon():
             user.new_release_groups.clear()
 
     logging.info('Sent %d email notifications, restarting' % sent_emails)
+
+
+def process_jobs():
+    """Work on pending jobs."""
+    while True:
+        try:
+            job = Job.objects.order_by('id')[0]
+        except IndexError:
+            break
+
+        # TODO
+        job.delete()
 
 
 def is_recent(date):
