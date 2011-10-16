@@ -22,6 +22,7 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/../..'))
 sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/..'))
 os.environ['DJANGO_SETTINGS_MODULE'] = 'muspy.settings'
 
+from datetime import datetime, timedelta
 import logging
 import time
 import traceback
@@ -41,6 +42,7 @@ def daemon():
 
     """
     logging.info('Start checking artists')
+    checked_artists = 0
     artist = None
     while True:
 
@@ -52,6 +54,7 @@ def daemon():
             artist = artists[0]
         except IndexError:
             break # last artist
+        checked_artists += 1
 
         sleep()
         logging.info('Checking artist %s' % artist.mbid)
@@ -81,6 +84,7 @@ def daemon():
         # Get release groups
         LIMIT = 100
         offset = 0
+        checked_release_groups = 0
         while True:
             sleep()
             release_groups = mb.get_release_groups(artist.mbid, LIMIT, offset)
@@ -101,6 +105,7 @@ def daemon():
                                 logging.info('Deleted release group %s' % mbid)
                         continue
 
+                    checked_release_groups += 1
                     release_date = str_to_date(rg_data['first-release-date'])
                     if mbid in current:
                         release_group = current[mbid]
@@ -156,8 +161,9 @@ def daemon():
                 release_group.save()
                 logging.info('Deleted release group %s' % mbid)
 
-    logging.info('Done checking artists, start sending email notifications')
+    logging.info('Checked %d artists and %d release groups' % (checked_artists, checked_release_groups))
 
+    sent_emails = 0
     while True:
         try:
             notification = Notification.objects.all()[0]
@@ -170,7 +176,9 @@ def daemon():
             if profile.notify and profile.email_activated:
                 types = profile.get_types()
                 release_groups = user.new_release_groups.select_related('artist').all()
-                release_groups = [rg for rg in release_groups if rg.type in types]
+                release_groups = [
+                    rg for rg in release_groups
+                    if rg.type in types and is_recent(rg.date)]
                 if release_groups:
                     sleep()
                     result = user.get_profile().send_email(
@@ -182,11 +190,23 @@ def daemon():
                     if not result:
                         logging.warning('Could not send to user %d, retrying' % user.id)
                         continue
+                    sent_emails += 1
                     logging.info('Sent notification to user %d' % user.id)
 
-            user.new_release_groups.all().delete()
+            user.new_release_groups.clear()
 
-    logging.info('Done sending email notifications, restarting')
+    logging.info('Sent %d email notifications, restarting' % sent_emails)
+
+
+def is_recent(date):
+    """Check if the integer date is not older than one year."""
+    date = datetime(
+        year=date // 10000,
+        month=(date // 100) % 100 or 1,
+        day=date % 100 or 1)
+    one_year = timedelta(weeks=52)
+    return date > datetime.utcnow() - one_year
+
 
 def sleep():
     """Sleep to avoid clogging up MusicBrainz servers.
@@ -201,6 +221,7 @@ def sleep():
     sleep.start = time.time()
 
 sleep.start = time.time()
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
