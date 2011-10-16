@@ -14,4 +14,3 @@
 * 404 and 500 pages
 * Email errors
 * Django's sitemap?
-* Fix MBS-2959 (bad first-release-date)

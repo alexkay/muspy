@@ -25,7 +25,7 @@ os.environ['DJANGO_SETTINGS_MODULE'] = 'muspy.settings'
 import logging
 import time
 
-from django.db import transaction
+from django.db import connection, transaction
 
 from app.models import *
 import app.musicbrainz as mb
@@ -109,6 +109,7 @@ def daemon():
                         updated = False
                         if release_group.is_deleted:
                             release_group.is_deleted = False
+                            updated = True
                         if release_group.name != rg_data['title']:
                             release_group.name = rg_date['title']
                             updated = True
@@ -133,7 +134,19 @@ def daemon():
                             is_deleted=False)
                         release_group.save()
                         logging.info('Created release group %s' % mbid)
-                        # TODO: notify all users
+
+                        # Notify users
+                        cursor = connection.cursor()
+                        cursor.execute(
+                            """
+                            INSERT INTO "app_notification" ("user_id", "release_group_id")
+                            SELECT "app_userartist"."user_id", "app_releasegroup"."id"
+                            FROM "app_userartist"
+                            JOIN "app_artist" ON "app_artist"."id" = "app_userartist"."artist_id"
+                            JOIN "app_releasegroup" ON "app_releasegroup"."artist_id" = "app_artist"."id"
+                            WHERE "app_releasegroup"."id" = %s
+                            """, [release_group.id])
+                        logging.info('Notified %d users' % cursor.rowcount)
 
             if len(release_groups) < LIMIT: break
             offset += LIMIT
@@ -144,7 +157,7 @@ def daemon():
                 release_group.save()
                 logging.info('Deleted release group %s' % mbid)
 
-    logging.info('Done checking artists')
+    logging.info('Done checking artists, start sending email notifications')
 
 def sleep(start):
     duration = time.time() - start

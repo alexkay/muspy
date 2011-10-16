@@ -91,6 +91,7 @@ class Notification(models.Model):
     user = models.ForeignKey(User)
     release_group = models.ForeignKey('ReleaseGroup')
 
+
 class ReleaseGroup(models.Model):
 
     artist = models.ForeignKey(Artist)
