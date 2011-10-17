@@ -58,6 +58,11 @@ CREATE TABLE "app_userprofile" (
     "reset_code" varchar(16) NOT NULL,
     "legacy_id" integer
 );
+CREATE TABLE "app_usersearch" (
+    "id" integer NOT NULL PRIMARY KEY,
+    "user_id" integer NOT NULL REFERENCES "auth_user" ("id"),
+    "search" varchar(512) NOT NULL
+);
 CREATE TABLE "auth_user" (
     "id" integer NOT NULL PRIMARY KEY,
     "username" varchar(30) NOT NULL UNIQUE,
@@ -89,4 +94,5 @@ CREATE INDEX "app_userartist_artist_id" ON "app_userartist" ("artist_id");
 CREATE INDEX "app_userprofile_activation_code" ON "app_userprofile" ("activation_code");
 CREATE INDEX "app_userprofile_reset_code" ON "app_userprofile" ("reset_code");
 CREATE INDEX "app_userprofile_legacy_id" ON "app_userprofile" ("legacy_id");
+CREATE INDEX "app_usersearch_user_id" ON "app_usersearch" ("user_id");
 CREATE INDEX "django_session_expire_date" ON "django_session" ("expire_date");

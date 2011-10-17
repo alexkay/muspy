@@ -85,13 +85,20 @@ class Artist(models.Model):
 
 class Job(models.Model):
 
-    TYPE_ADD_ARTISTS = 1
-    TYPE_ADD_RELEASES = 2
-    TYPE_IMPORT_LASTFM = 3
+    ADD_ARTIST = 1
+    ADD_RELEASES = 2
+    IMPORT_LASTFM = 3
 
     user = models.ForeignKey(User)
     type = models.IntegerField()
     data = models.TextField()
+
+    @classmethod
+    def add_artists(cls, user, names):
+        with transaction.commit_on_success():
+            for name in names:
+                cls(user=user, type=cls.ADD_ARTIST, data=name).save()
+
 
 class Notification(models.Model):
 
@@ -314,6 +321,16 @@ class UserProfile(models.Model):
     def get_by_username(cls, username):
         users = User.objects.filter(username=username)
         return users[0].get_profile() if users else None
+
+
+class UserSearch(models.Model):
+
+    user = models.ForeignKey(User)
+    search = models.CharField(max_length=512)
+
+    @classmethod
+    def get(cls, user):
+        return cls.objects.filter(user=user)
 
 
 # Activate foreign keys for sqlite.

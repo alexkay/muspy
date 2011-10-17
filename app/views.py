@@ -96,11 +96,21 @@ def artists(request):
             messages.error(request, 'The search string is too long.')
             return redirect('/artists')
 
-        if ',' in search and not offset:
+        searches = [s.strip() for s in search.split(',') if s.strip()]
+        if len(searches) > 1 and not offset:
             # Batch add mode.
-            Job.add_artists(request.user.key().id(), search, dontadd)
-            messages.info(request, 'Your artists will be processed in the next couple of '
-                          'minutes. In the meantime you can add more artists.')
+            if dontadd:
+                messages.warning(
+                    request, 'Cannot search for multiple artists. Remove all commas to search.')
+                return render(request, 'artists.html', {
+                        'artist_rows': artist_rows,
+                        'search': search,
+                        'dontadd': dontadd})
+
+            Job.add_artists(request.user, searches)
+            messages.info(
+                request, 'Your artists will be processed in the next couple of '
+                'minutes. In the meantime you can add more artists.')
             return redirect('/artists')
 
         found_artists, count = mb.search_artists(search, limit=LIMIT, offset=offset)
@@ -132,9 +142,11 @@ def artists(request):
     artists_offset = offset + len(found_artists)
     artists_left = max(0, count - artists_offset)
 
-#    importing = Job.importing_artists(request.user.key().id())
-#    pending = sorted(s.search for s in request.user.searches.fetch(200))
-#    pending_rows = arrange_for_table(pending, COLUMNS)
+    #TODO
+    #importing = Job.importing_artists(request.user.key().id())
+
+    pending = sorted(s.search for s in UserSearch.get(request.user)[:200])
+    pending_rows = arrange_for_table(pending, COLUMNS)
 
     return render(request, 'artists.html', {
             'artist_rows': artist_rows,
@@ -142,7 +154,8 @@ def artists(request):
             'dontadd': dontadd,
             'found_artists': found_artists,
             'artists_offset': artists_offset,
-            'artists_left': artists_left})
+            'artists_left': artists_left,
+            'pending_rows': pending_rows})
 
 @login_required
 def artists_add(request):
