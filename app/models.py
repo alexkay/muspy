@@ -341,6 +341,12 @@ class UserSearch(models.Model):
     def get(cls, user):
         return cls.objects.filter(user=user)
 
+    @classmethod
+    def remove(cls, user, searches):
+        with transaction.commit_on_success():
+            for search in searches:
+                cls.objects.filter(user=user, search=search).delete()
+
 
 # Activate foreign keys for sqlite.
 @receiver(connection_created)

@@ -167,9 +167,8 @@ def artists_add(request):
 
     UserArtist.add(request.user, artist)
 
-    #TODO
-#    search = request.GET.get('search', '')
-#    UserSearch.remove(request.user, [search])
+    search = request.GET.get('search', '')
+    UserSearch.remove(request.user, [search])
 
     messages.success(request, "%s has been added!" % artist.name)
     return redirect('/artists')
