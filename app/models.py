@@ -66,8 +66,8 @@ class Artist(models.Model):
         if release_groups:
             with transaction.commit_on_success():
                 for rg_data in release_groups:
-                    # Ignoring releases without a release date.
-                    if rg_data.get('first-release-date'):
+                    # Ignoring releases without a release date or a type.
+                    if rg_data.get('first-release-date') and rg_data.get('type'):
                         release_group = ReleaseGroup(
                             artist=artist,
                             mbid=rg_data['id'],

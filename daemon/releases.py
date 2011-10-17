@@ -28,6 +28,7 @@ from daemon import jobs, tools
 def check():
     logging.info('Start checking artists')
     checked_artists = 0
+    checked_release_groups = 0
     artist = None
     while True:
 
@@ -70,7 +71,6 @@ def check():
         # Get release groups
         LIMIT = 100
         offset = 0
-        checked_release_groups = 0
         while True:
             jobs.process()
             tools.sleep()
@@ -82,8 +82,8 @@ def check():
             with transaction.commit_on_success():
                 for rg_data in release_groups:
                     mbid = rg_data['id']
-                    # Ignore releases without a release date.
-                    if not rg_data.get('first-release-date'):
+                    # Ignore releases without a release date or a type.
+                    if not rg_data.get('first-release-date') or not rg_data.get('type'):
                         if mbid in current:
                             release_group = current[mbid]
                             if not release_group.is_deleted:
