@@ -10,7 +10,7 @@ CREATE TABLE "app_artist" (
 );
 CREATE TABLE "app_job" (
     "id" integer NOT NULL PRIMARY KEY,
-    "user_id" integer NOT NULL REFERENCES "auth_user" ("id"),
+    "user_id" integer REFERENCES "auth_user" ("id"),
     "type" integer NOT NULL,
     "data" text NOT NULL
 );

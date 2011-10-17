@@ -61,7 +61,8 @@ class Artist(models.Model):
         artist.save()
 
         # Add a few release groups immediately.
-        release_groups = mb.get_release_groups(mbid, limit=100, offset=0)
+        LIMIT = 100
+        release_groups = mb.get_release_groups(mbid, limit=LIMIT, offset=0)
         if release_groups:
             with transaction.commit_on_success():
                 for rg_data in release_groups:
@@ -75,6 +76,11 @@ class Artist(models.Model):
                             date=str_to_date(rg_data['first-release-date']),
                             is_deleted=False)
                         release_group.save()
+
+        if release_groups is None or len(release_groups) == LIMIT:
+            # Add the remaining release groups
+            Job.add_release_groups(artist)
+
         return artist
 
     @classmethod
@@ -86,10 +92,10 @@ class Artist(models.Model):
 class Job(models.Model):
 
     ADD_ARTIST = 1
-    ADD_RELEASES = 2
+    ADD_RELEASE_GROUPS = 2
     IMPORT_LASTFM = 3
 
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, null=True)
     type = models.IntegerField()
     data = models.TextField()
 
@@ -99,6 +105,9 @@ class Job(models.Model):
             for name in names:
                 cls(user=user, type=cls.ADD_ARTIST, data=name).save()
 
+    @classmethod
+    def add_release_groups(cls, artist):
+        cls(user=None, type=cls.ADD_RELEASE_GROUPS, data=artist.mbid).save()
 
 class Notification(models.Model):
 
