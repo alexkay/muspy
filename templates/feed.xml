@@ -7,7 +7,7 @@
     <updated>{{ releases.date_iso8601 }}</updated>
     <author><name>muspy</name></author>
     <icon>{{ root }}favicon.ico</icon>
-    <logo>{{ root }}static/logo.gif</logo>
+    <logo>{{ root }}logo.gif</logo>
     {% for release in releases %}
     <entry>
         <title type="text"><![CDATA[{{ release.artist.name }} - {{ release.name }}]]></title>

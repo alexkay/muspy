@@ -35,13 +35,6 @@ LANGUAGE_CODE = 'en-gb'
 USE_I18N = False
 USE_L10N = False
 
-MEDIA_ROOT = ''
-MEDIA_URL = ''
-STATIC_URL = '/static/'
-STATICFILES_DIRS = (
-    'static',
-)
-
 # TODO: /releases if there are any otherwise /artists, or make it an option
 LOGIN_REDIRECT_URL = '/'
 LOGIN_URL = '/signin'
@@ -81,7 +74,6 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
     'app',
 )
 

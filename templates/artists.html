@@ -7,12 +7,12 @@
     {% if not found_artists %}
         <p>No artists matching your query.</p>
     {% else %}
-    <p>Search results: <small>(click <img class="add_artist" src="/static/add.gif" alt="+"/> to follow the artist)</small></p>
+    <p>Search results: <small>(click <img class="add_artist" src="/add.gif" alt="+"/> to follow the artist)</small></p>
         <div id="found_artists">
             <ul>
                 {% for artist in found_artists %}
                     <li{% if artist.best_match %} class="best_match"{% endif %}>
-                        <a class="noborder" href="/artists-add?id={{ artist.id }}&amp;search={{ search|urlencode }}"><img class="add_artist" src="/static/add.gif" alt="+" title="Add"/></a>
+                        <a class="noborder" href="/artists-add?id={{ artist.id }}&amp;search={{ search|urlencode }}"><img class="add_artist" src="/add.gif" alt="+" title="Add"/></a>
                         <a href="/artist/{{ artist.id }}">{{ artist.name }}</a>
                         {% if artist.disambiguation %}&nbsp;<small>({{ artist.disambiguation }})</small>{% endif %}
                     </li>
@@ -103,7 +103,7 @@ follow releases a new album.</p>
 {% endblock content %}
 
 {% block javascript %}
-<script type="text/javascript" src="/static/jquery-1.6.4.min.js"></script>
+<script type="text/javascript" src="/jquery-1.6.4.min.js"></script>
 <script type="text/javascript">
 //<![CDATA[
 $(function() {

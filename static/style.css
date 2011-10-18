@@ -40,7 +40,7 @@ h2 {
     width: 760px;
     margin: 20px auto;
     padding: 0;
-    background: #FFFFFF url(/static/logo-bg.gif) no-repeat scroll top right;
+    background: #FFFFFF url(/logo-bg.gif) no-repeat scroll top right;
 }
 
 #header {
