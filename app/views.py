@@ -195,7 +195,7 @@ def calendar(request):
     today = int(date.today().strftime('%Y%m%d'))
     date_int = str_to_date(date_str) if date_str else today
     offset = int(request.GET.get('offset', 0))
-    PER_PAGE = 4
+    PER_PAGE = 10
     limit = PER_PAGE + 1
     releases = list(ReleaseGroup.get_calendar(date_int, limit, offset))
 
