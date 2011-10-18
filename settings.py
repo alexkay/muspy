@@ -15,13 +15,28 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
+
+########################################################################
+# Change the next section in production
+########################################################################
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-ADMINS = (
-    ('admin', 'admin@muspy.com'),
-)
+SECRET_KEY = 'change me'
+
+SERVER_EMAIL = 'info@muspy.com'
+EMAIL_HOST = 'localhost'
+EMAIL_PORT = 1025
+#EMAIL_HOST_USER = 'info'
+#EMAIL_HOST_PASSWORD = 'change me'
+#EMAIL_USE_TLS = True
+
+########################################################################
+
+ADMINS = (('admin', 'info@muspy.com'),)
 MANAGERS = ADMINS
+SEND_BROKEN_LINK_EMAILS = True
 
 DATABASES = {
     'default': {
@@ -31,36 +46,16 @@ DATABASES = {
 }
 
 TIME_ZONE = None
-LANGUAGE_CODE = 'en-gb'
 USE_I18N = False
-USE_L10N = False
-
-# TODO: /releases if there are any otherwise /artists, or make it an option
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/artists'
 LOGIN_URL = '/signin'
 AUTH_PROFILE_MODULE = 'app.UserProfile'
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 ROOT_URLCONF = 'urls'
-
-# Change for production
-SECRET_KEY = '^c)@qv0@pb$ym&zb^#vm8nuv0972qa9w(#le&atirpvfvi_yjc'
 EMAIL_SUBJECT_PREFIX = '[muspy] '
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 1025
-#EMAIL_HOST_USER =
-#EMAIL_HOST_PASSWORD =
-#EMAIL_USE_TLS =
-
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-)
-TEMPLATE_DIRS = (
-    'templates',
-)
-
-AUTHENTICATION_BACKENDS = (
-    'app.backends.EmailAuthBackend',
-)
+TEMPLATE_LOADERS = ('django.template.loaders.filesystem.Loader',)
+TEMPLATE_DIRS = ('templates',)
+AUTHENTICATION_BACKENDS = ('app.backends.EmailAuthBackend',)
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
