@@ -62,7 +62,11 @@ def add_artist(user, search):
         # get_by_mbid() queries MB, must sleep.
         tools.sleep()
         logging.info('[JOB] Adding artist %s' % mbid)
-        artist = Artist.get_by_mbid(mbid)
+        try:
+            artist = Artist.get_by_mbid(mbid)
+        except Artist.Blacklisted:
+            logging.warning('[ERR] Artist %s is blacklisted artists, skipping' % mbid)
+            return True
         if not artist:
             logging.warning('[ERR] Could not fetch artist %s, retrying' % mbid)
             return False

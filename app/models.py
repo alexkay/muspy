@@ -40,9 +40,23 @@ class Artist(models.Model):
     disambiguation = models.CharField(max_length=512)
     users = models.ManyToManyField(User, through='UserArtist')
 
+    blacklisted = [
+        '89ad4ac3-39f7-470e-963a-56509c546377', # Various Artists
+        'f731ccc4-e22a-43af-a747-64213329e088', # [anonymous]
+        '33cf029c-63b0-41a0-9855-be2a3665fb3b', # [data]
+        '314e1c25-dde7-4e4d-b2f4-0a7b9f7c56dc', # [dialogue]
+        'eec63d3c-3b81-4ad4-b1e4-7c147d4d2b61', # [no artist]
+        '9be7f096-97ec-4615-8957-8d40b5dcbc41', # [traditional]
+        '125ec42a-7229-4250-afc5-e057484327fe', # [unknown]
+        ]
+    class Blacklisted(Exception): pass
+
     @classmethod
     def get_by_mbid(cls, mbid):
         """ Fetches the artist and releases from MB if not in the database. """
+        if mbid in cls.blacklisted:
+            raise cls.Blacklisted()
+
         try:
             return cls.objects.get(mbid=mbid)
         except cls.DoesNotExist:

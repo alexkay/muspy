@@ -45,11 +45,11 @@ def check():
         except IndexError:
             break # last artist
 
+        checked_artists += 1
+
         # Artist names don't change that often. Update artists at most once
         # a month, unless we are debugging.
         if DEBUG or day == 1:
-            checked_artists += 1
-
             jobs.process()
             tools.sleep()
             logging.info('Updating artist %s' % artist.mbid)

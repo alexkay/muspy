@@ -20,7 +20,7 @@ from datetime import date
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import redirect, render
 
 from settings import LOGIN_REDIRECT_URL
@@ -50,7 +50,10 @@ def activate(request):
     return render(request, 'activate.html')
 
 def artist(request, mbid):
-    artist = Artist.get_by_mbid(mbid)
+    try:
+        artist = Artist.get_by_mbid(mbid)
+    except Artist.Blacklisted:
+        return HttpResponseNotFound()
     if not artist:
         # TODO: Show a meaningful error message.
         return HttpResponseNotFound()
@@ -130,7 +133,10 @@ def artists(request):
             # Only one artist found - add it right away.
             artist_data = found_artists[0]
             mbid = artist_data['id']
-            artist = Artist.get_by_mbid(mbid)
+            try:
+                artist = Artist.get_by_mbid(mbid)
+            except Artist.Blacklisted:
+                return redirect('/artists')
             if not artist:
                 # TODO: error message
                 return redirect('/artists')
@@ -160,7 +166,11 @@ def artists(request):
 @login_required
 def artists_add(request):
     mbid = request.GET.get('id', '').lower()
-    artist = Artist.get_by_mbid(mbid)
+    try:
+        artist = Artist.get_by_mbid(mbid)
+    except Artist.Blacklisted:
+        messages.error(request, 'The artist is special-purpose and cannot be added')
+        return redirect('/artists')
     if not artist:
         # TODO: Show a meaningful error message.
         return HttpResponseNotFound()
