@@ -15,9 +15,12 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
+import datetime
 import logging
 
 from django.db import connection, transaction
+
+from settings import DEBUG
 
 from app.models import *
 import app.musicbrainz as mb
@@ -29,6 +32,7 @@ def check():
     logging.info('Start checking artists')
     checked_artists = 0
     checked_release_groups = 0
+    day = datetime.datetime.utcnow().day
     artist = None
     while True:
 
@@ -40,31 +44,36 @@ def check():
             artist = artists[0]
         except IndexError:
             break # last artist
-        checked_artists += 1
 
-        jobs.process()
-        tools.sleep()
-        logging.info('Checking artist %s' % artist.mbid)
-        artist_data = mb.get_artist(artist.mbid)
-        if not artist_data:
-            # TODO: musicbrainz/network error or deleted?
-            logging.warning('Could not fetch artist data')
-            continue # skip for now
+        # Artist names don't change that often. Update artists at most once
+        # a month, unless we are debugging.
+        if DEBUG or day == 1:
+            checked_artists += 1
 
-        # Update artist info if changed.
-        updated = False
-        if artist.name != artist_data['name']:
-            artist.name = artist_data['name']
-            updated = True
-        if artist.sort_name != artist_data['sort-name']:
-            artist.sort_name = artist_data['sort-name']
-            updated = True
-        if artist.disambiguation != artist_data.get('disambiguation', ''):
-            artist.disambiguation = artist_data.get('disambiguation', '')
-            updated = True
-        if updated:
-            logging.info('Artist changed, updating')
-            artist.save()
+            jobs.process()
+            tools.sleep()
+            logging.info('Updating artist %s' % artist.mbid)
+            artist_data = mb.get_artist(artist.mbid)
+            if not artist_data:
+                # TODO: musicbrainz/network error or deleted?
+                logging.warning('Could not fetch artist data')
+            else:
+                # Update artist info if changed.
+                updated = False
+                if artist.name != artist_data['name']:
+                    artist.name = artist_data['name']
+                    updated = True
+                if artist.sort_name != artist_data['sort-name']:
+                    artist.sort_name = artist_data['sort-name']
+                    updated = True
+                if artist.disambiguation != artist_data.get('disambiguation', ''):
+                    artist.disambiguation = artist_data.get('disambiguation', '')
+                    updated = True
+                if updated:
+                    logging.info('Artist changed, updating')
+                    artist.save()
+        else:
+            logging.info('Checking artist %s' % artist.mbid)
 
         current = {rg.mbid: rg for rg in ReleaseGroup.objects.filter(artist=artist)}
 
