@@ -22,9 +22,11 @@ from django.contrib.auth import authenticate, login, logout, REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import redirect, render
+from django.views.decorators.cache import cache_control
 
 from settings import LOGIN_REDIRECT_URL
 
+from app.cover import Cover
 from app.forms import *
 from app.models import *
 import app.musicbrainz as mb
@@ -239,6 +241,14 @@ def calendar(request):
             'releases': releases,
             'next_date': next_date,
             'next_offset': next_offset})
+
+@cache_control(max_age=24*60*60)
+def cover(request):
+    mbid = request.GET.get('id', '')
+    cover = Cover(mbid)
+    if not cover.found:
+        Job.get_cover(mbid)
+    return HttpResponse(content=cover.image, content_type='image/jpeg')
 
 def feed(request):
     user_id = request.GET.get('id', '')

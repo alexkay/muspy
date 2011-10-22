@@ -1,2 +1,3 @@
 *.pyc
+covers
 db/muspy.db

@@ -107,7 +107,8 @@ class Job(models.Model):
 
     ADD_ARTIST = 1
     ADD_RELEASE_GROUPS = 2
-    IMPORT_LASTFM = 3
+    GET_COVER = 3
+    IMPORT_LASTFM = 4
 
     user = models.ForeignKey(User, null=True)
     type = models.IntegerField()
@@ -122,6 +123,11 @@ class Job(models.Model):
     @classmethod
     def add_release_groups(cls, artist):
         cls(user=None, type=cls.ADD_RELEASE_GROUPS, data=artist.mbid).save()
+
+    @classmethod
+    def get_cover(cls, mbid):
+        cls(user=None, type=cls.GET_COVER, data=mbid).save()
+
 
 class Notification(models.Model):
 
