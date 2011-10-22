@@ -3,20 +3,20 @@
 
 <iframe width="425" height="349" style="float:right;margin-left:1em;margin-bottom:1em" src="http://www.youtube.com/embed/CvLBmU5m080?hl=en&fs=1" frameborder="0" allowfullscreen></iframe>
 
-<p>Welcome to Muspy &ndash; <span class="marker">the easiest way to follow your favourite artists!</span></p>
+<p>Welcome to muspy &ndash; <span class="marker">the easiest way to follow your favourite artists!</span></p>
 
 <h2>What?</h2>
-<p><span class="marker">Muspy will notify you when
+<p><span class="marker">muspy will notify you when
 {% if user.is_authenticated %}<a href="/artists">{% endif %}artists you like{% if user.is_authenticated %}</a>{% endif %}
 release
 {% if user.is_authenticated %}<a href="/releases">{% endif %}new albums{% if user.is_authenticated %}</a>{% endif %}</span>.</p>
 <h2>Why?</h2>
 <p>Have you ever missed an album of one of your favourite artists only to
  discover it by accident weeks after the release? Do you spend a lot of time on
-official websites looking for release announcements? <span class="marker">With Muspy you will save time and won't miss any releases</span>!</p>
+official websites looking for release announcements? <span class="marker">With muspy you will save time and won't miss any releases</span>!</p>
 <h2>How?</h2>
 {% if not user.is_authenticated %}
-<p>You need to <a href="/signup">create an account</a> to use Muspy.
+<p>You need to <a href="/signup">create an account</a> to use muspy.
 Come on, don't be lazy! <span class="marker">It's free and only
 <a href="/signup">takes a minute</a>!</span> If you already have an account,
 <a href="/signin">click here</a> to sign in.</p>
