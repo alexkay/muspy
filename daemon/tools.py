@@ -17,6 +17,8 @@
 
 import time
 
+from django.db import connection
+
 
 def sleep():
     """Sleep to avoid clogging up MusicBrainz servers.
@@ -24,6 +26,9 @@ def sleep():
     Call it before each MB request.
 
     """
+    # Don't keep an open database connection while sleeping.
+    connection.close()
+
     DELAY = 2 # seconds
     duration = time.time() - sleep.start
     if DELAY - duration > 0:
