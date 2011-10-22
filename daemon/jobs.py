@@ -16,7 +16,13 @@
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+import re
+import StringIO
+from urllib2 import Request, urlopen
 
+from PIL import Image
+
+from app.cover import Cover
 from app.models import *
 import app.musicbrainz as mb
 from app.tools import str_to_date
@@ -39,6 +45,9 @@ def process():
             if not add_release_groups(job.data):
                 tools.sleep()
                 continue
+
+        elif job.type == Job.GET_COVER:
+            get_cover(job.data)
 
         job.delete()
 
@@ -114,3 +123,72 @@ def add_release_groups(mbid):
         offset += LIMIT
 
     return True
+
+def get_cover(mbid):
+    logging.info('[JOB] Trying to find a cover for %s' % mbid)
+    tools.sleep()
+    logging.info('[JOB] Get releases')
+    releases = mb.get_releases(mbid, limit=100, offset=0)
+    if releases is None:
+        logging.warning('[ERR] Could not get releases, skipping')
+        return
+    releases = [r for r in releases if r.get('date')]
+
+    # Order releases by date.
+    def by_date(a, b):
+        # Convert 2011 to 2011-99-99 and 2011-01 to 2011-01-99.
+        d1, d2 = a['date'], b['date']
+        while len(d1) < 10: d1 += '-99'
+        while len(d2) < 10: d2 += '-99'
+        return cmp(d1, d2)
+    releases = sorted(releases, cmp=by_date)
+
+    # We don't want to check all 100 releases.
+    releases = [r['id'] for r in releases][:10]
+
+    url = None
+    for release in releases:
+        tools.sleep()
+        logging.info('[JOB] Checking release %s' % release)
+        try:
+            request = Request(
+                'http://musicbrainz.org/release/' + release,
+                headers = {'User-Agent': 'muspy/2.0'})
+            response = urlopen(request)
+            html = response.read()
+        except:
+            logging.warning('[ERR] Could not fetch the release page, skipping')
+            continue
+
+        # Parsing the release page
+        pattern = r'<div class="cover-art">\s*<img src="(?P<url>[^"]+)"'
+        match = re.search(pattern, html)
+        if not match:
+            logging.info('[JOB] No cover art, skipping')
+            continue
+        url = match.group('url')
+
+        logging.info('[JOB] Downloading the cover')
+        image = None
+        try:
+            request = Request(url, headers = {'User-Agent': 'muspy/2.0'})
+            response = urlopen(request)
+            image = response.read()
+        except:
+            logging.warning('[ERR] Could not download, skipping')
+            continue
+
+        logging.info('[JOB] Saving the cover')
+        try:
+            im = Image.open(StringIO.StringIO(image))
+            im = im.resize((120, 120), Image.ANTIALIAS)
+            f = StringIO.StringIO()
+            im.save(f, 'JPEG', quality=95)
+            image = f.getvalue()
+            Cover(mbid, image)
+            return
+        except:
+            logging.warning('[ERR] Could not save the cover, skipping')
+            continue
+
+    logging.warning('[ERR] Could not find a cover')

@@ -4,3 +4,8 @@
 
 It's currently hosted on Google App Engine, this repository is an attempt to
 re-write it in vanilla Django. Stay tuned.
+
+## Dependencies
+
+* graphics/py-imaging
+* www/py-django

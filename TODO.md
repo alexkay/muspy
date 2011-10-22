@@ -13,3 +13,4 @@
 * Django's sitemap?
 * Block special artists
 * One-click unsubscribe link
+* Amazon: ja, it, es

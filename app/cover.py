@@ -23,7 +23,7 @@ class Cover(object):
 
     DELAY = 7 * 24 * 60 * 60 # 7 weeks
 
-    def __init__(self, mbid):
+    def __init__(self, mbid, image=None):
         self._base = os.path.abspath(os.path.dirname(__file__) + '/..')
         self._default = os.path.join(self._base, 'static/cover.jpg')
         self.found = False
@@ -33,6 +33,14 @@ class Cover(object):
             return
 
         self._path = os.path.join(self._base, 'covers', mbid[0:2], mbid[2:4], mbid + '.jpg')
+        if image:
+            self._create_dirs()
+            with open(self._path, 'wb') as f:
+                f.write(image)
+            self.found = True
+            self.image = image
+            return
+
         if os.path.exists(self._path):
             if os.path.getsize(self._path):
                 self.found = True
@@ -45,18 +53,20 @@ class Cover(object):
                     os.remove(self._path)
                 else:
                     self.found = True
-            self.image = self._read(self._default)
-        else:
-            # Create dirs.
-            dirname = os.path.dirname(self._path)
-            if not os.path.exists(dirname):
-                os.makedirs(dirname)
+                self.image = self._read(self._default)
+            return
 
-            # Create an empty file.
-            f = open(self._path, 'w+b')
-            f.close()
-            self.image = self._read(self._default)
+        # Create an empty file.
+        self._create_dirs()
+        f = open(self._path, 'wb')
+        f.close()
+        self.image = self._read(self._default)
 
     def _read(self, path):
         with open(path, 'rb') as f:
             return f.read()
+
+    def _create_dirs(self):
+        dirname = os.path.dirname(self._path)
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
