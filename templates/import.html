@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Import{% endblock %}
+{% block header %}Import Artists{% endblock %}
+{% block content %}
+
+<h2>Import from Last.fm</h2>
+
+<form method="post" action="/import">
+{% csrf_token %}
+<input type="hidden" name="type" value="last.fm"/>
+<p>Your Last.fm user name: <input type="text" id="username" name="username"/></p>
+<p><input type="submit" value="Import" /> top
+<select name="count">
+<option value="50" selected="selected">50</option>
+<option value="100">100</option>
+<option value="200">200</option>
+</select>
+artists</p>
+</form>
+
+{% endblock content %}
+
+{% block javascript %}
+<script type="text/javascript" src="/jquery-1.6.4.min.js"></script>
+<script type="text/javascript">
+//<![CDATA[
+$(function() {
+    $("#username").focus();
+});
+//]]>
+</script>
+{% endblock %}

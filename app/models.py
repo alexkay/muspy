@@ -128,6 +128,21 @@ class Job(models.Model):
     def get_cover(cls, mbid):
         cls(user=None, type=cls.GET_COVER, data=mbid).save()
 
+    @classmethod
+    def import_lastfm(cls, user, username, count):
+        cls(user=user, type=cls.IMPORT_LASTFM, data=str(count) + ',' + username).save()
+
+    @classmethod
+    def importing_artists(cls, user):
+        """Returns a comma-separated list of all artists yet to be imported."""
+        q = cls.objects.filter(user=user)
+        q = q.filter(type=cls.ADD_ARTIST)
+        return [r.data for r in q]
+
+    @classmethod
+    def has_import_lastfm(cls, user):
+        return cls.objects.filter(user=user).filter(type=cls.IMPORT_LASTFM).exists()
+
 
 class Notification(models.Model):
 

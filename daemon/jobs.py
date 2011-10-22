@@ -178,6 +178,10 @@ def get_cover(mbid):
             logging.warning('[ERR] Could not download, skipping')
             continue
 
+        # Sometimes we get just a one-pixel image, avoid resizing it.
+        if len(image) < 4096:
+            logging.warninig('[ERR] Bad image, skipping')
+
         logging.info('[JOB] Saving the cover')
         try:
             im = Image.open(StringIO.StringIO(image))

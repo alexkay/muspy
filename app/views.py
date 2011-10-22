@@ -26,6 +26,7 @@ from django.views.decorators.cache import cache_control
 
 from settings import LOGIN_REDIRECT_URL
 
+from app import lastfm
 from app.cover import Cover
 from app.forms import *
 from app.models import *
@@ -150,8 +151,7 @@ def artists(request):
     artists_offset = offset + len(found_artists)
     artists_left = max(0, count - artists_offset)
 
-    #TODO
-    #importing = Job.importing_artists(request.user.key().id())
+    importing = ', '.join(Job.importing_artists(request.user))
 
     pending = sorted(s.search for s in UserSearch.get(request.user)[:200])
     pending_rows = arrange_for_table(pending, COLUMNS)
@@ -163,6 +163,7 @@ def artists(request):
             'found_artists': found_artists,
             'artists_offset': artists_offset,
             'artists_left': artists_left,
+            'importing': importing,
             'pending_rows': pending_rows})
 
 @login_required
@@ -272,6 +273,38 @@ def feed(request):
             'root': request.build_absolute_uri('/')
             }, content_type='application/atom+xml')
 
+@login_required
+def import_artists(request):
+    if request.method == 'GET':
+        return render(request, 'import.html')
+
+    type = request.POST.get('type', '')
+    if type == 'last.fm':
+        username = request.POST.get('username', '')
+        if not username:
+            messages.error(request, 'Please enter your Last.fm user name.')
+            return redirect('/import')
+        if Job.has_import_lastfm(request.user) or Job.importing_artists(request.user):
+            messages.error(
+                request, 'You already have a pending import. Please wait until '
+                'the import finishes before importing again. '
+                'Refresh this page to track the progress.')
+            return redirect('/artists')
+        if not lastfm.has_user(username):
+            messages.error(request, 'Unknown user: %s' % username)
+            return redirect('/import')
+
+        count = request.POST.get('count', '')
+        count = int(count) if count.isdigit() else 50
+        count = min(200, count)
+        Job.import_lastfm(request.user, username, count)
+        messages.info(
+            request, 'Your artists will be imported in a few minutes. '
+            'Refresh this page to track the progress of the import.')
+        return redirect('/artists')
+
+    return redirect('/import')
+
 def index(request):
     today = int(date.today().strftime('%Y%m%d'))
     releases = ReleaseGroup.get_calendar(today, 5, 0)
@@ -303,9 +336,9 @@ def reset(request):
                 messages.error(request, 'Unknown email address: ' + email)
                 return redirect('/')
             profile.send_reset_email()
-            messages.success(request,
-                             'An email has been sent to %s describing how to '
-                             'obtain your new password.' % email)
+            messages.success(
+                request, 'An email has been sent to %s describing how to '
+                'obtain your new password.' % email)
             return redirect('/')
     elif 'code' in request.GET:
         code = request.GET['code']
