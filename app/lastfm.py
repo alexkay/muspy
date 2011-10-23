@@ -47,7 +47,7 @@ def get_artists(username, limit, page):
     artists = [_parse_artist(element) for element in root.findall('artists/artist')]
     return [artist for artist in artists if 'name' in artist or 'mbid' in artist]
 
-def get_cover_url(artist, album):
+def get_cover_urls(artist, album):
     # Remove the trailing ' (X)' from the album.
     album = re.sub(r'(^.+)\s+\([^\)]+\)$', r'\1', album)
     try:
@@ -56,12 +56,13 @@ def get_cover_url(artist, album):
         return None
 
     pattern = r'<image size="%s">(?P<url>[^<]+)</image>'
+    res = []
     for size in ('large', 'extralarge', 'mega'):
         match = re.search(pattern % size, xml)
         if match:
-            return match.group('url')
+            res.append(match.group('url'))
 
-    return None
+    return res
 
 def _fetch(method, **kw):
     url = 'http://ws.audioscrobbler.com/2.0/'

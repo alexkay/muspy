@@ -170,35 +170,46 @@ def get_cover(mbid):
             logging.info('[JOB] No cover art, skipping')
             continue
         url = match.group('url')
-
-        logging.info('[JOB] Downloading the cover')
-        image = None
-        try:
-            request = Request(url, headers = {'User-Agent': 'muspy/2.0'})
-            response = urlopen(request)
-            image = response.read()
-        except:
-            logging.warning('[ERR] Could not download, skipping')
-            continue
-
-        # Sometimes we get just a one-pixel image, avoid resizing it.
-        if len(image) < 4096:
-            logging.warninig('[ERR] Bad image, skipping')
-
-        logging.info('[JOB] Saving the cover')
-        try:
-            im = Image.open(StringIO.StringIO(image))
-            im = im.resize((120, 120), Image.ANTIALIAS)
-            f = StringIO.StringIO()
-            im.save(f, 'JPEG', quality=95)
-            image = f.getvalue()
-            Cover(mbid, image)
+        if _fetch_cover(mbid, url):
             return
-        except:
-            logging.warning('[ERR] Could not save the cover, skipping')
-            continue
+
+    logging.info('[JOB] Try to get cover from Last.fm')
+    rg = ReleaseGroup.objects.filter(mbid=mbid).select_related('artist').get()
+    urls = lastfm.get_cover_urls(rg.artist.name, rg.name) or []
+    for url in urls:
+        if _fetch_cover(mbid, url):
+            return
 
     logging.warning('[ERR] Could not find a cover')
+
+def _fetch_cover(mbid, url):
+    logging.info('[JOB] Downloading the cover')
+    image = None
+    try:
+        request = Request(url, headers = {'User-Agent': 'muspy/2.0'})
+        response = urlopen(request)
+        image = response.read()
+    except:
+        logging.warning('[ERR] Could not download, skipping')
+        return False
+
+    # Sometimes we get just a one-pixel image, avoid resizing it.
+    if len(image) < 4096:
+        logging.warning('[ERR] Bad image, skipping')
+        return False
+
+    logging.info('[JOB] Saving the cover')
+    try:
+        im = Image.open(StringIO.StringIO(image))
+        im = im.resize((120, 120), Image.ANTIALIAS)
+        f = StringIO.StringIO()
+        im.save(f, 'JPEG', quality=95)
+        image = f.getvalue()
+        Cover(mbid, image)
+        return True
+    except:
+        logging.warning('[ERR] Could not save the cover, skipping')
+        return False
 
 def import_lastfm(user, username, count):
     logging.info('[JOB] Importing %d artists from Last.fm for user %s' % (count, username))
