@@ -153,8 +153,9 @@ def check():
 
         with transaction.commit_on_success():
             for release_group in current:
-                release_group.is_deleted = True
-                release_group.save()
+                rg = ReleaseGroup.objects.filter(mbid=release_group).get()
+                rg.is_deleted = True
+                rg.save()
                 logging.info('Deleted release group %s' % mbid)
 
     logging.info('Checked %d artists and %d release groups' % (checked_artists, checked_release_groups))

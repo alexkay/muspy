@@ -32,6 +32,8 @@ EMAIL_PORT = 1025
 #EMAIL_HOST_PASSWORD = 'change me'
 #EMAIL_USE_TLS = True
 
+LASTFM_API_KEY='change me'
+
 ########################################################################
 
 ADMINS = (('admin', 'info@muspy.com'),)

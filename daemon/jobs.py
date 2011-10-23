@@ -22,6 +22,7 @@ from urllib2 import Request, urlopen
 
 from PIL import Image
 
+from app import lastfm
 from app.cover import Cover
 from app.models import *
 import app.musicbrainz as mb
@@ -45,9 +46,11 @@ def process():
             if not add_release_groups(job.data):
                 tools.sleep()
                 continue
-
         elif job.type == Job.GET_COVER:
             get_cover(job.data)
+        elif job.type == Job.IMPORT_LASTFM:
+            count, username = job.data.split(',', 1)
+            import_lastfm(job.user, username, int(count))
 
         job.delete()
 
@@ -196,3 +199,45 @@ def get_cover(mbid):
             continue
 
     logging.warning('[ERR] Could not find a cover')
+
+def import_lastfm(user, username, count):
+    logging.info('[JOB] Importing %d artists from Last.fm for user %s' % (count, username))
+    LIMIT = 50
+    page, added = 0, 0
+    while True:
+        page += 1
+        tools.sleep()
+        logging.info('[JOB] Getting page %d' % page)
+        artists = lastfm.get_artists(username, LIMIT, page)
+
+        if artists is None:
+            logging.warning('[ERR] Last.fm error, retrying')
+            continue
+
+        for artist_data in artists:
+            mbid = artist_data.get('mbid', '')
+            if mbid:
+                while True:
+                    # Artist.get_by_mbid will query MB if the artist is not yet
+                    # in the database. Query first to avoid unnecessary sleep.
+                    if not Artist.objects.filter(mbid=mbid).exists():
+                        tools.sleep()
+                    logging.info('[JOB] Getting artist %s' % mbid)
+                    try:
+                        artist = Artist.get_by_mbid(mbid)
+                    except Artist.Blacklisted:
+                        logging.info('[JOB] Blacklisted artist, skipping')
+                        break
+                    if not artist:
+                        logging.warning('[ERR] Cannot get the artist data, retrying')
+                        continue
+                    UserArtist.add(user, artist)
+                    break
+            else:
+                name = artist_data['name']
+                logging.info('[JOB] Adding artist [%s] to the queue' % name)
+                Job.add_artists(user, [name])
+            added += 1
+            if added == count: break
+
+        if added == count: break
