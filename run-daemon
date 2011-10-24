@@ -1,0 +1,5 @@
+#!/bin/sh
+
+DIR=$(dirname $(realpath $0))
+
+exec setuidgid www python -u $DIR/daemon/daemon

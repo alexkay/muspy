@@ -8,4 +8,7 @@ re-write it in vanilla Django. Stay tuned.
 ## Dependencies
 
 * graphics/py-imaging
+* sysutils/daemontools
+* www/nginx
 * www/py-django
+* www/py-flup
