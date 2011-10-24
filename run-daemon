@@ -2,4 +2,6 @@
 
 DIR=$(dirname $(realpath $0))
 
+cd $DIR
+
 exec setuidgid www python -u $DIR/daemon/daemon
