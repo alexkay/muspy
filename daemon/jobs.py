@@ -251,9 +251,7 @@ def import_lastfm(user, username, count):
                     UserArtist.add(user, artist)
                     break
             else:
-                name = artist_data['name']
-                logging.info('[JOB] Adding artist [%s] to the queue' % name)
-                Job.add_artists(user, [name])
+                add_artists(user, artist_data['name'])
             added += 1
             if added == count: break
 
