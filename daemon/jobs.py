@@ -252,7 +252,7 @@ def import_lastfm(user, username, count):
                     UserArtist.add(user, artist)
                     break
             else:
-                add_artists(user, artist_data['name'])
+                add_artist(user, artist_data['name'])
             added += 1
             if added == count: break
 
