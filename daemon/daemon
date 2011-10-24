@@ -26,6 +26,8 @@ import logging
 import time
 import traceback
 
+from django.core.mail import mail_admins
+
 from daemon import notifications, releases
 
 def daemon():
@@ -46,4 +48,9 @@ if __name__ == '__main__':
     try:
         daemon()
     except:
-        logging.error('Daemon error:\n' + traceback.format_exc())
+        logging.error('Daemon error, notifying admins and restarting')
+        try:
+            mail_admins('Daemon error', traceback.format_exc())
+        except:
+            logging.error('!!! Could not send the email !!!')
+            logging.error(traceback.format_exc())
