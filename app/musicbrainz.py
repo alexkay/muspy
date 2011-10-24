@@ -23,6 +23,10 @@ from xml.etree import ElementTree as et
 setdefaulttimeout(10)
 
 def search_artists(query, limit, offset):
+    # Escape Lucene special characters.
+    special = '\\+-&|!(){}[]^"~*?:'
+    for c in special:
+        query = query.replace(c, '\\' + c)
     try:
         xml = _fetch('artist', query=query, limit=limit, offset=offset)
     except:
