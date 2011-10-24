@@ -226,6 +226,7 @@ def import_lastfm(user, username, count):
 
         if artists is None:
             logging.warning('[ERR] Last.fm error, retrying')
+            page -= 1
             continue
 
         for artist_data in artists:
