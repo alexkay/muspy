@@ -66,15 +66,18 @@ class Artist(models.Model):
         if not artist_data:
             return None
 
-        # Sleep 1s to comply with the MB web service.
-        sleep(1)
-
         artist = Artist(
             mbid=mbid, name=artist_data['name'], sort_name=artist_data['sort-name'],
             disambiguation=artist_data.get('disambiguation', ''))
-        artist.save()
+        try:
+            artist.save()
+        except IntegrityError:
+            # The artist was added while we were querying MB.
+            return cls.objects.get(mbid=mbid)
 
         # Add a few release groups immediately.
+        # Sleep 1s to comply with the MB web service.
+        sleep(1)
         LIMIT = 100
         release_groups = mb.get_release_groups(mbid, limit=LIMIT, offset=0)
         if release_groups:
@@ -89,7 +92,11 @@ class Artist(models.Model):
                             type=rg_data['type'],
                             date=str_to_date(rg_data['first-release-date']),
                             is_deleted=False)
-                        release_group.save()
+                        try:
+                            release_group.save()
+                        except IntegrityError:
+                            # Ignore duplicate release groups
+                            pass
 
         if release_groups is None or len(release_groups) == LIMIT:
             # Add the remaining release groups
