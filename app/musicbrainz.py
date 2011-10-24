@@ -17,7 +17,7 @@
 
 from socket import setdefaulttimeout
 from urllib import urlencode
-from urllib2 import Request, urlopen
+from urllib2 import HTTPError, Request, urlopen
 from xml.etree import ElementTree as et
 
 setdefaulttimeout(10)
@@ -45,6 +45,10 @@ def search_artists(query, limit, offset):
 def get_artist(mbid):
     try:
         xml = _fetch('artist', mbid=mbid)
+    except HTTPError as e:
+        if e.code == 404:
+            return []
+        return None
     except:
         return None
 

@@ -77,7 +77,10 @@ def add_artist(user, search):
         try:
             artist = Artist.get_by_mbid(mbid)
         except Artist.Blacklisted:
-            logging.warning('[ERR] Artist %s is blacklisted artists, skipping' % mbid)
+            logging.warning('[ERR] Artist %s is blacklisted, skipping' % mbid)
+            return True
+        except Artist.Unknown:
+            logging.warning('[ERR] Artist %s is unknown, skipping' % mbid)
             return True
         if not artist:
             logging.warning('[ERR] Could not fetch artist %s, retrying' % mbid)
@@ -238,6 +241,9 @@ def import_lastfm(user, username, count):
                         artist = Artist.get_by_mbid(mbid)
                     except Artist.Blacklisted:
                         logging.info('[JOB] Blacklisted artist, skipping')
+                        break
+                    except Artist.Unknown:
+                        logging.info('[JOB] Unknown artist, skipping')
                         break
                     if not artist:
                         logging.warning('[ERR] Cannot get the artist data, retrying')

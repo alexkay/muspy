@@ -55,7 +55,7 @@ def activate(request):
 def artist(request, mbid):
     try:
         artist = Artist.get_by_mbid(mbid)
-    except Artist.Blacklisted:
+    except (Artist.Blacklisted, Artist.Unknown):
         return HttpResponseNotFound()
     if not artist:
         # TODO: Show a meaningful error message.
@@ -138,7 +138,7 @@ def artists(request):
             mbid = artist_data['id']
             try:
                 artist = Artist.get_by_mbid(mbid)
-            except Artist.Blacklisted:
+            except (Artist.Blacklisted, Artist.Unknown):
                 return redirect('/artists')
             if not artist:
                 # TODO: error message
@@ -173,6 +173,9 @@ def artists_add(request):
         artist = Artist.get_by_mbid(mbid)
     except Artist.Blacklisted:
         messages.error(request, 'The artist is special-purpose and cannot be added')
+        return redirect('/artists')
+    except Artist.Unknown:
+        messages.error(request, 'Unknown artist')
         return redirect('/artists')
     if not artist:
         # TODO: Show a meaningful error message.

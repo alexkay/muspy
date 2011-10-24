@@ -50,6 +50,7 @@ class Artist(models.Model):
         '125ec42a-7229-4250-afc5-e057484327fe', # [unknown]
         ]
     class Blacklisted(Exception): pass
+    class Unknown(Exception): pass
 
     @classmethod
     def get_by_mbid(cls, mbid):
@@ -63,8 +64,10 @@ class Artist(models.Model):
             pass
 
         artist_data = mb.get_artist(mbid)
-        if not artist_data:
+        if artist_data is None:
             return None
+        if not artist_data:
+            raise cls.Unknown
 
         artist = Artist(
             mbid=mbid, name=artist_data['name'], sort_name=artist_data['sort-name'],
