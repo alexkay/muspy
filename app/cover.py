@@ -21,7 +21,7 @@ import time
 
 class Cover(object):
 
-    DELAY = 7 * 24 * 60 * 60 # 7 weeks
+    DELAY = 7 * 24 * 60 * 60 # 7 days
 
     def __init__(self, mbid, image=None):
         self._base = os.path.abspath(os.path.dirname(__file__) + '/..')

@@ -262,7 +262,7 @@ class UserArtist(models.Model):
     def remove(cls, user, mbids):
         with transaction.commit_on_success():
             for mbid in mbids:
-                q = cls.objects.filter(user__id=user.id)
+                q = cls.objects.filter(user_id=user.id)
                 q = q.filter(artist__mbid=mbid)
                 q.delete()
 

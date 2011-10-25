@@ -111,10 +111,10 @@ def check():
                             release_group.is_deleted = False
                             updated = True
                         if release_group.name != rg_data['title']:
-                            release_group.name = rg_date['title']
+                            release_group.name = rg_data['title']
                             updated = True
                         if release_group.type != rg_data['type']:
-                            release_group.type = rg_date['type']
+                            release_group.type = rg_data['type']
                             updated = True
                         if release_group.date != release_date:
                             release_group.date = release_date
