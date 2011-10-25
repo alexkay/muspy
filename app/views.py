@@ -150,6 +150,7 @@ def artists(request):
 
     artists_offset = offset + len(found_artists)
     artists_left = max(0, count - artists_offset)
+    found_artists = [a for a in found_artists if a['id'] not in Artist.blacklisted]
 
     importing = ', '.join(Job.importing_artists(request.user))
 
