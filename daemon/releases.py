@@ -132,12 +132,8 @@ def check():
                             type=rg_data['type'],
                             date=release_date,
                             is_deleted=False)
-                        try:
-                            release_group.save()
-                            logging.info('Created release group %s' % mbid)
-                        except IntegrityError:
-                            # Ignore duplicate release groups
-                            pass
+                        release_group.save()
+                        logging.info('Created release group %s' % mbid)
 
                         # Notify users
                         cursor = connection.cursor()

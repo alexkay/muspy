@@ -111,7 +111,9 @@ def add_release_groups(mbid):
                 for rg_data in release_groups:
                     # Ignoring releases without a release date or a type.
                     if rg_data.get('first-release-date') and rg_data.get('type'):
-                        if ReleaseGroup.objects.filter(mbid=rg_data['id']).exists():
+                        q = ReleaseGroup.objects.filter(
+                            artist_id=artist.id, mbid=rg_data['id'])
+                        if q.exists():
                             continue
                         release_group = ReleaseGroup(
                             artist=artist,
@@ -177,11 +179,11 @@ def get_cover(mbid):
             return
 
     logging.info('[JOB] Try to get cover from Last.fm')
-    rg = ReleaseGroup.objects.filter(mbid=mbid).select_related('artist').get()
-    urls = lastfm.get_cover_urls(rg.artist.name, rg.name) or []
-    for url in urls:
-        if _fetch_cover(mbid, url):
-            return
+    for rg in ReleaseGroup.objects.filter(mbid=mbid).select_related('artist'):
+        urls = lastfm.get_cover_urls(rg.artist.name, rg.name) or []
+        for url in urls:
+            if _fetch_cover(mbid, url):
+                return
 
     logging.warning('[ERR] Could not find a cover')
 

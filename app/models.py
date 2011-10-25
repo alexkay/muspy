@@ -95,11 +95,7 @@ class Artist(models.Model):
                             type=rg_data['type'],
                             date=str_to_date(rg_data['first-release-date']),
                             is_deleted=False)
-                        try:
-                            release_group.save()
-                        except IntegrityError:
-                            # Ignore duplicate release groups
-                            pass
+                        release_group.save()
 
         if release_groups is None or len(release_groups) == LIMIT:
             # Add the remaining release groups
@@ -165,9 +161,18 @@ class Notification(models.Model):
 
 
 class ReleaseGroup(models.Model):
+    """De-normalised release groups
+
+    A release group can have different artists. Instead of adding a
+    many-to-many relationship between them, keep everything in one
+    table and group by mbid as needed.
+
+    """
+    class Meta:
+        unique_together = ('artist', 'mbid')
 
     artist = models.ForeignKey(Artist)
-    mbid = models.CharField(max_length=36, unique=True)
+    mbid = models.CharField(max_length=36)
     name = models.CharField(max_length=512)
     type = models.CharField(max_length=16)
     date = models.IntegerField() # 20080101 OR 20080100 OR 20080000

@@ -23,11 +23,12 @@ CREATE TABLE "app_notification" (
 CREATE TABLE "app_releasegroup" (
     "id" integer NOT NULL PRIMARY KEY,
     "artist_id" integer NOT NULL REFERENCES "app_artist" ("id"),
-    "mbid" varchar(36) NOT NULL UNIQUE,
+    "mbid" varchar(36) NOT NULL,
     "name" varchar(512) NOT NULL,
     "type" varchar(16) NOT NULL,
     "date" integer NOT NULL,
-    "is_deleted" bool NOT NULL
+    "is_deleted" bool NOT NULL,
+    UNIQUE ("artist_id", "mbid")
 );
 CREATE TABLE "app_star" (
     "id" integer NOT NULL PRIMARY KEY,
@@ -83,16 +84,17 @@ CREATE TABLE "django_session" (
 );
 CREATE INDEX "app_artist_sort_name" ON "app_artist" ("sort_name");
 CREATE INDEX "app_job_user_id" ON "app_job" ("user_id");
-CREATE INDEX "app_notification_user_id" ON "app_notification" ("user_id");
 CREATE INDEX "app_notification_release_group_id" ON "app_notification" ("release_group_id");
+CREATE INDEX "app_notification_user_id" ON "app_notification" ("user_id");
 CREATE INDEX "app_releasegroup_artist_id" ON "app_releasegroup" ("artist_id");
 CREATE INDEX "app_releasegroup_date" ON "app_releasegroup" ("date" DESC);
-CREATE INDEX "app_star_user_id" ON "app_star" ("user_id");
+CREATE INDEX "app_releasegroup_mbid" ON "app_releasegroup" ("mbid");
 CREATE INDEX "app_star_release_group_id" ON "app_star" ("release_group_id");
-CREATE INDEX "app_userartist_user_id" ON "app_userartist" ("user_id");
+CREATE INDEX "app_star_user_id" ON "app_star" ("user_id");
 CREATE INDEX "app_userartist_artist_id" ON "app_userartist" ("artist_id");
+CREATE INDEX "app_userartist_user_id" ON "app_userartist" ("user_id");
 CREATE INDEX "app_userprofile_activation_code" ON "app_userprofile" ("activation_code");
-CREATE INDEX "app_userprofile_reset_code" ON "app_userprofile" ("reset_code");
 CREATE INDEX "app_userprofile_legacy_id" ON "app_userprofile" ("legacy_id");
+CREATE INDEX "app_userprofile_reset_code" ON "app_userprofile" ("reset_code");
 CREATE INDEX "app_usersearch_user_id" ON "app_usersearch" ("user_id");
 CREATE INDEX "django_session_expire_date" ON "django_session" ("expire_date");
