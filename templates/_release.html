@@ -4,9 +4,9 @@
             <p>
             {% if show_stars %}
                 {% if release.is_starred %}
-                <a class="star" href="/star?id={{ release.mbid }}&amp;value=0"><img id="i{{ release.mbid }}" src="/starred1.gif" alt=""/></a>
+                <a class="star" href="/star?id={{ release.id }}&amp;value=0"><img id="i{{ release.id }}" src="/starred1.gif" alt=""/></a>
                 {% else %}
-                <a class="star" href="/star?id={{ release.mbid }}&amp;value=1"><img id="i{{ release.mbid }}" src="/starred0.gif" alt=""/></a>
+                <a class="star" href="/star?id={{ release.id }}&amp;value=1"><img id="i{{ release.id }}" src="/starred0.gif" alt=""/></a>
                 {% endif %}
             {% endif %}
             &#32;{% if release.date_str %}{{ release.date_str }}: {% endif %}<a href="/artist/{{ release.artist.mbid }}">{{ release.artist.name }}</a> &ndash; {{ release.name }} ({{ release.type }})</p>

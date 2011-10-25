@@ -228,9 +228,9 @@ class Star(models.Model):
     release_group = models.ForeignKey(ReleaseGroup)
 
     @classmethod
-    def set(cls, user, mbid, value):
+    def set(cls, user, id, value):
         try:
-            release_group = ReleaseGroup.objects.get(mbid=mbid)
+            release_group = ReleaseGroup.objects.get(id=id)
         except ReleaseGroup.DoesNotExist:
             return
         if value:
@@ -267,7 +267,7 @@ class UserArtist(models.Model):
     def remove(cls, user, mbids):
         with transaction.commit_on_success():
             for mbid in mbids:
-                q = cls.objects.filter(user_id=user.id)
+                q = cls.objects.filter(user=user)
                 q = q.filter(artist__mbid=mbid)
                 q.delete()
 

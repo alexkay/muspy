@@ -406,9 +406,9 @@ def sitemap(request):
 @login_required
 #@csrf_exempt
 def star(request):
-    mbid = request.REQUEST.get('id', '').lower()
+    id = request.REQUEST.get('id', '').lower()
     value = int(request.REQUEST.get('value', 0))
-    Star.set(request.user, mbid, value)
+    Star.set(request.user, id, value)
     if request.method == 'POST':
         return HttpResponse('{}', 'application/json')
     return redirect(request.META.get('HTTP_REFERER', '/'))
