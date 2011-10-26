@@ -266,10 +266,10 @@ def feed(request):
     if not profile:
         return HttpResponseNotFound()
 
-    LIMIT = 20
+    LIMIT = 40
     releases = ReleaseGroup.get(user=profile.user, limit=LIMIT, offset=0)
     if releases:
-        releases.date_iso8601 = min(r.date_iso8601 for r in releases)
+        releases.date_iso8601 = max(r.date_iso8601 for r in releases)
 
     return render(request, 'feed.xml', {
             'releases': releases,

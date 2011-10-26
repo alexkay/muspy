@@ -203,6 +203,13 @@ class ReleaseGroup(models.Model):
             q = q.filter(artist__userartist__user=user)
             q = q.filter(Q(users_who_starred=user) | Q(users_who_starred__isnull=True))
             q = q.filter(type__in=user.get_profile().get_types())
+            profile = user.get_profile()
+            if profile.legacy_id:
+                # TODO: Feel free to remove this check some time in 2013.
+                # Don't include release groups added during the import
+                # TODO: Adjust
+                MAX_RG_ID = 500000
+                q = q.filter(id__gt=MAX_RG_ID)
             q = q.annotate(is_starred=Count('users_who_starred'))
             q = q.order_by('-users_who_starred', '-date')
         else:
