@@ -112,7 +112,7 @@ def add_release_groups(mbid):
                     # Ignoring releases without a release date or a type.
                     if rg_data.get('first-release-date') and rg_data.get('type'):
                         q = ReleaseGroup.objects.filter(
-                            artist_id=artist.id, mbid=rg_data['id'])
+                            artist=artist, mbid=rg_data['id'])
                         if q.exists():
                             continue
                         release_group = ReleaseGroup(

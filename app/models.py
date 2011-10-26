@@ -191,7 +191,7 @@ class ReleaseGroup(models.Model):
         return date_to_iso8601(self.date)
 
     @classmethod
-    def get(cls, artist=None, user=None, limit=0, offset=0):
+    def get(cls, artist=None, user=None, limit=0, offset=0, feed=False):
         if not artist and not user:
             assert 'Both artist and user are None'
             return None
@@ -204,7 +204,7 @@ class ReleaseGroup(models.Model):
             q = q.filter(Q(users_who_starred=user) | Q(users_who_starred__isnull=True))
             q = q.filter(type__in=user.get_profile().get_types())
             profile = user.get_profile()
-            if profile.legacy_id:
+            if feed and profile.legacy_id:
                 # TODO: Feel free to remove this check some time in 2013.
                 # Don't include release groups added during the import
                 # TODO: Adjust
