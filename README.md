@@ -10,5 +10,5 @@ re-write it in vanilla Django. Stay tuned.
 * graphics/py-imaging
 * sysutils/daemontools
 * www/nginx
-* www/py-django
+* www/py-django 1.3.x
 * www/py-flup
