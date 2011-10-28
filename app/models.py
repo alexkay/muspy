@@ -212,8 +212,7 @@ class ReleaseGroup(models.Model):
             if feed and profile.legacy_id:
                 # TODO: Feel free to remove this check some time in 2013.
                 # Don't include release groups added during the import
-                # TODO: Adjust
-                MAX_RG_ID = 500000
+                MAX_RG_ID = 261202
                 q = q.filter(id__gt=MAX_RG_ID)
             q = q.annotate(is_starred=Count('users_who_starred'))
             q = q.order_by('-users_who_starred', '-date')
