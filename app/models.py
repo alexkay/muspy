@@ -51,6 +51,8 @@ class Artist(models.Model):
         '125ec42a-7229-4250-afc5-e057484327fe', # [unknown]
         '203b6058-2401-4bf0-89e3-8dc3d37c3f12', # [unknown]
         '5e760f5a-ea55-4b53-a18f-021c0d9779a6', # [unknown]
+        '1d8bc797-ec8a-40d2-8d80-b1346b56a65f', # [unknown]
+        '7734d67f-44d9-4ba2-91e3-9b067263210e', # [unknown]
         'd6bd72bc-b1e2-4525-92aa-0f853cbb41bf', # [soundtrack]
         ]
     class Blacklisted(Exception): pass
