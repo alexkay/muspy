@@ -263,7 +263,7 @@ LIMIT %s OFFSET %s
                 'artist_name': '"app_artist"."name"'})
         # TODO: benchmark, do we need an index?
         q = q.filter(is_deleted=False)
-        q = q.order_by('-date', 'id')
+        q = q.order_by('-date')
         return q[offset:offset+limit]
 
 
