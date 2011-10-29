@@ -200,30 +200,65 @@ class ReleaseGroup(models.Model):
         if not artist and not user:
             assert 'Both artist and user are None'
             return None
-        q = cls.objects.filter(is_deleted=False)
-        q = q.select_related('artist')
+
+        # Unfortunately I don't see how to use ORM for these queries.
+        sql = """
+SELECT
+    "app_releasegroup"."id",
+    "app_releasegroup"."artist_id",
+    "app_releasegroup"."mbid",
+    "app_releasegroup"."name",
+    "app_releasegroup"."type",
+    "app_releasegroup"."date",
+    "app_releasegroup"."is_deleted",
+    "app_artist"."mbid" AS "artist_mbid",
+    "app_artist"."name" AS "artist_name"
+    {select}
+FROM "app_releasegroup"
+JOIN "app_artist" ON "app_artist"."id" = "app_releasegroup"."artist_id"
+{join}
+WHERE "app_releasegroup"."is_deleted" = 0
+{where}
+ORDER BY {order}
+"""
+        select = join = where = ''
+        order = '"app_releasegroup"."date" DESC'
+        params = []
         if artist:
-            q = q.filter(artist=artist)
+            where += '\nAND "app_releasegroup"."artist_id" = %s'
+            params.append(artist.id)
         if user:
-            q = q.filter(artist__userartist__user=user)
-            q = q.filter(Q(users_who_starred=user) | Q(users_who_starred__isnull=True))
-            q = q.filter(type__in=user.get_profile().get_types())
+            # Stars.
+            select += ',\n"app_star"."id" as "is_starred"'
+            join += '\nJOIN "app_userartist" ON "app_userartist"."artist_id" = "app_artist"."id"'
+            join += '\nLEFT JOIN "app_star" ON "app_star"."user_id" = "app_userartist"."user_id" AND "app_star"."release_group_id" = "app_releasegroup"."id"'
+            where += '\nAND "app_userartist"."user_id" = %s'
+            params.append(user.id)
+            order = '"app_star"."id" DESC, ' + order
+            # Release types.
             profile = user.get_profile()
+            types = profile.get_types()
+            ss = ','.join('%s' for i in xrange(len(types)))
+            where += '\nAND "app_releasegroup"."type" IN (' + ss + ')'
+            params.extend(types)
+
             if feed and profile.legacy_id:
-                # TODO: Feel free to remove this check some time in 2013.
                 # Don't include release groups added during the import
-                MAX_RG_ID = 261202
-                q = q.filter(id__gt=MAX_RG_ID)
-            q = q.annotate(is_starred=Count('users_who_starred'))
-            q = q.order_by('-users_who_starred', '-date')
-        else:
-            q = q.order_by('-date')
-        return q[offset:offset+limit]
+                # TODO: Feel free to remove this check some time in 2013.
+                where += '\nAND "app_releasegroup"."id" > 261202'
+
+        sql = sql.format(select=select, join=join, where=where, order=order)
+        return cls.objects.raw(sql, params)[offset:offset+limit]
 
     @classmethod
     def get_calendar(cls, date, limit, offset):
         """Returns the list of release groups for the date."""
         q = cls.objects.filter(date__lte=date)
+        q = q.select_related('artist')
+        # Calendar uses the same template as releases, adapt to conform.
+        q = q.extra(select={
+                'artist_mbid': '"app_artist"."mbid"',
+                'artist_name': '"app_artist"."name"'})
         # TODO: benchmark, do we need an index?
         q = q.filter(is_deleted=False)
         q = q.order_by('-date', 'id')
