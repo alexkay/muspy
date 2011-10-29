@@ -271,7 +271,7 @@ def feed(request):
         return HttpResponseNotFound()
 
     LIMIT = 40
-    releases = ReleaseGroup.get(user=profile.user, limit=LIMIT, offset=0, feed=True)
+    releases = list(ReleaseGroup.get(user=profile.user, limit=LIMIT, offset=0, feed=True))
     date_iso8601 = None
     if releases:
         date_iso8601 = max(r.date_iso8601 for r in releases)
