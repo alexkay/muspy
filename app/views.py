@@ -62,7 +62,10 @@ def artist(request, mbid):
         return HttpResponseNotFound()
 
     PER_PAGE = 10
-    offset = int(request.GET.get('offset', 0))
+    try:
+        offset = int(request.GET.get('offset', 0))
+    except ValueError:
+        return HttpResponseNotFound()
     user_has_artist = request.user.is_authenticated() and UserArtist.get(request.user, artist)
     if user_has_artist:
         show_stars = True
@@ -268,11 +271,13 @@ def feed(request):
 
     LIMIT = 40
     releases = ReleaseGroup.get(user=profile.user, limit=LIMIT, offset=0, feed=True)
+    date_iso8601 = None
     if releases:
-        releases.date_iso8601 = max(r.date_iso8601 for r in releases)
+        date_iso8601 = max(r.date_iso8601 for r in releases)
 
     return render(request, 'feed.xml', {
             'releases': releases,
+            'date_iso8601': date_iso8601,
             'url': request.build_absolute_uri(),
             'root': request.build_absolute_uri('/')
             }, content_type='application/atom+xml')

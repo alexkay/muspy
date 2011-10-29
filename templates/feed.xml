@@ -4,7 +4,7 @@
     <link href="{{ url }}" rel="self" type="application/atom+xml" />
     <link href="{{ root }}" rel="alternate" type="text/html" />
     <id>{{ url }}</id>
-    <updated>{{ releases.date_iso8601 }}</updated>
+    <updated>{{ date_iso8601 }}</updated>
     <author><name>muspy</name></author>
     <icon>{{ root }}favicon.ico</icon>
     <logo>{{ root }}logo.gif</logo>
