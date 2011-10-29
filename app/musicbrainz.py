@@ -65,6 +65,10 @@ def get_artist(mbid):
 def get_release_groups(mbid, limit, offset=0):
     try:
         xml = _fetch('release-group', artist=mbid, limit=limit, offset=offset)
+    except HTTPError as e:
+        if e.code == 404:
+            return []
+        return None
     except:
         return None
 
