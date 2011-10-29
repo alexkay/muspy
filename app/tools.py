@@ -73,3 +73,19 @@ def date_to_iso8601(date):
     month = (date // 100) % 100
     day = date % 100
     return "%04d-%02d-%02dT00:00:00Z" % (year, month or 1, day or 1)
+
+def check_password(user, password):
+    # Legacy users have their passwords hashed with SHA512.
+    # TODO: Remove when Django supports SHA512 (1.4?)
+    if user.password.startswith('sha512$'):
+        import hashlib
+        from django.utils.crypto import constant_time_compare
+        from django.utils.encoding import smart_str
+        algo, salt, hsh = user.password.split('$')
+        password, salt = smart_str(password), smart_str(salt)
+        hash = hashlib.new('sha512')
+        hash.update(password)
+        hash.update(salt)
+        hexdigest = hash.hexdigest()
+        return constant_time_compare(hsh, hexdigest)
+    return user.check_password(password)

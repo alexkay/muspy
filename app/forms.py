@@ -24,6 +24,7 @@ from django.contrib.auth.models import User
 from django.db import transaction
 
 from app.models import *
+from app.tools import check_password
 
 
 class ResetForm(forms.Form):
@@ -63,7 +64,8 @@ class SettingsForm(forms.Form):
 
     def clean_password(self):
         password = self.cleaned_data['password']
-        if password and not self.profile.user.check_password(password):
+        user = self.profile.user
+        if password and not check_password(user, password):
             raise forms.ValidationError('Invalid password, try again.')
         if self.data['new_password'] and not password:
             raise forms.ValidationError('Enter the current password.')

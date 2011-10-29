@@ -18,24 +18,14 @@
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.admin.models import User
 
+from app.tools import check_password
+
+
 class EmailAuthBackend(ModelBackend):
 
     def authenticate(self, username=None, password=None, **kwargs):
         try:
             user = User.objects.get(email=username)
-            # Legacy users have their passwords hashed with SHA512.
-            # TODO: Remove when Django supports SHA512 (1.4?)
-            if user.password.startswith('sha512$'):
-                import hashlib
-                from django.utils.crypto import constant_time_compare
-                from django.utils.encoding import smart_str
-                algo, salt, hsh = user.password.split('$')
-                password, salt = smart_str(password), smart_str(salt)
-                hash = hashlib.new('sha512')
-                hash.update(password)
-                hash.update(salt)
-                hexdigest = hash.hexdigest()
-                return user if constant_time_compare(hsh, hexdigest) else None
-            return user if user.check_password(password) else None
+            return user if check_password(user, password) else None
         except User.DoesNotExist:
             return None
