@@ -76,6 +76,7 @@ def artist(request, mbid):
         release_groups = ReleaseGroup.get(
             artist=artist, limit=PER_PAGE, offset=offset)
 
+    release_groups = list(release_groups)
     offset = offset + PER_PAGE if len(release_groups) == PER_PAGE else None
     return render(request, 'artist.html', {
             'artist': artist,

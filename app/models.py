@@ -220,6 +220,7 @@ JOIN "app_artist" ON "app_artist"."id" = "app_releasegroup"."artist_id"
 WHERE "app_releasegroup"."is_deleted" = 0
 {where}
 ORDER BY {order}
+LIMIT %s OFFSET %s
 """
         select = join = where = ''
         order = '"app_releasegroup"."date" DESC'
@@ -248,7 +249,8 @@ ORDER BY {order}
                 where += '\nAND "app_releasegroup"."id" > 261202'
 
         sql = sql.format(select=select, join=join, where=where, order=order)
-        return cls.objects.raw(sql, params)[offset:offset+limit]
+        params.extend([limit, offset])
+        return cls.objects.raw(sql, params)
 
     @classmethod
     def get_calendar(cls, date, limit, offset):
