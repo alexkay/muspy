@@ -358,9 +358,12 @@ class UserProfile(models.Model):
         return ''.join(random.choice(code_chars) for i in xrange(UserProfile.code_length))
 
     def send_email(self, subject, text_template, html_template, **kwds):
-        sender = 'info@muspy.com'
         text = render_to_string(text_template, kwds)
-        msg = EmailMultiAlternatives(subject, text, sender, [self.user.email])
+        msg = EmailMultiAlternatives(
+            subject,
+            text,
+            'muspy support <info@muspy.com>',
+            [self.user.email])
         if html_template:
             html = render_to_string(html_template, kwds)
             msg.attach_alternative(html, "text/html")

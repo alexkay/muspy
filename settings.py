@@ -28,9 +28,6 @@ SECRET_KEY = 'change me'
 SERVER_EMAIL = 'info@muspy.com'
 EMAIL_HOST = 'localhost'
 EMAIL_PORT = 1025
-#EMAIL_HOST_USER = 'info'
-#EMAIL_HOST_PASSWORD = 'change me'
-#EMAIL_USE_TLS = True
 
 LASTFM_API_KEY='change me'
 
