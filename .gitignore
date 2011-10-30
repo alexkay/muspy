@@ -1,3 +1,4 @@
 *.pyc
 covers
-db/muspy.db
+db/muspy.bak
+db/muspy.db*
