@@ -215,7 +215,10 @@ def calendar(request):
     date_str = request.GET.get('date', None)
     today = int(date.today().strftime('%Y%m%d'))
     date_int = str_to_date(date_str) if date_str else today
-    offset = int(request.GET.get('offset', 0))
+    try:
+        offset = int(request.GET.get('offset', 0))
+    except ValueError:
+        return HttpResponseNotFound()
     PER_PAGE = 10
     limit = PER_PAGE + 1
     releases = list(ReleaseGroup.get_calendar(date_int, limit, offset))
