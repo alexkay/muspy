@@ -52,8 +52,7 @@ def process():
             count, username = job.data.split(',', 1)
             import_lastfm(job.user, username, int(count))
 
-        # We've probably closed the database connection, re-get the job object.
-        Job.objects.get(id=job.id).delete()
+        job.delete()
 
 
 def add_artist(user, search):
