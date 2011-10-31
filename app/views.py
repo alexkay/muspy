@@ -31,7 +31,7 @@ from app.cover import Cover
 from app.forms import *
 from app.models import *
 import app.musicbrainz as mb
-from app.tools import arrange_for_table
+from app.tools import arrange_for_table, str_to_date, date_to_str
 
 def activate(request):
     if 'code' in request.GET:
@@ -225,7 +225,7 @@ def calendar(request):
 
     if len(releases) == limit:
         if releases[0].date == releases[-1].date:
-            next_date = date_str
+            next_date = date_to_str(date_int)
             next_offset = offset + PER_PAGE
             releases = releases[:-1]
         else:
