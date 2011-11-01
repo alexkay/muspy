@@ -29,6 +29,7 @@ urlpatterns = patterns('app.views',
     (r'^artists$', 'artists'),
     (r'^artists-add$', 'artists_add'),
     (r'^artists-remove$', 'artists_remove'),
+    (r'^blog$', RedirectView.as_view(url='http://versia.com/category/muspy/')),
     (r'^blog/feed$', RedirectView.as_view(url='http://versia.com/category/spek/feed/atom/')),
     (r'^calendar$', 'calendar'),
     (r'^contact$', TemplateView.as_view(template_name='contact.html')),
@@ -45,4 +46,5 @@ urlpatterns = patterns('app.views',
     (r'^signup$', 'signup'),
     (r'^sitemap.xml$', 'sitemap'),
     (r'^star$', 'star'),
+    (r'blog', 'forbidden'), # Hello, vulnerability scan bots!
 )

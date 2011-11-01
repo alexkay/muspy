@@ -20,7 +20,7 @@ from datetime import date
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 from django.shortcuts import redirect, render
 from django.views.decorators.cache import cache_control
 
@@ -285,6 +285,9 @@ def feed(request):
             'url': request.build_absolute_uri(),
             'root': request.build_absolute_uri('/')
             }, content_type='application/atom+xml')
+
+def forbidden(request):
+    return HttpResponseForbidden()
 
 @login_required
 def import_artists(request):
