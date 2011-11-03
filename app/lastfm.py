@@ -24,11 +24,13 @@ from settings import LASTFM_API_KEY
 
 
 def has_user(username):
-    return get_artists(username, 1, 1) != None
+    return get_artists(username, 'overall', 1, 1) != None
 
-def get_artists(username, limit, page):
+def get_artists(username, period, limit, page):
     try:
-        xml = _fetch('library.getArtists', user=username, limit=limit, page=page)
+        xml = _fetch(
+            'user.getTopArtists', user=username,
+            period=period, limit=limit, page=page)
     except:
         return None
 
@@ -40,11 +42,11 @@ def get_artists(username, limit, page):
     if not 'status' in root.attrib or root.get('status') != 'ok':
         return None
 
-    artists = root.find('artists')
+    artists = root.find('topartists')
     if artists is None:
         return []
 
-    artists = [_parse_artist(element) for element in root.findall('artists/artist')]
+    artists = [_parse_artist(element) for element in root.findall('topartists/artist')]
     return [artist for artist in artists if 'name' in artist or 'mbid' in artist]
 
 def get_cover_urls(artist, album):

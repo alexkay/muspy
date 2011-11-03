@@ -224,7 +224,7 @@ def import_lastfm(user, username, count):
         page += 1
         tools.sleep()
         logging.info('[JOB] Getting page %d' % page)
-        artists = lastfm.get_artists(username, LIMIT, page)
+        artists = lastfm.get_artists(username, 'overall', LIMIT, page)
 
         if artists is None:
             logging.warning('[ERR] Last.fm error, retrying')
