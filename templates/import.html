@@ -11,11 +11,20 @@
 <p>Your Last.fm user name: <input type="text" id="username" name="username"/></p>
 <p><input type="submit" value="Import" /> top
 <select name="count">
-<option value="50" selected="selected">50</option>
-<option value="100">100</option>
+<option value="50">50</option>
+<option value="100" selected="selected">100</option>
 <option value="200">200</option>
+<option value="500">500</option>
 </select>
-artists</p>
+artists
+<select name="period">
+<option value="overall">overall</option>
+<option value="12month" selected="selected">in the last 12 months</option>
+<option value="6month">in the last 6 months</option>
+<option value="3month">in the last 3 months</option>
+<option value="7day">in the last 7 days</option>
+</select>
+</p>
 </form>
 
 {% endblock content %}

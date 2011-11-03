@@ -312,8 +312,11 @@ def import_artists(request):
 
         count = request.POST.get('count', '')
         count = int(count) if count.isdigit() else 50
-        count = min(200, count)
-        Job.import_lastfm(request.user, username, count)
+        count = min(500, count)
+        period = request.POST.get('period', '')
+        if period not in ['overall', '12month', '6month', '3month', '7day']:
+            period = 'overall'
+        Job.import_lastfm(request.user, username, count, period)
         messages.info(
             request, 'Your artists will be imported in a few minutes. '
             'Refresh this page to track the progress of the import.')

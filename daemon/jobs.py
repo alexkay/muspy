@@ -49,8 +49,8 @@ def process():
         elif job.type == Job.GET_COVER:
             get_cover(job.data)
         elif job.type == Job.IMPORT_LASTFM:
-            count, username = job.data.split(',', 1)
-            import_lastfm(job.user, username, int(count))
+            count, period, username = job.data.split(',', 2)
+            import_lastfm(job.user, username, int(count), period)
 
         job.delete()
 
@@ -216,7 +216,7 @@ def _fetch_cover(mbid, url):
         logging.warning('[ERR] Could not save the cover, skipping')
         return False
 
-def import_lastfm(user, username, count):
+def import_lastfm(user, username, count, period):
     logging.info('[JOB] Importing %d artists from Last.fm for user %s' % (count, username))
     LIMIT = 50
     page, added = 0, 0
@@ -224,12 +224,14 @@ def import_lastfm(user, username, count):
         page += 1
         tools.sleep()
         logging.info('[JOB] Getting page %d' % page)
-        artists = lastfm.get_artists(username, 'overall', LIMIT, page)
+        artists = lastfm.get_artists(username, period, LIMIT, page)
 
         if artists is None:
             logging.warning('[ERR] Last.fm error, retrying')
             page -= 1
             continue
+
+        if not artists: break
 
         for artist_data in artists:
             mbid = artist_data.get('mbid', '')

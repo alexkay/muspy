@@ -141,8 +141,9 @@ class Job(models.Model):
         cls(user=None, type=cls.GET_COVER, data=mbid).save()
 
     @classmethod
-    def import_lastfm(cls, user, username, count):
-        cls(user=user, type=cls.IMPORT_LASTFM, data=str(count) + ',' + username).save()
+    def import_lastfm(cls, user, username, count, period):
+        data = str(count) + ',' + period + ',' + username
+        cls(user=user, type=cls.IMPORT_LASTFM, data=data).save()
 
     @classmethod
     def importing_artists(cls, user):
