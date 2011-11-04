@@ -402,7 +402,9 @@ def signup(request):
     form = SignUpForm(request.POST or None)
     if form.is_valid():
         form.save(request)
-        user = authenticate(username=request.POST['email'], password=request.POST['password'])
+        user = authenticate(
+            username=form.cleaned_data['email'],
+            password=form.cleaned_data['password'])
         user.get_profile().send_activation_email()
         login(request, user)
         return redirect(LOGIN_REDIRECT_URL)
