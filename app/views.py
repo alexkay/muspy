@@ -421,7 +421,6 @@ def sitemap(request):
     return render(request, 'sitemap.xml', {'root': root}, content_type='text/xml')
 
 @login_required
-#@csrf_exempt
 def star(request):
     id = request.REQUEST.get('id', '').lower()
     value = int(request.REQUEST.get('value', 0))
