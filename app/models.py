@@ -236,7 +236,7 @@ LIMIT %s OFFSET %s
             join += '\nLEFT JOIN "app_star" ON "app_star"."user_id" = "app_userartist"."user_id" AND "app_star"."release_group_id" = "app_releasegroup"."id"'
             where += '\nAND "app_userartist"."user_id" = %s'
             params.append(user.id)
-            order = '"app_star"."id" DESC, ' + order
+            order = '"app_star"."user_id" DESC, ' + order
             # Release types.
             profile = user.get_profile()
             types = profile.get_types()
