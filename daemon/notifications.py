@@ -28,7 +28,7 @@ def send():
         jobs.process()
         tools.sleep()
         try:
-            notification = Notification.objects.order_by('user_id')[0]
+            notification = Notification.objects.order_by('-user')[0]
         except IndexError:
             break # last one
 
