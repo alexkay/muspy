@@ -345,7 +345,7 @@ def releases(request):
             'show_stars': True})
 
 def reset(request):
-    form = resetting = password = None
+    form = code = user = None
     if request.method == 'POST':
         form = ResetForm(request.POST)
         if form.is_valid():
@@ -361,17 +361,16 @@ def reset(request):
             return redirect('/')
     elif 'code' in request.GET:
         code = request.GET['code']
-        resetting = True
         email, password = UserProfile.reset(code)
         if email and password:
-            # Sign in immediately.
             user = authenticate(username=email, password=password)
-            login(request, user)
-            return redirect(LOGIN_REDIRECT_URL)
+            if user:
+                login(request, user)
+                return redirect('/settings')
     else:
         form = ResetForm()
 
-    return render(request, 'reset.html', {'form': form, 'resetting': resetting, 'password': password})
+    return render(request, 'reset.html', {'form': form, 'code': code, 'user': user})
 
 @login_required
 def settings(request):

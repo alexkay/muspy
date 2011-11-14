@@ -39,9 +39,6 @@ class ResetForm(forms.Form):
 
 class SettingsForm(forms.Form):
     email = forms.EmailField(label='New email')
-    password = forms.CharField(label='Current password', max_length=100,
-                               required=False,
-                               widget=forms.PasswordInput(render_value=False))
     new_password = forms.CharField(label='New password', max_length=100,
                                    required=False,
                                    widget=forms.PasswordInput(render_value=False))
@@ -61,15 +58,6 @@ class SettingsForm(forms.Form):
             raise forms.ValidationError('This email is already in use. '
                                         'Please enter another.')
         return email
-
-    def clean_password(self):
-        password = self.cleaned_data['password']
-        user = self.profile.user
-        if password and not check_password(user, password):
-            raise forms.ValidationError('Invalid password, try again.')
-        if self.data['new_password'] and not password:
-            raise forms.ValidationError('Enter the current password.')
-        return password
 
     def save(self):
         if self.profile.user.email != self.cleaned_data['email']:

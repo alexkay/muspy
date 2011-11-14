@@ -3,14 +3,9 @@
 {% block header %}Reset password{% endblock %}
 {% block content %}
 
-{% if resetting %}
+{% if code %}
 
-{% if password %}
-<p>Your new password is <strong>{{ password }}</strong>. Click
-<a href="/settings">here</a> to change it.</p>
-{% else %}
 <p>Invalid code, your password was not reset.</p>
-{% endif %}
 
 {% else %}
 
