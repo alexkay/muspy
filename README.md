@@ -9,4 +9,4 @@
 * sysutils/daemontools
 * www/nginx
 * www/py-django 1.3.x
-* www/py-flup
+* www/uwsgi
