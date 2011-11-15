@@ -21,7 +21,7 @@ from time import sleep
 
 from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives
-from django.db import IntegrityError, models, transaction
+from django.db import connection, IntegrityError, models, transaction
 from django.db.backends.signals import connection_created
 from django.db.models import Count, Q
 from django.db.models.signals import post_save
@@ -357,6 +357,19 @@ class UserProfile(models.Model):
     def generate_code(self):
         code_chars = '23456789abcdefghijkmnpqrstuvwxyz'
         return ''.join(random.choice(code_chars) for i in xrange(UserProfile.code_length))
+
+    def purge(self):
+        user = self.user
+        with transaction.commit_on_success():
+            Job.objects.filter(user=user).delete()
+            Notification.objects.filter(user=user).delete()
+            Star.objects.filter(user=user).delete()
+            UserArtist.objects.filter(user=user).delete()
+            UserSearch.objects.filter(user=user).delete()
+            self.delete()
+            # Cannot call user.delete() because it references deprecated auth_message.
+            cursor = connection.cursor()
+            cursor.execute('DELETE FROM auth_user WHERE id=%s', [user.id])
 
     def send_email(self, subject, text_template, html_template, **kwds):
         text = render_to_string(text_template, kwds)

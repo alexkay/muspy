@@ -262,6 +262,16 @@ def cover(request):
         Job.get_cover(mbid)
     return HttpResponse(content=cover.image, content_type='image/jpeg')
 
+@login_required
+def delete(request):
+    if request.POST.get('confirm', '') == '1':
+        profile = request.user.get_profile()
+        logout(request)
+        profile.purge()
+        return redirect('/')
+
+    return render(request, 'delete.html')
+
 def feed(request):
     user_id = request.GET.get('id', '')
     if user_id.isdigit():

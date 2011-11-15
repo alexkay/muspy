@@ -50,6 +50,14 @@
 </table>
 </form>
 
+<p>&nbsp;</p>
+<h2>Delete account</h2>
+<form method="post" action="/delete">
+{% csrf_token %}
+<p>Click here to delete your muspy account and everything that goes with it.</p>
+<input type="submit" value="Delete account"/>
+</form>
+
 {% endblock content %}
 
 <script type="text/javascript">document.getElementById("id_email").focus();</script>
