@@ -1,7 +1,0 @@
-#!/bin/sh
-
-DIR=$(dirname $(realpath $0))
-
-cd $DIR
-
-exec setuidgid www python $DIR/manage.py runfcgi daemonize=false socket=/tmp/muspy.sock
