@@ -12,23 +12,25 @@ be authenticated using HTTP basic authentication.
         * mbid
 
 * artists
-    * GET: list of all artists (mbid, name, sort_name, disambiguation)
-    * PUT: add a new artist, return the artist info or the list of matching artists
+    * GET: list of all artists for the user (mbid, name, sort_name,
+      disambiguation)
+    * PUT: follow a new artist, return the artist info or the list of artists if
+      multiple artists match the name
         * mbid, or
         * name
     * DELETE: unfollow artists
-        * list of mbids
+        * mbid: comma-separated list of mbids
 
 * release
     * GET: release group info (artist, mbid, name, type, date), no auth
+        * mbid
 
 * releases
-    * GET: list of release groups, sorted by release date
+    * GET: list of release groups, sorted by release date. Will also work with
+      no auth, in this case user's release type filters won't apply.
         * limit, max 100
         * offset
-        * artist: optional artist mbid, if set filter by this artist. Will also
-          work with no auth, in this case user's release type filters won't
-          apply.
+        * artist: optional artist mbid, if set filter by this artist.
 
 * user
     * GET: return user info and settings
