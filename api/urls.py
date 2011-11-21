@@ -27,8 +27,10 @@ auth = {'authentication': HttpBasicAuthentication(realm="api")}
 
 artist_handler = Resource(handler=ArtistHandler)
 #artists_handler = Resource(handler=ArtistsHandler, **auth)
+release_handler = Resource(handler=ReleaseHandler)
 
 urlpatterns = patterns('',
-   url(r'artist/(?P<mbid>[0-9a-f\-]{36})', artist_handler),
-#   url(r'artists', artists_handler),
+    (r'artist/(?P<mbid>[0-9a-f\-]{36})', artist_handler),
+#    url(r'artists', artists_handler),
+    (r'release/(?P<mbid>[0-9a-f\-]{36})', release_handler),
 )
