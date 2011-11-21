@@ -21,6 +21,7 @@ from django.views.generic.base import RedirectView, TemplateView
 
 from app.forms import SignInForm
 
+
 urlpatterns = patterns('app.views',
     (r'^$', 'index'),
     (r'^activate$', 'activate'),
@@ -48,4 +49,8 @@ urlpatterns = patterns('app.views',
     (r'^sitemap.xml$', 'sitemap'),
     (r'^star$', 'star'),
     (r'blog|\.php', 'forbidden'), # Hello, vulnerability scan bots!
+)
+
+urlpatterns += patterns('',
+    (r'^api/1/', include('api.urls')),
 )
