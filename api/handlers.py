@@ -43,15 +43,24 @@ class ReleaseHandler(AnonymousBaseHandler):
     allowed_methods = ('GET',)
 
     def read(self, request, mbid):
-        try:
-            release = ReleaseGroup.objects.select_related('artist').get(mbid=mbid)
-        except ReleaseGroup.DoesNotExist:
+        q = ReleaseGroup.objects.select_related('artist')
+        q = q.filter(mbid=mbid)
+        q = q.filter(is_deleted=False)
+        releases = list(q)
+        if not releases:
             return rc.NOT_HERE
 
+        release = releases[0]
+        artists = [release.artist for release in releases]
         return {
             'mbid': release.mbid,
-            'artist': release.artist.mbid,
             'name': release.name,
             'type': release.type,
             'date': release.date_str(),
+            'artists': [{
+                    'mbid': artist.mbid,
+                    'name': artist.name,
+                    'sort_name': artist.sort_name,
+                    'disambiguation': artist.disambiguation,
+                    } for artist in artists]
             }
