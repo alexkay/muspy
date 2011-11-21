@@ -2,14 +2,13 @@
 
 A draft specification of the muspy API.
 
-Use `http://muspy.com/api/<resource>`. Unless otherwise noted, all requests must
+Use `http://muspy.com/api/1/<resource>`. Unless otherwise noted, requests must
 be authenticated using HTTP basic authentication.
 
 ## Resources
 
-* artist
+* artist/<mbid>
     * GET: artist info, no auth
-        * mbid
 
 * artists
     * GET: list of all artists for the user (mbid, name, sort_name,
@@ -21,19 +20,20 @@ be authenticated using HTTP basic authentication.
     * DELETE: unfollow artists
         * mbid: comma-separated list of mbids
 
-* release
+* release/<mbid>
     * GET: release group info (artist, mbid, name, type, date), no auth
-        * mbid
 
-* releases
-    * GET: list of release groups, sorted by release date. Will also work with
-      no auth, in this case user's release type filters won't apply.
+* releases[/<userid>]
+    * GET: list of release groups, sorted by release date. If <userid> is not
+      supplied, the request does not have to be authenticated. In this case, the
+      call will return release groups starting from today for all artists and
+      the user's release type filters won't apply.
         * limit, max 100
         * offset
         * artist: optional artist mbid, if set filter by this artist.
 
-* user
-    * GET: return user info and settings
+* user[/<userid>]
+    * GET: return user info and settings, <userid> is optional, auth is not.
     * POST: create and return a new user, no auth
         * email
         * password
