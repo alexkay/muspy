@@ -6,8 +6,8 @@
 
 To set up development environment you need to install these dependencies:
 
-* On FreeBSD: `portmaster databases/sqlite3 graphics/py-imaging www/nginx www/py-django`
-* On Debian: `aptitude install sqlite3 python-imaging nginx python-django`
+* On FreeBSD: `portmaster databases/sqlite3 graphics/py-imaging www/nginx www/py-django www/py-django-piston`
+* On Debian: `aptitude install sqlite3 python-imaging nginx python-django python-django-piston`
 
 Edit your main `nginx.conf`:
 
@@ -25,4 +25,4 @@ Add this line to your `/etc/hosts`:
 Go to the project directory and run `make db` to create an empty database.
 
 Type `make run` and go to <http://muspy.dev/>. If static files don't load make
-sure nginx has rx permission for the `muspy/static` directory.
+sure nginx has rx permissions for the `muspy/static` directory.
