@@ -10,15 +10,14 @@ be authenticated using HTTP basic authentication.
 * artist/<mbid>
     * GET: artist info, no auth
 
-* artists/<userid>
+* artists/<userid>[/<mbid>]
     * GET: list of all artists for the user (mbid, name, sort_name,
       disambiguation)
     * PUT: follow a new artist, return the artist info or the list of artists if
       multiple artists match the name
         * mbid, or
         * name
-    * DELETE: unfollow artists
-        * mbid: comma-separated list of mbids
+    * DELETE: unfollow an artist, <mbid> is required
 
 * release/<mbid>
     * GET: release group info (artist, mbid, name, type, date), no auth

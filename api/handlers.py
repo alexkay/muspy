@@ -18,9 +18,17 @@
 from django.core.exceptions import ObjectDoesNotExist
 
 from piston.handler import AnonymousBaseHandler, BaseHandler
+from piston.resource import Resource
 from piston.utils import rc
 
 from app.models import *
+
+
+class ApiResource(Resource):
+    """TODO: Remove after upgrading to django-piston >= 0.2.3"""
+    def __init__(self, handler, authentication=None):
+        super(ApiResource, self).__init__(handler, authentication)
+        self.csrf_exempt = getattr(self.handler, 'csrf_exempt', True)
 
 
 class ArtistHandler(AnonymousBaseHandler):
@@ -39,10 +47,11 @@ class ArtistHandler(AnonymousBaseHandler):
             'disambiguation': artist.disambiguation,
             }
 
-class ArtistsHandler(BaseHandler):
-    allowed_methods = ('GET',)
 
-    def read(self, request, userid):
+class ArtistsHandler(BaseHandler):
+    allowed_methods = ('GET', 'DELETE')
+
+    def read(self, request, userid, mbid):
         if request.user.username != userid:
             return rc.FORBIDDEN
 
@@ -53,6 +62,17 @@ class ArtistsHandler(BaseHandler):
                 'sort_name': artist.sort_name,
                 'disambiguation': artist.disambiguation,
                 } for artist in artists]
+
+    def delete(self, request, userid, mbid):
+        if request.user.username != userid:
+            return rc.FORBIDDEN
+
+        if not mbid:
+            return rc.BAD_REQUEST
+
+        UserArtist.remove(user=request.user, mbids=[mbid])
+        return rc.DELETED
+
 
 class ReleaseHandler(AnonymousBaseHandler):
     allowed_methods = ('GET',)
