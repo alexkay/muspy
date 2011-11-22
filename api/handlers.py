@@ -39,6 +39,21 @@ class ArtistHandler(AnonymousBaseHandler):
             'disambiguation': artist.disambiguation,
             }
 
+class ArtistsHandler(BaseHandler):
+    allowed_methods = ('GET',)
+
+    def read(self, request, userid):
+        if request.user.username != userid:
+            return rc.FORBIDDEN
+
+        artists = Artist.get_by_user(user=request.user)
+        return [{
+                'mbid': artist.mbid,
+                'name': artist.name,
+                'sort_name': artist.sort_name,
+                'disambiguation': artist.disambiguation,
+                } for artist in artists]
+
 class ReleaseHandler(AnonymousBaseHandler):
     allowed_methods = ('GET',)
 

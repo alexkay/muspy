@@ -10,7 +10,7 @@ be authenticated using HTTP basic authentication.
 * artist/<mbid>
     * GET: artist info, no auth
 
-* artists
+* artists/<userid>
     * GET: list of all artists for the user (mbid, name, sort_name,
       disambiguation)
     * PUT: follow a new artist, return the artist info or the list of artists if

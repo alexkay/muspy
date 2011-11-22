@@ -26,11 +26,11 @@ from api.handlers import *
 auth = {'authentication': HttpBasicAuthentication(realm="api")}
 
 artist_handler = Resource(handler=ArtistHandler)
-#artists_handler = Resource(handler=ArtistsHandler, **auth)
+artists_handler = Resource(handler=ArtistsHandler, **auth)
 release_handler = Resource(handler=ReleaseHandler)
 
 urlpatterns = patterns('',
     (r'artist/(?P<mbid>[0-9a-f\-]{36})', artist_handler),
-#    url(r'artists', artists_handler),
+    (r'artists/(?P<userid>[0-9a-z]{30})', artists_handler),
     (r'release/(?P<mbid>[0-9a-f\-]{36})', release_handler),
 )
