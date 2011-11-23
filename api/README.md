@@ -5,6 +5,9 @@ A draft specification of the muspy API.
 Use `http://muspy.com/api/1/<resource>`. Unless otherwise noted, requests must
 be authenticated using HTTP basic authentication.
 
+Default output format is json, you can change it to xml by adding `?format=xml`
+to the request URL. POST/PUT parameters should be sent as form data.
+
 ## Resources
 
 * artist/<mbid>
