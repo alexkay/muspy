@@ -16,10 +16,8 @@ to the request URL. POST/PUT parameters should be sent as form data.
 * artists/<userid>[/<mbid>]
     * GET: list of all artists for the user (mbid, name, sort_name,
       disambiguation)
-    * PUT: follow a new artist, return the artist info or the list of artists if
-      multiple artists match the name
-        * mbid, or
-        * name
+    * PUT: follow a new artist, return the artist info
+        * mbid
     * DELETE: unfollow an artist, <mbid> is required
 
 * release/<mbid>

@@ -49,7 +49,7 @@ class ArtistHandler(AnonymousBaseHandler):
 
 
 class ArtistsHandler(BaseHandler):
-    allowed_methods = ('GET', 'DELETE')
+    allowed_methods = ('GET', 'PUT', 'DELETE')
 
     def read(self, request, userid, mbid):
         if request.user.username != userid:
@@ -62,6 +62,32 @@ class ArtistsHandler(BaseHandler):
                 'sort_name': artist.sort_name,
                 'disambiguation': artist.disambiguation,
                 } for artist in artists]
+
+    def update(self, request, userid, mbid):
+        if request.user.username != userid:
+            return rc.FORBIDDEN
+
+        mbid = request.POST.get('mbid', mbid)
+
+        if not  mbid:
+            return rc.BAD_REQUEST
+
+        try:
+            artist = Artist.get_by_mbid(mbid)
+        except (Artist.Blacklisted, Artist.Unknown):
+            return rc.BAD_REQUEST
+        if not artist:
+            return rc.NOT_FOUND
+
+        UserArtist.add(request.user, artist)
+        response = rc.ALL_OK
+        response.content = {
+            'mbid': artist.mbid,
+            'name': artist.name,
+            'sort_name': artist.sort_name,
+            'disambiguation': artist.disambiguation,
+            }
+        return response
 
     def delete(self, request, userid, mbid):
         if request.user.username != userid:
