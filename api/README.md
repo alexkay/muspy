@@ -25,12 +25,11 @@ to the request URL. POST/PUT parameters should be sent as form data.
 
 * `releases[/<userid>]`
     * GET: list of release groups, sorted by release date. If `<userid>` is not
-      supplied, the request does not have to be authenticated. In this case, the
-      call will return release groups starting from today for all artists and
-      the user's release type filters won't apply.
+      supplied, the call will return release groups starting from today for all
+      artists and the user's release type filters won't apply. No auth.
         * limit: max 100
         * offset
-        * artist: optional artist mbid, if set filter by this artist.
+        * mbid: optional artist mbid, if set filter by this artist.
 
 * `user[/<userid>]`
     * GET: return user info and settings, `<userid>` is optional, auth is not.

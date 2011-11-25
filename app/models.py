@@ -213,7 +213,9 @@ SELECT
     "app_releasegroup"."date",
     "app_releasegroup"."is_deleted",
     "app_artist"."mbid" AS "artist_mbid",
-    "app_artist"."name" AS "artist_name"
+    "app_artist"."name" AS "artist_name",
+    "app_artist"."sort_name" AS "artist_sort_name",
+    "app_artist"."disambiguation" AS "artist_disambiguation"
     {select}
 FROM "app_releasegroup"
 JOIN "app_artist" ON "app_artist"."id" = "app_releasegroup"."artist_id"
@@ -261,8 +263,10 @@ LIMIT %s OFFSET %s
         # Calendar uses the same template as releases, adapt to conform.
         q = q.extra(select={
                 'artist_mbid': '"app_artist"."mbid"',
-                'artist_name': '"app_artist"."name"'})
-        # TODO: benchmark, do we need an index?
+                'artist_name': '"app_artist"."name"',
+                'artist_sort_name': '"app_artist"."sort_name"',
+                'artist_disambiguation': '"app_artist"."disambiguation"',
+                })
         q = q.filter(is_deleted=False)
         q = q.order_by('-date')
         return q[offset:offset+limit]

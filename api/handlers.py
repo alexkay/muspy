@@ -15,6 +15,9 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import date
+
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 
 from piston.handler import AnonymousBaseHandler, BaseHandler
@@ -125,3 +128,46 @@ class ReleaseHandler(AnonymousBaseHandler):
                     'disambiguation': artist.disambiguation,
                     } for artist in artists]
             }
+
+
+class ReleasesHandler(AnonymousBaseHandler):
+    allowed_methods = ('GET',)
+
+    def read(self, request, userid):
+        artist = user = None
+        if userid:
+            try:
+                user = User.objects.get(username=userid)
+            except User.DoesNotExist:
+                return rc.NOT_HERE
+
+        mbid = request.GET.get('mbid', '')
+        limit = min(100, max(0, int(request.GET.get('limit', 40))))
+        offset = max(0, int(request.GET.get('offset', 0)))
+
+        if mbid:
+            try:
+                artist = Artist.get_by_mbid(mbid)
+            except (Artist.Blacklisted, Artist.Unknown):
+                return rc.BAD_REQUEST
+            if not artist:
+                return rc.NOT_HERE
+
+        if artist or user:
+            releases = ReleaseGroup.get(artist=artist, user=user, limit=limit, offset=offset)
+        else:
+            today = int(date.today().strftime('%Y%m%d'))
+            releases = ReleaseGroup.get_calendar(date=today, limit=limit, offset=offset)
+
+        return [{
+                'mbid': release.mbid,
+                'name': release.name,
+                'type': release.type,
+                'date': release.date_str(),
+                'artist': {
+                    'mbid': release.artist_mbid,
+                    'name': release.artist_name,
+                    'sort_name': release.artist_sort_name,
+                    'disambiguation': release.artist_disambiguation,
+                    }
+                } for release in releases]
