@@ -172,7 +172,7 @@ class ReleasesHandler(AnonymousBaseHandler):
 
 
 class UserHandler(BaseHandler):
-    allowed_methods = ('GET', 'DELETE')
+    allowed_methods = ('GET', 'PUT', 'DELETE')
 
     def read(self, request, userid):
         if userid and request.user.username != userid:
@@ -183,6 +183,7 @@ class UserHandler(BaseHandler):
 
         return {
             'userid': user.username,
+            'email': user.email,
             'notify': profile.notify,
             'notify_album': profile.notify_album,
             'notify_single': profile.notify_single,
@@ -192,6 +193,52 @@ class UserHandler(BaseHandler):
             'notify_remix': profile.notify_remix,
             'notify_other': profile.notify_other,
             }
+
+    def update(self, request, userid):
+        if request.user.username != userid:
+            return rc.FORBIDDEN
+
+        user = request.user
+        profile = user.get_profile()
+
+        if 'email' in request.POST:
+            user.email = request.POST['email'].lower().strip()
+            profile.email_activated = False
+        if 'notify' in request.POST:
+            profile.notify = bool(int(request.POST['notify']))
+        if 'notify_album' in request.POST:
+            profile.notify_album = bool(int(request.POST['notify_album']))
+        if 'notify_single' in request.POST:
+            profile.notify_single = bool(int(request.POST['notify_single']))
+        if 'notify_ep' in request.POST:
+            profile.notify_ep = bool(int(request.POST['notify_ep']))
+        if 'notify_live' in request.POST:
+            profile.notify_live = bool(int(request.POST['notify_live']))
+        if 'notify_compilation' in request.POST:
+            profile.notify_compilation = bool(int(request.POST['notify_compilation']))
+        if 'notify_remix' in request.POST:
+            profile.notify_remix = bool(int(request.POST['notify_remix']))
+        if 'notify_other' in request.POST:
+            profile.notify_other = bool(int(request.POST['notify_other']))
+
+        with transaction.commit_on_success():
+            user.save()
+            profile.save()
+
+        response = rc.ALL_OK
+        response.content = {
+            'userid': user.username,
+            'email': user.email,
+            'notify': profile.notify,
+            'notify_album': profile.notify_album,
+            'notify_single': profile.notify_single,
+            'notify_ep': profile.notify_ep,
+            'notify_live': profile.notify_live,
+            'notify_compilation': profile.notify_compilation,
+            'notify_remix': profile.notify_remix,
+            'notify_other': profile.notify_other,
+            }
+        return response
 
     def delete(self, request, userid):
         if request.user.username != userid:
