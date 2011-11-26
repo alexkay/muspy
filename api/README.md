@@ -39,3 +39,17 @@ to the request URL. POST/PUT parameters should be sent as form data.
         * activate: 1 to send an activation email
     * PUT: update user info and settings
     * DELETE: delete the user and all their data
+
+The API is quite new and will probably change in the coming weeks. I suggest
+that you [subscribe][0] to [the blog][1] where such changes will be announced.
+
+If you are going to use the API for commercial purposes (e.g. selling CDs or ads
+on the pages where the main content is pulled from the muspy API) I expect a 50%
+revenue share. Alternatively, you can donate these money to [MusicBrainz][2],
+[Django][3] or [FreeBSD][4].
+
+[0]: http://versia.com/category/muspy/feed/atom/
+[1]: http://versia.com/category/muspy/
+[2]: http://metabrainz.org/donate/
+[3]: https://www.djangoproject.com/foundation/donate/
+[4]: http://www.freebsd.org/donations/
