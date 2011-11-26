@@ -57,6 +57,26 @@ def check():
             if not artist_data:
                 # TODO: musicbrainz/network error or deleted?
                 logging.warning('Could not fetch artist data')
+            elif artist_data['id'] != artist.mbid:
+                # Requested and returned mbids are different if the artist has been merged.
+                logging.info('Merging into artist %s' % artist_data['id'])
+                try:
+                    new_artist = Artist.get_by_mbid(artist_data['id'])
+                except (Artist.Blacklisted, Artist.Unknown):
+                    continue
+                if not new_artist:
+                    continue
+                cursor = connection.cursor()
+                cursor.execute(
+                    """
+                    UPDATE OR REPLACE "app_userartist"
+                    SET "artist_id" = %s
+                    WHERE "artist_id" = %s
+                    """, [new_artist.id, artist.id])
+                # Mark release groups as deleted.
+                n = artist.releasegroup_set.update(is_deleted=True)
+                logging.info('Deleted %s release groups' % n)
+                continue
             else:
                 # Update artist info if changed.
                 updated = False
