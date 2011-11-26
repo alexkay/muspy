@@ -172,7 +172,7 @@ class ReleasesHandler(AnonymousBaseHandler):
 
 
 class UserHandler(BaseHandler):
-    allowed_methods = ('GET',)
+    allowed_methods = ('GET', 'DELETE')
 
     def read(self, request, userid):
         if userid and request.user.username != userid:
@@ -192,3 +192,10 @@ class UserHandler(BaseHandler):
             'notify_remix': profile.notify_remix,
             'notify_other': profile.notify_other,
             }
+
+    def delete(self, request, userid):
+        if request.user.username != userid:
+            return rc.FORBIDDEN
+
+        request.user.get_profile().purge()
+        return rc.DELETED
