@@ -70,8 +70,6 @@ class ArtistsHandler(BaseHandler):
         if request.user.username != userid:
             return rc.FORBIDDEN
 
-        mbid = request.POST.get('mbid', mbid)
-
         if not  mbid:
             return rc.BAD_REQUEST
 
