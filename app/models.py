@@ -17,6 +17,7 @@
 
 import random
 from smtplib import SMTPException
+import string
 from time import sleep
 
 from django.contrib.auth.models import User
@@ -213,7 +214,9 @@ SELECT
     "app_releasegroup"."date",
     "app_releasegroup"."is_deleted",
     "app_artist"."mbid" AS "artist_mbid",
-    "app_artist"."name" AS "artist_name"
+    "app_artist"."name" AS "artist_name",
+    "app_artist"."sort_name" AS "artist_sort_name",
+    "app_artist"."disambiguation" AS "artist_disambiguation"
     {select}
 FROM "app_releasegroup"
 JOIN "app_artist" ON "app_artist"."id" = "app_releasegroup"."artist_id"
@@ -261,8 +264,10 @@ LIMIT %s OFFSET %s
         # Calendar uses the same template as releases, adapt to conform.
         q = q.extra(select={
                 'artist_mbid': '"app_artist"."mbid"',
-                'artist_name': '"app_artist"."name"'})
-        # TODO: benchmark, do we need an index?
+                'artist_name': '"app_artist"."name"',
+                'artist_sort_name': '"app_artist"."sort_name"',
+                'artist_disambiguation': '"app_artist"."disambiguation"',
+                })
         q = q.filter(is_deleted=False)
         q = q.order_by('-date')
         return q[offset:offset+limit]
@@ -446,6 +451,12 @@ class UserProfile(models.Model):
     def get_by_username(cls, username):
         users = User.objects.filter(username=username)
         return users[0].get_profile() if users else None
+
+    @classmethod
+    def create_user(cls, email, password):
+        chars = string.ascii_lowercase + string.digits
+        username = ''.join(random.choice(chars) for i in xrange(30))
+        return User.objects.create_user(username, email, password)
 
 
 class UserSearch(models.Model):

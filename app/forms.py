@@ -15,9 +15,6 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
-import random
-import string
-
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.models import User
@@ -114,10 +111,6 @@ class SignUpForm(forms.Form):
         return email
 
     def save(self, request):
-        chars = string.ascii_lowercase + string.digits
-        username = ''.join(random.choice(chars) for i in xrange(30))
-        email = self.cleaned_data['email']
-        password = self.cleaned_data['password']
-        user = User.objects.create_user(username, email, password)
-
-        return user
+        return UserProfile.create_user(
+            email=self.cleaned_data['email'],
+            password=self.cleaned_data['password'])
