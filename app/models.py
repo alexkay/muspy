@@ -17,6 +17,7 @@
 
 import random
 from smtplib import SMTPException
+import string
 from time import sleep
 
 from django.contrib.auth.models import User
@@ -450,6 +451,12 @@ class UserProfile(models.Model):
     def get_by_username(cls, username):
         users = User.objects.filter(username=username)
         return users[0].get_profile() if users else None
+
+    @classmethod
+    def create_user(cls, email, password):
+        chars = string.ascii_lowercase + string.digits
+        username = ''.join(random.choice(chars) for i in xrange(30))
+        return User.objects.create_user(username, email, password)
 
 
 class UserSearch(models.Model):

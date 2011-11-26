@@ -32,7 +32,7 @@ to the request URL. POST/PUT parameters should be sent as form data.
 
 * `user[/<userid>]`
     * GET: return user info and settings, `<userid>` is optional, auth is not.
-    * POST: create and return a new user, no auth
+    * POST: create a new user, no auth
         * email
         * password
         * activate: 1 to send an activation email

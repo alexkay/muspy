@@ -171,8 +171,40 @@ class ReleasesHandler(AnonymousBaseHandler):
                 } for release in releases]
 
 
+class AnonymousUserHandler(AnonymousBaseHandler):
+    allowed_methods = ('POST')
+
+    def create(self, request, userid):
+        email = request.POST.get('email', '').lower().strip()
+        password = request.POST.get('password', '')
+        activate = int(request.POST.get('activate', '0'))
+
+        if not email:
+            response = rc.BAD_REQUEST
+            response.write(': empty email address')
+            return response
+
+        if not password:
+            response = rc.BAD_REQUEST
+            response.write(': empty password')
+            return response
+
+        if UserProfile.get_by_email(email):
+            response = rc.BAD_REQUEST
+            response.write(': email already in use');
+            return response
+
+        user = UserProfile.create_user(email, password)
+
+        if activate:
+            user.get_profile().send_activation_email()
+
+        return rc.CREATED
+
+
 class UserHandler(BaseHandler):
-    allowed_methods = ('GET', 'PUT', 'DELETE')
+    allowed_methods = ('GET', 'POST', 'PUT', 'DELETE')
+    anonymous = AnonymousUserHandler
 
     def read(self, request, userid):
         if userid and request.user.username != userid:
