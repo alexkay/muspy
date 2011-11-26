@@ -9,3 +9,5 @@
 * Django's sitemap?
 * One-click unsubscribe link
 * Amazon: ja, it, es
+* API tests
+* Artist image

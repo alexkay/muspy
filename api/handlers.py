@@ -171,3 +171,26 @@ class ReleasesHandler(AnonymousBaseHandler):
                     'disambiguation': release.artist_disambiguation,
                     }
                 } for release in releases]
+
+
+class UserHandler(BaseHandler):
+    allowed_methods = ('GET',)
+
+    def read(self, request, userid):
+        if userid and request.user.username != userid:
+            return rc.BAD_REQUEST
+
+        user = request.user
+        profile = user.get_profile()
+
+        return {
+            'userid': user.username,
+            'notify': profile.notify,
+            'notify_album': profile.notify_album,
+            'notify_single': profile.notify_single,
+            'notify_ep': profile.notify_ep,
+            'notify_live': profile.notify_live,
+            'notify_compilation': profile.notify_compilation,
+            'notify_remix': profile.notify_remix,
+            'notify_other': profile.notify_other,
+            }
