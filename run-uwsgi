@@ -10,5 +10,6 @@ exec setuidgid www /usr/local/bin/uwsgi \
     --master \
     --processes=6 \
     --harakiri=30 \
+    --max-requests=1000 \
     --env="DJANGO_SETTINGS_MODULE=settings" \
     --module="django.core.handlers.wsgi:WSGIHandler()"
