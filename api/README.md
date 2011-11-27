@@ -16,7 +16,13 @@ to the request URL. POST/PUT parameters should be sent as form data.
 * `artists/<userid>[/<mbid>]`
     * GET: list of all artists for the user (mbid, name, sort_name,
       disambiguation)
-    * PUT: follow a new artist, return the artist info, `<mbid>` is required
+    * PUT: follow a new artist, return the artist info. `<mbid>` is required
+      unless `import` is non-empty.
+        * import: instead of adding artists by mbid, import them. Only 'last.fm'
+          is supported for now.
+        * username: Last.fm user name
+        * count: max 500
+        * period: one of ['overall', '12month', '6month', '3month', '7day']
     * DELETE: unfollow an artist, `<mbid>` is required
 
 * `release/<mbid>`

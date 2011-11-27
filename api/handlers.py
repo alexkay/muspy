@@ -24,6 +24,7 @@ from piston.handler import AnonymousBaseHandler, BaseHandler
 from piston.resource import Resource
 from piston.utils import rc
 
+from app import lastfm
 from app.models import *
 
 
@@ -70,25 +71,47 @@ class ArtistsHandler(BaseHandler):
         if request.user.username != userid:
             return rc.FORBIDDEN
 
-        if not  mbid:
+        if mbid:
+            try:
+                artist = Artist.get_by_mbid(mbid)
+            except (Artist.Blacklisted, Artist.Unknown):
+                return rc.BAD_REQUEST
+            if not artist:
+                return rc.NOT_FOUND
+
+            UserArtist.add(request.user, artist)
+            response = rc.ALL_OK
+            response.content = {
+                'mbid': artist.mbid,
+                'name': artist.name,
+                'sort_name': artist.sort_name,
+                'disambiguation': artist.disambiguation,
+                }
+            return response
+
+        import_from = request.POST.get('import', '')
+        username = request.POST.get('username', '')
+        count = min(500, max(0, int(request.POST.get('count', 0))))
+        period = request.POST.get('period', '')
+
+        if (import_from != 'last.fm' or not username or not count or
+            period not in ['overall', '12month', '6month', '3month', '7day']):
             return rc.BAD_REQUEST
 
-        try:
-            artist = Artist.get_by_mbid(mbid)
-        except (Artist.Blacklisted, Artist.Unknown):
-            return rc.BAD_REQUEST
-        if not artist:
-            return rc.NOT_FOUND
+        if Job.has_import_lastfm(request.user) or Job.importing_artists(request.user):
+            response = rc.THROTTLED
+            response.write(
+                ': The user already has a pending import. '
+                'Please wait until the import finishes before importing again.')
+            return response
 
-        UserArtist.add(request.user, artist)
-        response = rc.ALL_OK
-        response.content = {
-            'mbid': artist.mbid,
-            'name': artist.name,
-            'sort_name': artist.sort_name,
-            'disambiguation': artist.disambiguation,
-            }
-        return response
+        if not lastfm.has_user(username):
+            response = rc.BAD_REQUEST
+            response.write(': Unknown user: %s' % username)
+            return response
+
+        Job.import_lastfm(request.user, username, count, period)
+        return rc.ALL_OK
 
     def delete(self, request, userid, mbid):
         if request.user.username != userid:
