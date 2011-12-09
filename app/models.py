@@ -44,6 +44,7 @@ class Artist(models.Model):
     blacklisted = [
         '89ad4ac3-39f7-470e-963a-56509c546377', # Various Artists
         'fe5b7087-438f-4e7e-afaf-6d93c8c888b2', # Various Artists
+        '0677ef60-6be5-4e36-9d1e-8bb2bf85b981', # Various Artists
         'f731ccc4-e22a-43af-a747-64213329e088', # [anonymous]
         '33cf029c-63b0-41a0-9855-be2a3665fb3b', # [data]
         '314e1c25-dde7-4e4d-b2f4-0a7b9f7c56dc', # [dialogue]
