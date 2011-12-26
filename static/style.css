@@ -196,3 +196,7 @@ a.star {
 #loading p {
     margin: 4em;
 }
+
+.share div {
+    display: inline-block;
+}
