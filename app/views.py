@@ -16,6 +16,7 @@
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import date
+import re
 
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout, REDIRECT_FIELD_NAME
@@ -214,7 +215,12 @@ def artists_remove(request):
 def calendar(request):
     date_str = request.GET.get('date', None)
     today = int(date.today().strftime('%Y%m%d'))
-    date_int = str_to_date(date_str) if date_str else today
+    if date_str:
+        if not re.match("^\d{4}-\d{2}-\d{2}$", date_str):
+            return redirect('/calendar')
+        date_int = str_to_date(date_str)
+    else:
+        date_int = today
     try:
         offset = int(request.GET.get('offset', 0))
     except ValueError:
