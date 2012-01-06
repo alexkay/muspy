@@ -216,7 +216,7 @@ def calendar(request):
     date_str = request.GET.get('date', None)
     today = int(date.today().strftime('%Y%m%d'))
     if date_str:
-        if not re.match("^\d{4}-\d{2}-\d{2}$", date_str):
+        if not re.match("^\d{4}(-\d{2})?(-\d{2})?$", date_str):
             return redirect('/calendar')
         date_int = str_to_date(date_str)
     else:
