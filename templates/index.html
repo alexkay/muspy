@@ -31,31 +31,6 @@ with the album name and the release date. You can also see the
 on the website sorted in the chronological order, or
 <span class="marker">subscribe to the {% if user.is_authenticated %}<a href="/feed?id={{ user.username }}">{% endif %}rss feed{% if user.is_authenticated %}</a>{% endif %}</span>
 and receive release alerts using the feed aggregator of your choice.</p>
-
-<p>
-<div class="share">
-  <div class="facebook">
-<iframe src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Fmuspy.com&amp;send=false&amp;layout=button_count&amp;width=450&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font=arial&amp;height=21" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:100px; height:21px;" allowTransparency="true"></iframe>
-  </div>
-  <div class="google">
-<div class="g-plusone" data-size="medium" data-href="http://muspy.com"></div>
-<script type="text/javascript">
-  window.___gcfg = {lang: 'en-GB'};
-
-  (function() {
-    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-    po.src = 'https://apis.google.com/js/plusone.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-  })();
-</script>
-  </div>
-  <div class="twitter">
-<a href="https://twitter.com/share" class="twitter-share-button" data-via="muspy">Tweet</a>
-<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-  </div>
-</div>
-</p>
-
 <h2>Latest Releases</h2>
 <table id="releases">
 {% for release in releases %}

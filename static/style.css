@@ -199,4 +199,6 @@ a.star {
 
 .share div {
     display: inline-block;
+    vertical-align: top;
+    padding-top: 2px;
 }
