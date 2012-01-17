@@ -162,9 +162,10 @@ class ReleasesHandler(AnonymousBaseHandler):
             except User.DoesNotExist:
                 return rc.NOT_HERE
 
-        mbid = request.GET.get('mbid', '')
         limit = min(100, max(0, int(request.GET.get('limit', 40))))
         offset = max(0, int(request.GET.get('offset', 0)))
+        mbid = request.GET.get('mbid', '')
+        since = request.GET.get('since', '')
 
         if mbid:
             try:
@@ -174,7 +175,25 @@ class ReleasesHandler(AnonymousBaseHandler):
             if not artist:
                 return rc.NOT_HERE
 
-        if artist or user:
+        if since:
+            try:
+                release = ReleaseGroup.objects.get(mbid=since)
+            except ReleaseGroup.DoesNotExist:
+                return rc.NOT_HERE
+            q = ReleaseGroup.objects.filter(id__gt=release.id)
+            if user:
+                q = q.filter(artist__users=user)
+            q = q.filter(is_deleted=False)
+            q = q.order_by('id')
+            q = q.select_related('artist')
+            q = q.extra(select={
+                    'artist_mbid': '"app_artist"."mbid"',
+                    'artist_name': '"app_artist"."name"',
+                    'artist_sort_name': '"app_artist"."sort_name"',
+                    'artist_disambiguation': '"app_artist"."disambiguation"',
+                    })
+            releases = q[:limit]
+        elif artist or user:
             releases = ReleaseGroup.get(artist=artist, user=user, limit=limit, offset=offset)
         else:
             today = int(date.today().strftime('%Y%m%d'))

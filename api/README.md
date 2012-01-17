@@ -35,6 +35,8 @@ to the request URL. POST/PUT parameters should be sent as form data.
         * limit: max 100
         * offset
         * mbid: optional artist mbid, if set filter by this artist.
+        * since: return releases fetched after the specified mbid, cannot be
+          combined with offset or mbid.
 
 * `user[/<userid>]`
     * GET: return user info and settings, `<userid>` is optional, auth is not.
