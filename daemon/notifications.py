@@ -24,9 +24,12 @@ from daemon import jobs, tools
 
 def send():
     sent_emails = 0
+    sleep = True
     while True:
-        jobs.process()
-        tools.sleep()
+        if sleep:
+            jobs.process()
+            tools.sleep()
+            sleep = False
         try:
             notification = Notification.objects.order_by('-user')[0]
         except IndexError:
@@ -42,6 +45,7 @@ def send():
                     rg for rg in release_groups
                     if rg.type in types and is_recent(rg.date)]
                 if release_groups:
+                    sleep = True
                     result = user.get_profile().send_email(
                         subject='[muspy] New Release Notification',
                         text_template='email/release.txt',
