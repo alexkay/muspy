@@ -60,8 +60,8 @@ def add_artist(user, search):
     logging.info('[JOB] Searching for artist [%s] for user %d' % (search, user.id))
     found_artists, count = mb.search_artists(search, limit=2, offset=0)
     if found_artists is None:
-        logging.warning('[ERR] MusicBrainz error while searching, retrying')
-        return False
+        logging.warning('[ERR] MusicBrainz error while searching, skipping')
+        return True
 
     only_one = len(found_artists) == 1
     first_is_exact = (len(found_artists) > 1 and
