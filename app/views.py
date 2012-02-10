@@ -107,12 +107,18 @@ def artists(request):
             messages.error(request, 'The search string is too long.')
             return redirect('/artists')
 
-        searches = [s.strip() for s in search.split(',') if s.strip()]
+        # FB likes are separated by '*'. 32 is completely random.
+        if len(search) > 32 and search.count('*') > len(search) // 32:
+            searches = [s.strip() for s in search.split('*') if s.strip()]
+        else:
+            searches = [s.strip() for s in search.split(',') if s.strip()]
         if len(searches) > 1 and not offset:
             # Batch add mode.
             if dontadd:
                 messages.warning(
-                    request, 'Cannot search for multiple artists. Remove all commas to search.')
+                    request,
+                    'Cannot search for multiple artists. '
+                    'Remove all commas and asterisks to search.')
                 return render(request, 'artists.html', {
                         'artist_rows': artist_rows,
                         'search': search,
