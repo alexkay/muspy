@@ -46,8 +46,8 @@
 <p>{{ importing }}</p>
 {% endif %}
 
-{% if pending_rows %}
-<h2>Pending artists</h2>
+{% if pending_count %}
+<h2>Pending artists ({{ pending_count }}):</h2>
 <p>These artists either could not be found or their names are ambiguous. <br/>
 Click on a name to search or select and remove the artists you don't want to follow.</p>
 <form id="form-pending" action="/artists-remove" method="post">
@@ -72,8 +72,8 @@ Click on a name to search or select and remove the artists you don't want to fol
 </form>
 {% endif %}
 
-<h2>Artists you are following:</h2>
-{% if artist_rows %}
+{% if artist_count %}
+<h2>Artists you are following ({{ artist_count }}):</h2>
 <form id="form-artists" action="/artists-remove" method="post">
 {% csrf_token %}
 <table id="artists">
@@ -95,6 +95,7 @@ Click on a name to search or select and remove the artists you don't want to fol
 <p><input type="submit" value="Remove"/> selected artists</p>
 </form>
 {% else %}
+<h2>Artists you are following:</h2>
 <p>You don't have any! Use the text box above to add your favourite artists
 to the list. You will receive a notification when one of the artists that you
 follow releases a new album.</p>

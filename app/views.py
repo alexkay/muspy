@@ -170,13 +170,15 @@ def artists(request):
 
     return render(request, 'artists.html', {
             'artist_rows': artist_rows,
+            'artist_count': len(artists),
             'search': search,
             'dontadd': dontadd,
             'found_artists': found_artists,
             'artists_offset': artists_offset,
             'artists_left': artists_left,
             'importing': importing,
-            'pending_rows': pending_rows})
+            'pending_rows': pending_rows,
+            'pending_count': len(pending)})
 
 @login_required
 def artists_add(request):
