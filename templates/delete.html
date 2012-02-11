@@ -6,9 +6,11 @@
 <form method="post" action="/delete">
 {% csrf_token %}
 <input type="hidden" name="confirm" value="1"/>
-<p>Are you sure you want to delete your account? You will not be able to recover your data and settings.</p>
-<input type="submit" value="Yes, delete my account"/>
-<p>If you just want to adjust your notification settings or to turn off email notifications, you can do it on the <a href="/settings">settings page</a>.</p>
+<p>Are you sure you want to delete your account? You will not be able to recover
+your data and settings.</p>  <input type="submit" value="Yes, delete my
+account"/>
+<p>If you just want to adjust your notification settings or to turn off email
+notifications, you can do it on the <a href="/settings">settings page</a>.</p>
 </form>
 
 {% endblock content %}
