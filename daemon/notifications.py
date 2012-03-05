@@ -40,17 +40,14 @@ def send():
             profile = user.get_profile()
             if profile.notify and profile.email_activated:
                 types = profile.get_types()
-                release_groups = user.new_release_groups.select_related('artist').all()
-                release_groups = [
-                    rg for rg in release_groups
-                    if rg.type in types and is_recent(rg.date)]
-                if release_groups:
+                rg = notification.release_group
+                if rg.type in types and is_recent(rg.date):
                     sleep = True
                     result = user.get_profile().send_email(
-                        subject='[muspy] New Release Notification',
+                        subject='[muspy] New Release: %s - %s' % (rg.artist.name, rg.name),
                         text_template='email/release.txt',
                         html_template='email/release.html',
-                        releases=release_groups,
+                        release=rg,
                         root='http://muspy.com/')
                     if not result:
                         logging.warning('Could not send to user %d, retrying' % user.id)
@@ -58,7 +55,7 @@ def send():
                     sent_emails += 1
                     logging.info('Sent a notification to user %d' % user.id)
 
-            user.new_release_groups.clear()
+            notification.delete()
 
     logging.info('Sent %d email notifications' % sent_emails)
 
