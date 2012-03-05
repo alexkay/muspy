@@ -49,7 +49,7 @@ def send():
                         html_template='email/release.html',
                         release=rg,
                         username=user.username,
-                        root='http://muspy.com/')
+                        root='https://muspy.com/')
                     if not result:
                         logging.warning('Could not send to user %d, retrying' % user.id)
                         continue

@@ -2,7 +2,7 @@ Hi,
 
 You recently requested a new password. To reset your password, follow the link below:
 
-http://muspy.com/reset?code={{ code }}
+https://muspy.com/reset?code={{ code }}
 
 If clicking on the link doesn't work, try copying and pasting it into your browser.
 

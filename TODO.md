@@ -7,7 +7,6 @@
 * Artist auto completion.
 * Review all URLs, e.g. /feed/<id> instead of /feed?id=<id>
 * Django's sitemap?
-* One-click unsubscribe link
 * Amazon: ja, it, es
 * API tests
 * Artist image

@@ -6,7 +6,7 @@ You need to activate your address to receive email notifications from us.
 
 To activate, follow the link below:
 
-http://muspy.com/activate?code={{ code }}
+https://muspy.com/activate?code={{ code }}
 
 If clicking on the link doesn't work, try copying and pasting it into your browser.
 

@@ -1,6 +1,6 @@
 # muspy
 
-[muspy](http://muspy.com) is an album release notification service.
+[muspy](https://muspy.com) is an album release notification service.
 
 ## Development
 
