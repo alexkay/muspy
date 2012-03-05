@@ -382,7 +382,7 @@ class UserProfile(models.Model):
         msg = EmailMultiAlternatives(
             subject,
             text,
-            'muspy support <info@muspy.com>',
+            'muspy.com <info@muspy.com>',
             [self.user.email])
         if html_template:
             html = render_to_string(html_template, kwds)
