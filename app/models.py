@@ -413,6 +413,10 @@ class UserProfile(models.Model):
             html_template=None,
             code=code)
 
+    def unsubscribe(self):
+        self.notify = False
+        self.save()
+
     @classmethod
     def activate(cls, code):
         profiles = UserProfile.objects.filter(activation_code=code)

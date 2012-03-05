@@ -451,3 +451,15 @@ def star(request):
     if request.method == 'POST':
         return HttpResponse('{}', 'application/json')
     return redirect(request.META.get('HTTP_REFERER', '/'))
+
+def unsubscribe(request):
+    username = request.GET.get('id', '')
+    profile = UserProfile.get_by_username(username) if username else None
+    if not profile:
+        messages.error(request, 'Bad request, you were not unsubscribed.')
+        return redirect('/')
+    profile.unsubscribe()
+    messages.success(
+        request, 'You have successfully unsubscribed from release notifications. '
+        'If you change your mind, you can subscribe to notifications on the Settings page.')
+    return redirect('/')

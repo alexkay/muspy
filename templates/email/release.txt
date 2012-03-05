@@ -7,4 +7,7 @@ A new release is available:
 Visit muspy for more information: {{ root }}releases
 
 Cheers,
-The muspy Team{% endautoescape %}
+The muspy Team
+
+To unsubscribe from these notifications click:
+{{ root }}unsubscribe?id={{ username }}{% endautoescape %}

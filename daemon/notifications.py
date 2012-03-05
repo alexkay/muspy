@@ -48,6 +48,7 @@ def send():
                         text_template='email/release.txt',
                         html_template='email/release.html',
                         release=rg,
+                        username=user.username,
                         root='http://muspy.com/')
                     if not result:
                         logging.warning('Could not send to user %d, retrying' % user.id)

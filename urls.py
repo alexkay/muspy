@@ -48,6 +48,7 @@ urlpatterns = patterns('app.views',
     (r'^signup$', 'signup'),
     (r'^sitemap.xml$', 'sitemap'),
     (r'^star$', 'star'),
+    (r'^unsubscribe$', 'unsubscribe'),
     (r'blog|\.php', 'forbidden'), # Hello, vulnerability scan bots!
 )
 
