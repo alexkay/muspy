@@ -274,6 +274,7 @@ def cover(request):
     cover = Cover(mbid)
     if not cover.found:
         Job.get_cover(mbid)
+        return HttpResponseNotFound(content=cover.image, content_type='image/jpeg')
     return HttpResponse(content=cover.image, content_type='image/jpeg')
 
 @login_required
