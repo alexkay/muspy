@@ -76,6 +76,8 @@ def check():
                 # Mark release groups as deleted.
                 n = artist.releasegroup_set.update(is_deleted=True)
                 logging.info('Deleted %s release groups' % n)
+                artist.delete()
+                logging.info('Deleted the artist')
                 continue
             else:
                 # Update artist info if changed.
