@@ -43,7 +43,7 @@ def get_artists(username, period, limit, page):
         return None
 
     artists = root.find('topartists')
-    if artists is None:
+    if artists is None or int(artists.get('page')) != page:
         return []
 
     artists = [_parse_artist(element) for element in root.findall('topartists/artist')]
