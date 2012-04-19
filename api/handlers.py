@@ -279,21 +279,21 @@ class UserHandler(BaseHandler):
             user.email = request.POST['email'].lower().strip()
             profile.email_activated = False
         if 'notify' in request.POST:
-            profile.notify = bool(int(request.POST['notify']))
+            profile.notify = request.POST['notify'] in ['1', 'true']
         if 'notify_album' in request.POST:
-            profile.notify_album = bool(int(request.POST['notify_album']))
+            profile.notify_album = request.POST['notify_album'] in ['1', 'true']
         if 'notify_single' in request.POST:
-            profile.notify_single = bool(int(request.POST['notify_single']))
+            profile.notify_single = request.POST['notify_single'] in ['1', 'true']
         if 'notify_ep' in request.POST:
-            profile.notify_ep = bool(int(request.POST['notify_ep']))
+            profile.notify_ep = request.POST['notify_ep'] in ['1', 'true']
         if 'notify_live' in request.POST:
-            profile.notify_live = bool(int(request.POST['notify_live']))
+            profile.notify_live = request.POST['notify_live'] in ['1', 'true']
         if 'notify_compilation' in request.POST:
-            profile.notify_compilation = bool(int(request.POST['notify_compilation']))
+            profile.notify_compilation = request.POST['notify_compilation'] in ['1', 'true']
         if 'notify_remix' in request.POST:
-            profile.notify_remix = bool(int(request.POST['notify_remix']))
+            profile.notify_remix = request.POST['notify_remix'] in ['1', 'true']
         if 'notify_other' in request.POST:
-            profile.notify_other = bool(int(request.POST['notify_other']))
+            profile.notify_other = request.POST['notify_other'] in ['1', 'true']
 
         with transaction.commit_on_success():
             user.save()
