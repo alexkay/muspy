@@ -73,10 +73,20 @@ def check():
                     SET "artist_id" = %s
                     WHERE "artist_id" = %s
                     """, [new_artist.id, artist.id])
-                # Mark release groups as deleted.
-                n = artist.releasegroup_set.update(is_deleted=True)
-                logging.info('Deleted %s release groups' % n)
-                artist.delete()
+                # Delete the artist and its release groups.
+                # Use SQL, delete() is buggy, see Django bug #16426.
+                # TODO: possible FK constraint fail in app_star.
+                cursor.execute(
+                    """
+                    DELETE FROM "app_releasegroup"
+                    WHERE "artist_id" = %s
+                    """, [artist.id])
+                logging.info('Deleted release groups')
+                cursor.execute(
+                    """
+                    DELETE FROM "app_artist"
+                    WHERE "id" = %s
+                    """, [artist.id])
                 logging.info('Deleted the artist')
                 continue
             else:
