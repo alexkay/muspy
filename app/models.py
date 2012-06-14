@@ -43,19 +43,22 @@ class Artist(models.Model):
 
     blacklisted = [
         '89ad4ac3-39f7-470e-963a-56509c546377', # Various Artists
-        'fe5b7087-438f-4e7e-afaf-6d93c8c888b2', # Various Artists
-        '0677ef60-6be5-4e36-9d1e-8bb2bf85b981', # Various Artists
-        'b7c7dfd9-d735-4733-9b10-f060ac75bd6a', # Various Artists
+        'fe5b7087-438f-4e7e-afaf-6d93c8c888b2',
+        '0677ef60-6be5-4e36-9d1e-8bb2bf85b981',
+        'b7c7dfd9-d735-4733-9b10-f060ac75bd6a',
+        'b05cc773-4e8e-40bc-ae12-dc88dfc2c9ec',
         'f731ccc4-e22a-43af-a747-64213329e088', # [anonymous]
         '33cf029c-63b0-41a0-9855-be2a3665fb3b', # [data]
         '314e1c25-dde7-4e4d-b2f4-0a7b9f7c56dc', # [dialogue]
         'eec63d3c-3b81-4ad4-b1e4-7c147d4d2b61', # [no artist]
         '9be7f096-97ec-4615-8957-8d40b5dcbc41', # [traditional]
         '125ec42a-7229-4250-afc5-e057484327fe', # [unknown]
-        '203b6058-2401-4bf0-89e3-8dc3d37c3f12', # [unknown]
-        '5e760f5a-ea55-4b53-a18f-021c0d9779a6', # [unknown]
-        '1d8bc797-ec8a-40d2-8d80-b1346b56a65f', # [unknown]
-        '7734d67f-44d9-4ba2-91e3-9b067263210e', # [unknown]
+        '203b6058-2401-4bf0-89e3-8dc3d37c3f12',
+        '5e760f5a-ea55-4b53-a18f-021c0d9779a6',
+        '1d8bc797-ec8a-40d2-8d80-b1346b56a65f',
+        '7734d67f-44d9-4ba2-91e3-9b067263210e',
+        'f49cc9f4-dc00-48ab-9aab-6387c02738cf',
+        '0035056d-72ac-41fa-8ea6-0e27e55f42f7',
         'd6bd72bc-b1e2-4525-92aa-0f853cbb41bf', # [soundtrack]
         ]
     class Blacklisted(Exception): pass
