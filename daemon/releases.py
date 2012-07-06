@@ -49,7 +49,7 @@ def check():
 
         # Artist names don't change that often. Update artists at most once
         # a month, unless we are debugging.
-        if DEBUG or day == 1:
+        if DEBUG or day in (1, 11, 21):
             jobs.process()
             tools.sleep()
             logging.info('Updating artist %s' % artist.mbid)
