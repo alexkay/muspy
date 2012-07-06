@@ -157,7 +157,7 @@ def check():
                             logging.info('Updated release group %s' % mbid)
 
                         del current[mbid]
-                    else:
+                    elif rg_data['title']:
                         release_group = ReleaseGroup(
                             artist=artist,
                             mbid=rg_data['id'],
