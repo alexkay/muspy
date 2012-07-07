@@ -47,7 +47,7 @@ def check():
 
         checked_artists += 1
 
-        # Artist names don't change that often. Update artists at most once
+        # Artist names don't change that often. Update artists at most 3 times
         # a month, unless we are debugging.
         if DEBUG or day in (1, 11, 21):
             jobs.process()
