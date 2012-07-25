@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Copyright © 2009-2011 Alexander Kojevnikov <alexander@kojevnikov.com>
+# Copyright © 2009-2012 Alexander Kojevnikov <alexander@kojevnikov.com>
 #
 # muspy is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -28,7 +28,7 @@ import traceback
 
 from django.core.mail import mail_admins
 
-from daemon import notifications, releases
+from daemon import releases
 
 def daemon():
     """Perform background processing.
@@ -39,7 +39,6 @@ def daemon():
     """
     start = time.time()
     releases.check()
-    notifications.send()
     logging.info("Cycle wall time: %.4f days" % ((time.time() - start) / 86400))
 
 

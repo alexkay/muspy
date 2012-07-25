@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright © 2009-2011 Alexander Kojevnikov <alexander@kojevnikov.com>
+# Copyright © 2009-2012 Alexander Kojevnikov <alexander@kojevnikov.com>
 #
 # muspy is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -25,11 +25,12 @@ from settings import DEBUG
 from app.models import *
 import app.musicbrainz as mb
 from app.tools import str_to_date
-from daemon import jobs, tools
+from daemon import jobs, notifications, tools
 
 
 def check():
     logging.info('Start checking artists')
+    sent_notifications = 0
     checked_artists = 0
     checked_release_groups = 0
     day = datetime.datetime.utcnow().day
@@ -113,8 +114,7 @@ def check():
         LIMIT = 100
         offset = 0
         while True:
-            jobs.process()
-            tools.sleep()
+            sent_notifications += notifications.send()
             release_groups = mb.get_release_groups(artist.mbid, LIMIT, offset)
             if release_groups is None:
                 logging.warning('Could not fetch release groups, retrying')
@@ -179,7 +179,7 @@ def check():
                             JOIN "app_releasegroup" ON "app_releasegroup"."artist_id" = "app_artist"."id"
                             WHERE "app_releasegroup"."id" = %s
                             """, [release_group.id])
-                        logging.info('Notified %d users' % cursor.rowcount)
+                        logging.info('Will notify %d users' % cursor.rowcount)
 
             if len(release_groups) < LIMIT: break
             offset += LIMIT
@@ -192,4 +192,7 @@ def check():
                     release_group.save()
                     logging.info('Deleted release group %s' % mbid)
 
-    logging.info('Checked %d artists and %d release groups' % (checked_artists, checked_release_groups))
+    logging.info(
+        'Checked %d artists and %d release groups, sent %d notifications'
+        % (checked_artists, checked_release_groups, sent_notifications)
+    )

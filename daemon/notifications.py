@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright © 2009-2011 Alexander Kojevnikov <alexander@kojevnikov.com>
+# Copyright © 2009-2012 Alexander Kojevnikov <alexander@kojevnikov.com>
 #
 # muspy is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -31,7 +31,7 @@ def send():
             tools.sleep()
             sleep = False
         try:
-            notification = Notification.objects.order_by('-user')[0]
+            notification = Notification.objects.all()[0]
         except IndexError:
             break # last one
 
@@ -58,7 +58,7 @@ def send():
 
             notification.delete()
 
-    logging.info('Sent %d email notifications' % sent_emails)
+    return sent_emails
 
 
 def is_recent(date):
