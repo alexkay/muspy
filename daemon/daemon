@@ -38,8 +38,14 @@ def daemon():
 
     """
     start = time.time()
-    releases.check()
-    logging.info("Cycle wall time: %.4f days" % ((time.time() - start) / 86400))
+    stats = releases.check()
+    wall = (time.time() - start) / 86400
+    logging.info('Checked %d artists and %d release groups, sent %d notifications' % stats)
+    logging.info("Cycle wall time: %.4f days" % wall)
+
+    title = 'Cycle stats: A: %d, R: %d, E: %d' % stats
+    title += ', T: %.4fd' % wall
+    mail_admins(title, '')
 
 
 if __name__ == '__main__':

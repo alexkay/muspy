@@ -192,7 +192,4 @@ def check():
                     release_group.save()
                     logging.info('Deleted release group %s' % mbid)
 
-    logging.info(
-        'Checked %d artists and %d release groups, sent %d notifications'
-        % (checked_artists, checked_release_groups, sent_notifications)
-    )
+    return (checked_artists, checked_release_groups, sent_notifications)
