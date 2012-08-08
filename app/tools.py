@@ -43,9 +43,9 @@ def str_to_date(date_str):
     '2010'       -> 20100000
 
     """
-    date = int(date_str[0:4]) * 10000 if date_str[0:4] else 0
-    date += int(date_str[5:7]) * 100 if date_str[5:7] else 0
-    date += int(date_str[8:10]) if date_str[8:10] else 0
+    date = int(date_str[0:4]) * 10000 if date_str[0:4].isdigit() else 0
+    date += int(date_str[5:7]) * 100 if date_str[5:7].isdigit() else 0
+    date += int(date_str[8:10]) if date_str[8:10].isdigit() else 0
     return date
 
 def date_to_str(date):
