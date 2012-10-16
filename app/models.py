@@ -119,7 +119,7 @@ class Artist(models.Model):
     @classmethod
     def get_by_user(cls, user):
         # TODO: paging
-        return cls.objects.filter(users=user).order_by('sort_name')[:1000]
+        return cls.objects.filter(users=user).order_by('sort_name')[:4000]
 
 
 class Job(models.Model):
