@@ -387,8 +387,10 @@ class UserProfile(models.Model):
         msg = EmailMultiAlternatives(
             subject,
             text,
-            'muspy.com <info@muspy.com>',
-            [self.user.email])
+            'bounces@muspy.com',
+            [self.user.email],
+            headers={'From': 'muspy.com <info@muspy.com>'},
+        )
         if html_template:
             html = render_to_string(html_template, kwds)
             msg.attach_alternative(html, "text/html")
