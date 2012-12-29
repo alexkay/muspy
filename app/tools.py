@@ -44,6 +44,8 @@ def str_to_date(date_str):
 
     """
     date = 0
+    if not date_str:
+        return date
     year = date_str[0:4]
     if not year.isdigit():
         return date
