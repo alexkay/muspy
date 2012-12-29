@@ -124,7 +124,8 @@ def check():
                 for rg_data in release_groups:
                     mbid = rg_data['id']
                     # Ignore releases without a release date or a type.
-                    if not rg_data.get('first-release-date') or not rg_data.get('type'):
+                    release_date = str_to_date(rg_data.get('first-release-date'))
+                    if not release_date or not rg_data.get('type'):
                         if mbid in current:
                             release_group = current[mbid]
                             if not release_group.is_deleted:
@@ -134,7 +135,6 @@ def check():
                         continue
 
                     checked_release_groups += 1
-                    release_date = str_to_date(rg_data['first-release-date'])
                     if mbid in current:
                         release_group = current[mbid]
 
