@@ -53,7 +53,7 @@ def str_to_date(date_str):
     month = date_str[5:7]
     if not month.isdigit():
         return date
-    date += int(month)
+    date += int(month) * 100
     day = date_str[8:10]
     if not day.isdigit():
         return date
