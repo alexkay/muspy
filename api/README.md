@@ -56,8 +56,8 @@ revenue share. Alternatively, you can donate these money to [MusicBrainz][2],
 [Django][3] or [FreeBSD][4]. If you are a [free software][5] project, feel free
 to use the API as you see fit.
 
-[0]: http://versia.com/category/muspy/feed/atom/
-[1]: http://versia.com/category/muspy/
+[0]: http://kojevnikov.com/muspy.xml
+[1]: http://kojevnikov.com/tag/muspy.html
 [2]: http://metabrainz.org/donate/
 [3]: https://www.djangoproject.com/foundation/donate/
 [4]: http://www.freebsdfoundation.org/donate/
