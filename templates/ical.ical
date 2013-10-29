@@ -1,0 +1,10 @@
+{% autoescape off %}BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//{{company}}//{{title}}//EN
+{% for event in release_events %}BEGIN:VEVENT
+SUMMARY:{{event.summary}}
+DTSTART;VALUE=DATE:{{event.date_start_str}}
+DTEND;VALUE=DATE:{{event.date_end_str}}
+UID:{{event.uid}}
+END:VEVENT
+{% endfor %}END:VCALENDAR{% endautoescape %}

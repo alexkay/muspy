@@ -31,6 +31,7 @@
                         {% if user.is_authenticated %}
                         <a href="/artists">Artists</a>
                         &bull; <a href="/feed?id={{ user.username }}"><img src="/feed.png" alt="RSS" title="Subscribe in a reader"/></a>
+                        <a href="/ical?id={{ user.username }}"><img src="/ical.gif" alt="iCal" title="Export to iCal"/></a>
                         <a href="/releases">Releases</a>
                         {% else %}
 <div class="share">

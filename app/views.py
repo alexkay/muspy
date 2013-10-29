@@ -15,7 +15,8 @@
 # You should have received a copy of the GNU Affero General Public License
 # along with muspy.  If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import date
+from calendar import monthrange
+from datetime import date, timedelta, datetime
 import re
 
 from django.contrib import messages
@@ -23,6 +24,7 @@ from django.contrib.auth import authenticate, login, logout, REDIRECT_FIELD_NAME
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseNotFound
 from django.shortcuts import redirect, render
+from django.template.loader import render_to_string
 from django.views.decorators.cache import cache_control
 
 from settings import LOGIN_REDIRECT_URL
@@ -310,6 +312,56 @@ def feed(request):
             'url': request.build_absolute_uri(),
             'root': request.build_absolute_uri('/')
             }, content_type='application/atom+xml')
+
+def ical(request):
+    user_id = request.GET.get('id', '')
+    profile = UserProfile.get_by_username(user_id)
+    if not profile:
+        return HttpResponseNotFound()
+
+    LIMIT = 40
+    releases = list(ReleaseGroup.get(user=profile.user, limit=LIMIT, offset=0, feed=True))
+
+    release_events = []
+
+    for r in releases:
+        event = {}
+        event['summary'] = "{} - {}".format(r.artist.name, r.name)
+
+        year = r.date // 10000
+
+        # month/day aren't always present.
+        month = (r.date // 100) % 100
+        if month == 0:
+            continue
+
+        day = r.date % 100
+        if day == 0:
+            # arbitrarily set the release as the last day of the month.
+            # hopefully, the date will be clarified before then, but this
+            # will ensure it's not missed on the calendar.
+            day = monthrange(year, month)[1]
+
+        event_date = date(year, month, day)
+        event['date_start_str'] = event_date.strftime('%Y%m%d')
+        event['date_end_str'] = (event_date + timedelta(days=1)).strftime('%Y%m%d')
+
+        # uid must be globally unique.
+        # this approximates the recommended format on the spec.
+        # the uid is important: it's used to sync events if changes are made.
+        event['uid'] = "%s-%s@muspy.com" % (r.id, user_id)
+
+        release_events.append(event)
+
+    ical_str = render_to_string('ical.ical', {
+        'company': 'Muspy',
+        'title': 'Muspy releases',
+        'release_events': release_events,
+    })
+
+    # ical spec declares \r\n newlines
+    return HttpResponse(ical_str.replace('\n', '\r\n'),
+                        content_type='text/calendar')
 
 def forbidden(request):
     return HttpResponseForbidden()
