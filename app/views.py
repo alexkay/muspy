@@ -361,7 +361,7 @@ def ical(request):
 
     # ical spec declares \r\n newlines
     return HttpResponse(ical_str.replace('\n', '\r\n'),
-                        content_type='text/calendar')
+                        content_type='text/calendar; charset=UTF-8')
 
 def forbidden(request):
     return HttpResponseForbidden()
