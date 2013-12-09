@@ -326,7 +326,7 @@ def ical(request):
 
     for r in releases:
         event = {}
-        event['summary'] = "{} - {}".format(r.artist.name, r.name)
+        event['summary'] = u'{} - {}'.format(r.artist.name, r.name)
 
         year = r.date // 10000
 
