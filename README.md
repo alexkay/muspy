@@ -4,10 +4,11 @@
 
 ## Development
 
-To set up development environment you need to install these dependencies:
+To set up development environment you need to install nginx and virtualenv, then run:
 
-* On FreeBSD: `portmaster databases/sqlite3 graphics/py-imaging www/nginx www/py-django www/py-django-piston`
-* On Debian: `aptitude install sqlite3 python-imaging nginx python-django python-django-piston`
+    % virtualenv env
+    % source env/bin/activate
+    % pip install -r requirements.txt
 
 Edit your main `nginx.conf`:
 
