@@ -5,4 +5,5 @@ DIR=$(dirname $(realpath $0))
 cd $DIR
 
 setuidgid www sqlite3 db/muspy.db ".dump" > db/muspy.bak
+. env/bin/activate
 exec setuidgid www python -u $DIR/daemon/daemon
