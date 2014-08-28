@@ -9,7 +9,7 @@ exec setuidgid www /usr/local/bin/uwsgi \
     --pythonpath="$DIR" \
     --home=env \
     --master \
-    --processes=6 \
+    --processes=8 \
     --harakiri=30 \
     --max-requests=1000 \
     --env="DJANGO_SETTINGS_MODULE=settings" \
