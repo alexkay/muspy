@@ -50,6 +50,7 @@ class Artist(models.Model):
         '4b2228f5-e18b-4acc-ace7-b8db13a9306f',
         '046c889d-5b1c-4f54-9c7b-319a8f67e729',
         '1bf34db2-8447-4ecd-9b25-57945b28ef28',
+        '023671ff-b1ad-4133-a4f3-aadaaadfd2e0',
         'f731ccc4-e22a-43af-a747-64213329e088', # [anonymous]
         '33cf029c-63b0-41a0-9855-be2a3665fb3b', # [data]
         '314e1c25-dde7-4e4d-b2f4-0a7b9f7c56dc', # [dialogue]
