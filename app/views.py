@@ -222,54 +222,6 @@ def artists_remove(request):
     messages.success(request, 'Removed %d artist%s.' % (len(mbids), 's' if len(mbids) > 1 else ''))
     return redirect('/artists')
 
-def calendar(request):
-    date_str = request.GET.get('date', None)
-    today = int(date.today().strftime('%Y%m%d'))
-    if date_str:
-        if not re.match("^\d{4}(-\d{2})?(-\d{2})?$", date_str):
-            return redirect('/calendar')
-        date_int = str_to_date(date_str)
-    else:
-        date_int = today
-    try:
-        offset = int(request.GET.get('offset', 0))
-    except ValueError:
-        return HttpResponseNotFound()
-    PER_PAGE = 10
-    limit = PER_PAGE + 1
-    releases = list(ReleaseGroup.get_calendar(date_int, limit, offset))
-
-    if len(releases) == limit:
-        if releases[0].date == releases[-1].date:
-            next_date = date_to_str(date_int)
-            next_offset = offset + PER_PAGE
-            releases = releases[:-1]
-        else:
-            if offset:
-                i = min(i for i in xrange(limit) if releases[i].date != releases[0].date)
-                next_date = date_to_str(releases[i].date)
-                next_offset = 0
-                releases = releases[:i]
-            else:
-                next_date = date_to_str(releases[-1].date)
-                next_offset = 0
-                releases = [r for r in releases if r.date != releases[-1].date]
-    else:
-        next_date = None
-        next_offset = 0
-
-    for i, release in enumerate(releases):
-        if i > 0 and release.date == releases[i - 1].date:
-            release.date_first = None
-        else:
-            release.date_first = release.date_str
-        release.date_str = None
-
-    return render(request, 'calendar.html', {
-            'releases': releases,
-            'next_date': next_date,
-            'next_offset': next_offset})
-
 @cache_control(max_age=24*60*60)
 def cover(request):
     mbid = request.GET.get('id', '')
@@ -403,7 +355,7 @@ def import_artists(request):
 
 def index(request):
     today = int(date.today().strftime('%Y%m%d'))
-    releases = ReleaseGroup.get_calendar(today, 5, 0)
+    releases = ReleaseGroup.get_calendar(today, 10, 0)
     return render(request, 'index.html', {'is_index': True, 'releases': releases})
 
 @login_required

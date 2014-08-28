@@ -10,10 +10,6 @@
   <changefreq>weekly</changefreq>
 </url>
 <url>
-  <loc>{{ root }}calendar</loc>
-  <changefreq>weekly</changefreq>
-</url>
-<url>
   <loc>{{ root }}contact</loc>
   <changefreq>weekly</changefreq>
 </url>
